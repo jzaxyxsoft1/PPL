@@ -9,6 +9,7 @@ exports.get=function (req,res){
         case 's': //订单状态
             break;
     }
+
 };
 exports.post=function(req,res){
     var t= req.body['t'];
