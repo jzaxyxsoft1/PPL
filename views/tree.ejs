@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> </title>
+    <meta charset="utf-8" />
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <script type="text/javascript" src="../javascripts/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="/stylesheets/treeview/jquery.treeview.js"></script>
+    <script type="text/javascript" src="/stylesheets/treeview/jquery.treeview.async.js"></script>
+</head>
+<body>
+    <b><a tid="<%= rootId%>" tn="<%=rootName%>" vp="<%=rootValuePath%>"><%= rootName%></a></b>
+    <ul id="ul_TreeView"></ul>
+    <script type="text/javascript">
+        var setting={persist:'location' ,collapsed: true, unique: true, url: '/base/tree?t=1&tp=<%=tp%>&rid=<%=rootId%>' };
+        $('#ul_TreeView').treeview(setting );
+        $('body').delegate('a', 'click', function () {
+            var l = $(this);
+            eval('<%=cb%>("'+l.attr('tid')+'","'+l.attr('tn')+'","'+l.attr('vp')+'")');
+        });
+    </script>
+</body>
+</html>

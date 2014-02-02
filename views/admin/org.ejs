@@ -1,0 +1,125 @@
+<% include ../Top.ejs %>
+<ul id="menu">
+    <li><a href="javascript:edit(0)">添加合作伙伴</a></li>
+</ul>
+<div class="wp100 hp95">
+
+    <div class="wp100 hp95 oya">
+        <div class="mc" style="width:610px;">
+            <b class="ml10">名称/简码包含:</b><input type="text" id="txt_ac"/><input type="button" value="查询" onclick="q()"/>
+        </div>
+        <div class="mt10 mc hide mt20" id="d_edit" style="width:610px;">
+            <div class="editor-label">ID:</div>
+            <div class="editor-field"><span data-bind="text:_id"></span></div>
+            <div class="editor-label">名称:</div>
+            <div class="editor-field"><input type="text" data-bind="value:Name"/></div>
+            <div class="editor-label">类型:</div>
+            <div class="editor-field">
+                <select data-bind="value:OrgType">
+                    <option value="授权经销商">授权经销商</option>
+                    <option value="预约经销商">预约经销商</option>
+                </select>
+            </div>
+            <div class="editor-label">合同到期时间:</div>
+            <div class="editor-field"><input data-bind="value:OverTime" id="txt_overTime"/></div>
+            <div class="editor-label">短信接收手机:</div>
+            <div class="editor-field"><input type="text" data-bind="value:SMSNum"/></div>
+            <div class="editor-label">简码:</div>
+            <div class="editor-field"><span data-bind="text:Simcode"></span></div>
+            <div class="hr" style="height: 10px;"></div>
+            <fieldset class="wp98 pp1">
+                <legend><strong>区域</strong><a href="javascript:addR()" class="ml10">添加区域</a></legend>
+                <ul data-bind="foreach:Ranges">
+                    <li><span data-bind="xzqh:$data"></span><a
+                                data-bind="click:function(){$parent.Ranges.remove($data);}">删除</a></li>
+                </ul>
+            </fieldset>
+            <div class="cb ac pt10">
+                <input type="button" value="保存" onclick="save()"/>
+                <input type="button" value="删除" onclick="del()" class="ml10"/>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript" src="../javascripts/xzqh.js"></script>
+<script type="text/javascript" src="../javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    $('#txt_ac').autocomplete({
+        source: '/base/getobjsac?tp=Org',
+        minLength: 2,
+        select: function (e, ui) {
+            if (ui.item._id) {
+                edit(ui.item._id);
+            }
+        }
+    });
+    function edit(id) {
+        if (id == 0) {
+            bindObj({_id: '', Name: '', Simcode: '', OrgType: '预约经销商', OverTime: '', SMSNum: '', Ranges: []});
+        }
+        else {
+            $.getJSON('/base/getobj', {tp: 'Org', query: {_id: id}}, bindObj);
+        }
+    }
+
+    function bindObj(d) {
+        if (GV.mdl) {
+            ko.mapping.fromJS(d, GV.mdl);
+        }
+        else {
+            GV.mdl = ko.mapping.fromJS(d);
+            ko.applyBindings(GV.mdl, document.getElementById('d_edit'));
+            $('#d_edit').show();
+        }
+
+    }
+    function addR() {
+        GV.mdl.Ranges.push(ko.mapping.fromJS({Name: '', Value: ''}));
+    }
+    function save() {
+        async.waterfall([
+            function (cb) {
+                var m = ko.mapping.toJS(GV.mdl);
+                var msg = '';
+                if (!m.Name) {
+                    msg = '请输入名称!\r';
+                }
+                if (m.Ranges == 0) {
+                    msg = msg + '请选择经销区域!\r';
+                }
+                if (msg) {
+                    cb(msg);
+                }
+                else {
+                    cb(null, m);
+                }
+            },
+            function (obj, cb) {
+                if (obj._id) {
+                    $.post('/base/postupdate', {tp: 'Org', query: {_id: GV.mdl._id()}, option: JSON.stringify(obj)}, function (d) {
+                        cb(d.error, null);
+                    });
+                }
+                else {
+                    cb(null, obj);
+                }
+            },
+            function (obj, cb) {
+                if (obj) {
+                    $.post('/base/postinsert', {tp: 'Org', obj: JSON.stringify(obj)}, function (d) {
+                        GV.mdl._id(d.ID);
+                        cb(d.error ? d.error : null, null);
+                    })
+                } else {
+                    cb(null, null);
+                }
+            }
+        ], function (e, rs) {
+            alert(e ? e : '保存成功!');
+        });
+    }
+    function del() {
+    }
+</script>
+<% include ../Bottom.ejs %>

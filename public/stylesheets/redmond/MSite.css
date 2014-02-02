@@ -1,0 +1,61 @@
+﻿html, body { width: 100%; height: 100%; margin-top: 0px; padding-left: 0px; font-size: 10pt; background-color: #fff; overflow: hidden; }
+
+a { text-decoration: none; border: none; outline: 0; }
+a, a:link, a:visited, a:active, .titleSpan, .lnk, .ui-widget-content a { color: #034af3; text-decoration: none; cursor: pointer; }
+a:hover { color: #CC3300; }
+.sctTitle { background-color: #465a7d; height: 22px; line-height: 22px; color: #fff; }
+.sctTitle a, .sctTitle a:active, .sctTitle a:visited { color: #FF9900; margin-left: 10px; }
+.sctTitle a:hover { color: #FF9933; }
+ul, li { margin-left: 0px; padding-left: 0px; list-style-type: none; }
+
+h1 { font-size: 16px; font-weight: bold; }
+h2 { font-size: 14px; font-weight: bold; }
+h3 { font-size: 12px; font-weight: bold; }
+tr.even { background-color: #e4e4e4; }
+tr { height: 22px; line-height: 22px; }
+.toolPnl { height: 22px; line-height: 22px; padding: 4px 0px; width: 98%; margin-left: auto; margin-right: auto; border-bottom: 3px double #696969; clear: both; }
+.editor-label { width: 95px; padding-right: 5px; text-align: right; font-weight: bold; background-color: #336699; float: left; height: 25px; line-height: 25px; color: #FFFFFF; }
+.editor-field { width: 195px; padding-left: 5px; height: 25px; line-height: 25px; text-align: left; float: left; background-color: #F0F0F0; }
+.editor-field input[type=text] { width: 90%; }
+.tabBorder { border: solid 1px #c5dbec; }
+
+.popMenu { background-color: #ccc; }
+.popMenu .ui-icon { float: left; margin-top: 2px; }
+.deskIcon { padding: 10px; text-align: center; }
+.deskIcon img { margin-left: auto; margin-right: auto; }
+
+.ml1t { margin-left: 10pt; }
+.ml2t { margin-left: 20pt; }
+.ml3t { margin-left: 30pt; }
+.ml4t { margin-left: 40pt; }
+
+.tabTitleItem { display: block; padding: 3px 10px; background-color: #eee; float: left; }
+.tabTitleItem.act { background-color: #ccc; }
+.tabTitleItem.hover { background-color: #333333; color: #FFFFFF; }
+
+#menu, .menu { float: left; margin: 0px; width: 100%; position: relative; overflow: visible; font-size: 12px; color: #000; height: 25px; background-color: #EFEFF2; }
+#menu li, .menu li { text-align: center; position: relative; display: inline-block; *display: inline; zoom: 1; }
+#menu li:hover, .menu li:hover { background-color: #fff; }
+#menu li a, .menu li a { display: inline-block; height: 25px; padding-left: 8px; padding-right: 8px; text-align: center; line-height: 25px; text-decoration: none; color: #000; }
+#menu li ul, .menu li ul { position: absolute; display: none; z-index: 999; top: 23px; left: -1px; }
+#menu li.act, .menu li.act { border: 1px solid #da532c; background: #e3a21a; border-bottom: none; }
+#menu .act, .menu .act { display: block; border: 1px solid #ff9900; background: #FEE8AD; border-top: none; }
+#menu .act a, .menu .act a { color: #000; }
+#menu .act li, .menu .act li { clear: both; }
+legend b { line-height: 16px; float: left; }
+.iconBt, .icon-button, .icon { width: 16px; height: 16px; background-image: url(/content/redmond/images/ui-icons_217bc0_256x240.png); overflow: hidden; font-size: 10px; cursor: pointer; display: inline-block; *display: inline; *zoom: 1; }
+.iconBt-hover, .icon-button-hover, .icon-hover { background-image: url(/content/redmond/images/ui-icons_6da8d5_256x240.png); background-color: #f4f4f4; }
+.iconBt-red, .icon-button-red, .icon-red { background-image: url(/content/redmond/images/ui-icons_cd0a0a_256x240.png); }
+.iconBt-search, .icon-button-search, .icon-search { background-position: -159px -111px; }
+.icon-button-arrow-s { background-position: -64px -16px; }
+.icon-button-18 { width: 18px; height: 18px; }
+.icon-button-add, .icon-add { background-position: -32px -128px; }
+.icon-arrow-s { background-position: -65px -16px; }
+.icon-button-del, .icon-del { background-position: -80px -128px; background-color: #fff; border: none; }
+.icon-button-bg-blue, .icon-blue { background-color: #dfeffc; border: 1px solid #3366FF; }
+.frmL { background-color: #465A7D; color: #FFFFFF; padding-top: 5px; width: 100%; height: 100%; overflow: auto; }
+.frmL .cnt { background-color: #fff; width: 96%; margin-left: auto; margin-right: auto; }
+.bgW { background-color: #fff; }
+.hr { display: block; height: 1px; clear: both; }
+b.label { display: table-cell; text-align: right; vertical-align: middle; *display: inline-block; }
+.cmbx, .ui-autocomplete-input { background-color: #FFFFDD; }

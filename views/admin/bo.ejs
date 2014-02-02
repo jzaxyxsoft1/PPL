@@ -1,0 +1,118 @@
+<% include ../Top.ejs%>
+<ul id="menu">
+    <li><a href="javascript:edit(0)" id="bt_add" style="display: none;"></a></li>
+</ul>
+<div class="hp94 wp100">
+    <div class="hp100 oh fl mp1" style="width:20%;">
+        <iframe id="listFrm" src=" " frameborder="0" scrolling="auto" width="100%"
+                height="100%"></iframe>
+    </div>
+    <div class="hp100 fr mp1 hide" id="ePnl" style="width:75%;">
+        <div class="wp98 mc">
+            <div class="editor-label">ID:</div>
+            <div class="editor-field"><span data-bind="text:_id"></span></div>
+            <div class="editor-label">名称:</div>
+            <div class="editor-field"><input type="text" data-bind="value:Name"/></div>
+            <div class="editor-label">上级类别:</div>
+            <div class="editor-field"><a href="javascript:chgP()" data-bind="text:Parent.Name"></a></div>
+        </div>
+        <div class="hr"></div>
+        <%if(manageFlg){%>
+        <fieldset class="wp96 pp1 mt10 cb ">
+            <legend><strong>扩展属性</strong><a href="javascript:addPro()" class="ml10 lnk">添加</a></legend>
+            <div class="wp100" style="line-height: 22px;" data-bind="visible:$data.Properties().length>0">
+                <b class="ilblk ac" style="width:10%;">属性名称</b>
+                <b class="ilblk ac" style="width:10%;">控件类型</b>
+                <b class="ilblk ac" style="width:75%;">绑定值</b>
+            </div>
+            <ul data-bind="foreach:Properties" class="wp100">
+                <li class="wp100">
+                    <input type="text" data-bind="value:PropertyName" style="width:10%;"/>
+                    <select data-bind="value:ControlType" style="width:10%;">
+                        <option value="1">文本框</option>
+                        <option value="2">下拉列表框</option>
+                        <option value="3">多选框</option>
+                        <option value="4">单选框</option>
+                        <option value="5">多选框组</option>
+                    </select>
+                    <input type="text" data-bind="value:BoundValue,visible:$data.ControlType()!='1'" style="width:70%;"/>
+                    <a class="lnk fred"
+                       data-bind="click:function(){if(window.confirm('是否删除?')){$parent.Properties.remove($data);}}">删除</a>
+                </li>
+            </ul>
+        </fieldset>
+        <script type="text/javascript">
+            function addPro() {
+                var pid = GV.mdl.Properties().length ? _.max(GV.mdl.Properties(), function (i) {
+                    return Number(i._id());
+                }) + 1 : 1;
+                GV.mdl.Properties.push(ko.mapping.fromJS({_id: pid, PropertyName: '', ControlType: "1", BoundValue: ""}));
+            }
+        </script>
+        <%}%>
+        <div class="cb ac pt10">
+            <input type="button" onclick="save" value="保存"/>
+            <%if(manageFlg){%>
+            <input type="button" onclick="del()" value="删除"/>
+            <script type="text/javascript">
+                function del(){
+                    $.getJSON('/admin/get',{t:'delbo',id:GV.mdl._id()},function(rtn){
+                        if(rtn.msg){   bindList(); $('#ePnl').hide(); $('#bt_add').hide(); }
+                        else{alert(rtn.error);}
+                    });
+                }
+            </script>
+            <%}%>
+        </div>
+    </div>
+</div>
+<div class="hide" id="d_prnt">
+    <iframe src="" scrolling="auto" id="prntFrm" width="100%" height="95%" frameborder="0"></iframe>
+</div>
+<script type="text/javascript">
+    GV.parent = {Name: '<%=bo.Name%>', Value: '<%=bo._id%>'};
+    GV.ValuePath = '<%=bo.ValuePath%>';
+    function bindList() {
+        $('#listFrm').attr('src', '/base/tree?tp=BODefine&rid=<%=id%>&cb=parent.dStl');
+        $('#prntFrm').attr('src', '/base/tree?tp=BODefine&rid=<%=id%>&cb=parent.prntStl');
+    }
+</script>
+<script type="text/javascript">
+    $('#d_prnt').dialog({modal: true, autoOpen: false, width: 400, height: WS.h - 80, title: '选择上级类别'});
+    bindList();
+    function dStl(id, name, vp) {
+        GV.parent = {Name: name, Value: id, ValuePath: vp};
+        $('#bt_add').html('添加【' + name + '】下级类别').show();
+    }
+    function chgP() {
+        $('#d_prnt').dialog('open');
+    }
+    function prntSlt(id, name, vp) {
+        GV.mdl.Parent.Name(name);
+        GV.mdl.Parent.Value(id);
+        GV.mdl.ValuePath(vp);
+        $('#d_prnt').dialog('close');
+    }
+
+    function edit(id) {
+        if (id == 0) {
+            bindObj({_id: '', Name: '', Parent: GV.parent, ValuePath: GV.ValuePath, Properties: []});
+        }
+        else {
+            $.getJSON('/base/getobj', {tp: 'BODefine', query: {_id: id},m:1}, function (rtn) {
+                bindObj(rtn)
+            });
+        }
+    }
+    function bindObj(o) {
+        if (GV.mdl) {
+            ko.mapping.fromJS(o, GV.mdl);
+        }
+        else {
+            GV.mdl = ko.mapping.fromJS(o);
+            ko.applyBindings(GV.mdl, document.getElementById('ePnl'));
+        }
+        $('#ePnl').show();
+    }
+</script>
+<% include ../Bottom.ejs%>

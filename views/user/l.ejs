@@ -1,0 +1,24 @@
+<% include ../Top.ejs %>
+<b><%= Org.Name %>用户列表</b>
+<ul data-bind="foreach:$data" style="padding-left: 10px;" id="ul_list">
+
+    <li style="line-height: 22px;">
+        <a class="lnk" data-bind="text:Name,click:uSlt"></a>
+    </li>
+</ul>
+<script type="text/javascript">
+    $.getJSON('/base/getobjs', {tp: 'User', query: {'Org.Value': '<%=Org.Value%>'}, option: {Name: 1}}, function (d) {
+        if (GV.mdl) {
+            ko.mapping.fromJS(d, GV.mdl);
+        }
+        else {
+            GV.mdl = ko.mapping.fromJS(d);
+            ko.applyBindings(GV.mdl, document.getElementById('ul_list'));
+        }
+
+    });
+    function uSlt(d) {
+        eval('<%=cb%>("' + d._id() + '","' + d.Name() + '")');
+    }
+</script>
+<% include ../Bottom.ejs %>

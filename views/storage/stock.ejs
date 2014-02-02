@@ -1,0 +1,29 @@
+<% include ../Top.ejs %>
+<ul id="menu">
+    <li><a href="javascript:edit(0)">添加库房</a></li>
+</ul>
+<div class="wp100 hp95">
+    <div class="hp98 pp1 oya fl" style="width:20%;" id="d_list">
+        <b>库房列表</b>
+        <ul data-bind="foreach:$data">
+            <li class="lh22"><a class="lnk" data-bind="text:Name,click:edit"></a></li>
+        </ul>
+    </div>
+    <div class="fr hp100 oh hide" style="width: 75%;" id="d_edit">
+        <div class="mc mt10" style="width: 305px;">
+            <div class="editor-label">ID</div>
+            <div class="editor-field"><span data-bind="text:_id"></span></div>
+            <div class="editor-label">库房名称:</div>
+            <div class="editor-field"><input type="text" data-bind="value:Name"/></div>
+            <div class="cb ac pt10">
+                <input type="button" value="保存" onclick="save()"/>
+                <input type="button" value="删除" onclick="del()" class="ml10"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var org = {Name: '<%=Org.Name%>', Value: '<%=Org.Value%>'};
+</script>
+<script type="text/javascript" src="/javascripts/pages/storage/stock.js"> </script>
+<% include ../Bottom.ejs %>

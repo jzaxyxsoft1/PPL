@@ -1,0 +1,106 @@
+<% include ../Top.ejs %>
+<ul id="menu">
+    <li><a href="javascript:edit(0)">添加用户</a></li>
+</ul>
+<div class="wp100 hp95 oh">
+    <iframe src="" frameborder="0" class="fl hp98 pp1 oya" scrolling="auto" id="frm1"
+            style="width:20%"></iframe>
+    <div class="fr pp1 hp98 hide" style="width:75%;" id="d_edit">
+        <div class="mc mt10" style="width:300px;">
+            <div class="editor-label">ID:</div>
+            <div class="editor-field"><span data-bind="text:_id"></span></div>
+            <div class="editor-label">登录名:</div>
+            <div class="editor-field"><input type="text" data-bind="value:Name"/></div>
+            <div class="editor-label">简码:</div>
+            <div class="editor-field"><span type="text" data-bind="text:Simcode"></span></div>
+            <div class="ac pt10 cb">
+                <input type="button" value="保存" onclick="save()"/>
+                <input type="button" value="重置密码" onclick="resetPwd()" class="ml10"/>
+                <input type="button" value="删除" onclick="del()" class="ml10"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var org = {Name: '<%=Org.Name%>', Value: '<%=Org.Value%>', Type: 'Partner'};
+    var url = '/base/getobj';
+    function bindList() {
+        $('#frm1').attr('src', '/user/m?t=l&cb=parent.edit');
+    }
+    function edit(id) {
+        if (id == 0) {
+            bindO({_id: '', Name: '', Org: org, Pwd: '8888', Simcode: ''});
+        }
+        else {
+            $.getJSON(url, {tp: 'User', query: {_id: id}},bindO);
+        }
+    }
+    function bindO(d) {
+        if (GV.mdl) {
+            ko.mapping.fromJS(d, GV.mdl);
+        }
+        else {
+            GV.mdl = ko.mapping.fromJS(d);
+            ko.applyBindings(GV.mdl, document.getElementById('d_edit'));
+        }
+        $('#d_edit').show();
+    }
+    function save() {
+        var m = ko.mapping.toJS(GV.mdl);
+        if (!m.Name) {
+            alert('请输入用户名!');
+            return;
+        }
+        async.waterfall([
+            function (cb) {
+                $.getJSON(url, {tp: 'User',query:{'Org.Value':org.Value,Name:m.Name,_id:{$ne:m._id}},option:{Name:1}}, function ( d) {
+                    cb(d ? '用户名重复!' : null);
+                });
+            },
+            function (cb) {
+                if (m._id) {
+                    $.post('/base/postupdate', {tp: 'User', query: {_id: m._id}, option: m }, function (d) {
+                        cb(null, d);
+                    });
+                }
+                else {
+                    $.post('/base/postinsert', {tp: 'User', obj: m}, function (d) {
+                        cb(null, d);
+                    });
+                }
+            }
+        ], function (e, d) {
+            if (e || d.error) {
+                alert(e || d.error);
+                return;
+            }
+            if (d.ID) {
+                GV.mdl._id(d.ID);
+                alert('保存成功!');
+                bindList();
+            }
+        });
+    }
+    function del() {
+        if (window.confirm('是否删除用户?')) {
+            $.getJSON('/base/delete', {tp: 'User', query: {_id: GV.mdl._id()}}, function (d) {
+                if (d.error) {
+                    alert(d.error);
+                    return;
+                }
+                alert('删除完成!');
+                bindList();
+                $('#d_edit').hide();
+            });
+        }
+    }
+    function resetPwd() {
+        if (window.confirm('是否重置用户密码?')) {
+            $.getJSON('/user/m?t=resetPwd', {id: GV.mdl._id()}, function (d) {
+                alert('密码重置' + d ? '成功' : '失败' + '!')
+            });
+        }
+    }
+    bindList();
+</script>
+<% include ../Bottom.ejs %>
