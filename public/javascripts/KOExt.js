@@ -51,7 +51,7 @@ ko.bindingHandlers.xzqh = {
         $('option[value="' + _ns.pn + '"]', _t.children().eq(0)).attr('selected', 'selected');
         _t.children().eq(0).change();
 
-        if(_t.children().length>1){
+        if (_t.children().length > 1) {
             $('option[value="' + _ns.cn + '"]', _t.children().eq(1)).attr('selected', 'selected');
             _t.children().eq(1).change();
             $('option[value="' + _ns.dn + '"]', _t.children().eq(2)).attr('selected', 'selected');
@@ -95,27 +95,50 @@ ko.bindingHandlers.xzqh = {
 };
 var Bill = function (owner, creator) {
     this._id = ko.observable('');
-    this.Owner = { Item1: ko.observable(owner ? owner.Item1 : ''), Item2: ko.observable(owner ? owner.Item2 : ''), Item3: ko.observable(owner ? owner.Item3 : ''), Item4: ko.observable(owner ? owner.Item4 : '') };
+    this.Owner = { Item1: ko.observable(owner ? owner.Item1 : ''), Item2: ko.observable(owner ? owner.Item2 : ''), Item3: ko.observable(owner ? owner.Item3 : '')  };
     this.Remark = ko.observable('');
     this.Items = ko.observableArray([]);
-    this.Sum = ko.computed(function () {
-        return this.Items().Sum(function (iii) {
-            return iii.Sum();
-        });
-    }, this);
     this.CreateTime = Date.ToCreateTime();
-    this.Creator={Item1:ko.observable(creator?creator.Item1:''),Item2:ko.observable(creator?creator.Item2:''),Item3:ko.observable( creator?creator.Item3:'')};
+    this.Creator = {Item1: ko.observable(creator ? creator.Item1 : ''), Item2: ko.observable(creator ? creator.Item2 : ''), Item3: ko.observable(creator ? creator.Item3 : '')};
+    this.Status = ko.observable('');
 };
-var BillItem = function (relativeObj, unitPrice, amount,  model, unit, amountEditable) {
+Bill.prototype.Sum = ko.computed(function () {
+    return this.Items().Sum(function (iii) {
+        return iii.Sum();
+    });
+}, this);
+Bill.generateFromObj = function (obj) {
+    delete obj.Sum;
+    delete obj.Items;
+    var r = ko.mapping.fromJS(obj);
+    r.Items = ko.observableArray([]);
+    obj.Items.forEach(function (i) {
+        var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
+        ii.Remark(i.Remark);
+        r.Items.push(ii);
+    });
+    return r;
+};
+Bill.updateFromObj = function (bill, obj) {
+    delete obj.Sum;
+    ko.mapping.fromJS(obj, bill);
+    bill.Items.removeAll();
+    obj.Items.forEach(function (i) {
+        var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
+        ii.Remark(i.Remark);
+        bill.Items.push(ii);
+    });
+};
+var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
     this.RelativeObj = { Item1: ko.observable(relativeObj ? relativeObj.Item1 : ''), Item2: ko.observable(relativeObj ? relativeObj.Item2 : ''), Item3: ko.observable(relativeObj ? relativeObj.Item3 : ''), Item4: ko.observable(relativeObj ? relativeObj.Item4 : '') };
     this.UnitPrice = ko.observable(unitPrice || 0);
     this.Amount = ko.observable(amount || 0);
     this.Model = ko.observable(model || '');
     this.Unit = ko.observable(unit || '');
-    this.Sum = ko.computed(function () {
-        return Math.round(this.UnitPrice() * this.Amount(), 2);
-    }, this);
     this.AmountEditable = ko.observable(amountEditable || false);
     this.Deleteable = ko.observable(true);
     this.Remark = ko.observable('');
 };
+BillItem.prototype.Sum = ko.computed(function () {
+    return Math.round(this.UnitPrice() * this.Amount(), 2);
+}, this);

@@ -1,3 +1,109 @@
-<% include ../Top.ejs%>
+<% include ../Top.ejs %>
+<ul id="menu">
+    <li><a href="javascript:edit(0)" id="bt_new" style="display: none;">新建订单</a></li>
+</ul>
+<div class="hp95 wp100">
+    <div id="d_list" class="wp100 hp100 oya hide">
+        <table cellspacing="0" cellpadding="0" class="mt10 mc wp98">
+            <thead>
+            <tr>
+                <td>单号</td>
+                <td>日期</td>
+                <td>内容</td>
+                <td>金额</td>
+                <td>状态</td>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach:$data">
+            <tr data-bind="css:{'even':$index()%2!=0}">
+                <td><a class="lnk" data-bind="text:BillNum,click:edit"></a>
+                <td>
+                <td data-bind="text:CreateTime.Item1">日期</td>
+                <td class="al" data-bind="foreach:Items">
+                    <span class="ml10"> <b data-bind="text:Item2"></b><b>:</b><span
+                                data-bind="text:Amount"></span></span>
+                </td>
+                <td data-bind="text:Sum"></td>
+                <td data-bind="text:Status">状态</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="d_edit" class="wp100 hp100 oya hide">
+        <div class="mc mt10" style="width: 610px;">
+            <div class="editor-label">单号:</div>
+            <div class="eidtor-field"><span data-bind="text:BillNum"></span></div>
+            <div class="editor-label">状态:</div>
+            <div class="eidtor-field"><span data-bind="text:Status"></span></div>
+            <div class="editor-label">经销商:</div>
+            <div class="eidtor-field"><span data-bind="text:Owner.Item2"></span></div>
+            <div class="editor-label">建单时间:</div>
+            <div class="eidtor-field"><span data-bind="text:CreateTime.Item1"></span></div>
+            <div class="editor-label">建单人:</div>
+            <div class="eidtor-field"><span data-bind="text:Creator.Item2"></span></div>
+            <div class="editor-label">金额:</div>
+            <div class="eidtor-field"><span data-bind="text:Sum"></span></div>
+        </div>
+        <div class="hr" style="height: 10px;"></div>
+        <fieldset class="mc p10" style="width: 590px;">
+            <legend><strong>订单内容:</strong><a href="javascript:addItem()" class="lnk ml10">添加产品</a></legend>
+            <table cellspacing="0" cellpadding="0" style="width:590px;">
+                <thead>
+                <tr>
+                    <td>产品</td>
+                    <td>规格</td>
+                    <td>单位</td>
+                    <td>数量</td>
+                    <td>单价</td>
+                    <td>金额</td>
+                </tr>
+                </thead>
+                <tbody data-bind="foreach:Items">
+                <tr data-bind="css:{'even':$index()%2!=0}">
+                    <td>
+                        <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,change:proChg"></select>
+                    </td>
+                    <td data-bind="text:Model"></td>
+                    <td data-bind="text:Unit"></td>
+                    <td><input type="text" data-bind="value:Amount" style="width:40px;"/></td>
+                    <td data-bind="text:UnitPrice"></td>
+                    <td data-bind="text:Sum"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+        <div class="cb ac pt10">
+            <input type="button" value="保存" onclick="save()"/>
+            <input class="ml10" type="button" value="保存并提交" onclick="save(1)"/>
+            <input class="ml10" type="button" value="删除" onclick="del()"
+                   data-bind="visible:$data.Status()=='未提交'&& $data.BillNum()!=''"/>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    var u = JSON.parse('<%=JSON.stringify(user)%>');
+    var org = u.Org;
+    $.getJSON('/base/getobjs', {tp: 'Product', query: {}, option: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
+        GV.products = d;
+        $('#bt_add').show();
+    });
+    function bindList() {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未提交'}}, function (d) {
+            if (GV.list) {
+                ko.mapping.fromJS(d, GV.list);
+            }
+            else {
+                GV.list = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.list, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+    function alm(msg) {
+        alert(msg);
+    }
 
-<% include ../Bottom.ejs%>
+</script>
+<script type="text/javascript" src="/javascripts/pages/order/neworder.js"></script>
+<% include ../Bottom.ejs %>

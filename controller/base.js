@@ -146,12 +146,12 @@ exports.postsave = function (req, res) {
     obj = typeof obj == 'string' ? JSON.parse(obj) : obj;
     if (obj._id) {
         Svc.update(tp, {_id: obj._id}, obj, req.currentUser, function (e) {
-            res.json({msg: e == null, error: e, ID: obj._id});
+            res.json({msg: e == null, error: e, ID: obj._id, BillNum: (Svc.IBill[tp] ? obj.BillNum : '')});
         });
     }
     else {
         Svc.insert(tp, obj, req.currentUser, function (e, ds) {
-            res.json({msg: e == null, error: e, ID: ds[0]._id});
+            res.json({msg: e == null, error: e, ID: ds[0]._id, BillNum: (Svc.IBill[tp] ? obj.BillNum : '')});
         });
     }
 };
