@@ -8,7 +8,7 @@ exports.get=function (req,res){
             res.render('order/n',{user:req.currentUser});
             break;
         case 's': //订单状态
-            var st=req.query['st'];
+            var st=req.query['st']; //状态
             res.render('order/s',{user:req.currentUser,status:st });
             break;
     }

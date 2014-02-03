@@ -51,7 +51,7 @@ function proChg(d) {
 }
 function save(f) {
     if (f) {
-        GV.mdl.Status('已提交');
+        GV.mdl.Status('未付款');
     }
     var m = ko.mapping.toJS(GV.mdl);
     $.post('/base/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {

@@ -145,7 +145,10 @@ exports.postsave = function (req, res) {
     var tp = req.body['tp'];
     obj = typeof obj == 'string' ? JSON.parse(obj) : obj;
     if (obj._id) {
-        Svc.update(tp, {_id: obj._id}, obj, req.currentUser, function (e) {
+        var oi= obj._id;
+        delete obj._id;
+        var up = {$set:obj};
+        Svc.update(tp, {_id: oi}, up, req.currentUser, function (e) {
             res.json({msg: e == null, error: e, ID: obj._id, BillNum: (Svc.IBill[tp] ? obj.BillNum : '')});
         });
     }
