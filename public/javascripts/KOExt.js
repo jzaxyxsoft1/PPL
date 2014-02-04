@@ -142,3 +142,27 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
 BillItem.prototype.Sum = ko.computed(function () {
     return Math.round(this.UnitPrice() * this.Amount(), 2);
 }, this);
+$.fn.BillTable = function (sltKoEvent,multSlt) {
+    var _t = $(this);
+    var ops = {sltKoEvent: sltKoEvent, multiSlt:arguments.length>1?arguments[1]:false};
+
+    var _s = '<thead><tr>' + (ops.multiSlt ? '<td></td>' : '')
+    '<td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>状态</td></tr>' +
+        '</thead><tbody data-bind="foreach:$data">' + '<tr data-bind="css:{\'even\':$index()%2!=0}">' +
+        (ops.multiSlt ? '<td><input type="checkbox" data-bind="value:_id"/></td>' : '') +
+        '<td>'+(ops.multiSlt?'<span  data-bind="text:RelativeObj.Item2"></span>':'<a data-bind="text:RelativeObj.Item2,click:'+ sltKoEvent+'"></a>')+'</td> <td data-bind = "text:Model" > </td> <td data-bind="text:Unit"></td> <td data-bind="text:Amount"></td> <td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td> </tr></tbody>' + (ops.multiSlt ? '<tfoot><tr><td colspan="6"><input type="button" value="全选"/><input type="button" value="取消全选" /></td></tr></tfoot>' : '');
+    _t.append('_s');
+    _t.getValues = function () {
+        var _r = [];
+        $('input[type=checkbox]:selected', _t).each(function () {
+            _r.push(this.value);
+        });
+        return _r;
+    }
+    if (ops.multiSlt) {
+        $('tfoot', _t).delegate('input', 'click', function () {
+            $('tbody input', _t).attr('checked', (this.value.indexOf('取消') < 0));
+        })
+    }
+    return _t;
+};
