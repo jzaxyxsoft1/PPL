@@ -4,45 +4,22 @@
 </ul>
 <div class="hp95 wp100">
     <div id="d_list" class="wp100 hp100 oya hide">
-        <table cellspacing="0" cellpadding="0" class="mt10 mc wp98">
-            <thead>
-            <tr>
-                <td>单号</td>
-                <td>日期</td>
-                <td>内容</td>
-                <td>金额</td>
-                <td>状态</td>
-            </tr>
-            </thead>
-            <tbody data-bind="foreach:$data">
-            <tr data-bind="css:{'even':$index()%2!=0}">
-                <td><a class="lnk" data-bind="text:BillNum,click:edit"></a>
-                <td>
-                <td data-bind="text:CreateTime.Item1">日期</td>
-                <td class="al" data-bind="foreach:Items">
-                    <span class="ml10"> <b data-bind="text:Item2"></b><b>:</b><span
-                                data-bind="text:Amount"></span></span>
-                </td>
-                <td data-bind="text:Sum"></td>
-                <td data-bind="text:Status">状态</td>
-            </tr>
-            </tbody>
-        </table>
+        <table id="tbl_ds" cellspacing="0" cellpadding="0" class="mc mt10 wp98"></table>
     </div>
     <div id="d_edit" class="wp100 hp100 oya hide">
         <div class="mc mt10" style="width: 610px;">
             <div class="editor-label">单号:</div>
-            <div class="eidtor-field"><span data-bind="text:BillNum"></span></div>
+            <div class="editor-field"><span data-bind="text:BillNum"></span></div>
             <div class="editor-label">状态:</div>
-            <div class="eidtor-field"><span data-bind="text:Status"></span></div>
+            <div class="editor-field"><span data-bind="text:Status"></span></div>
             <div class="editor-label">经销商:</div>
-            <div class="eidtor-field"><span data-bind="text:Owner.Item2"></span></div>
+            <div class="editor-field"><span data-bind="text:Owner.Item2"></span></div>
             <div class="editor-label">建单时间:</div>
-            <div class="eidtor-field"><span data-bind="text:CreateTime.Item1"></span></div>
+            <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
             <div class="editor-label">建单人:</div>
-            <div class="eidtor-field"><span data-bind="text:Creator.Item2"></span></div>
+            <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
             <div class="editor-label">金额:</div>
-            <div class="eidtor-field"><span data-bind="text:Sum"></span></div>
+            <div class="editor-field"><span data-bind="text:Sum"></span></div>
         </div>
         <div class="hr" style="height: 10px;"></div>
         <fieldset class="mc p10" style="width: 590px;">
@@ -56,18 +33,22 @@
                     <td>数量</td>
                     <td>单价</td>
                     <td>金额</td>
+                    <td style="width:30px;" data-bind="visible:$data.Status()=='未提交'"></td>
                 </tr>
                 </thead>
                 <tbody data-bind="foreach:Items">
                 <tr data-bind="css:{'even':$index()%2!=0}">
                     <td>
-                        <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,change:proChg"></select>
+                        <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
                     </td>
                     <td data-bind="text:Model"></td>
                     <td data-bind="text:Unit"></td>
                     <td><input type="text" data-bind="value:Amount" style="width:40px;"/></td>
                     <td data-bind="text:UnitPrice"></td>
                     <td data-bind="text:Sum"></td>
+                    <td data-bind="visible:$parent.Status()=='未提交'"><a class="lnk fred"
+                                                                       data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}">删除</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -77,16 +58,19 @@
             <input class="ml10" type="button" value="保存并提交" onclick="save(1)"/>
             <input class="ml10" type="button" value="删除" onclick="del()"
                    data-bind="visible:$data.Status()=='未提交'&& $data.BillNum()!=''"/>
+            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
         </div>
     </div>
 </div>
 <script type="text/javascript" src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
-    var u = {_id:'<%=user._id%>',Name:'<%=user.Name%>',Org:{Name:'<%=user.Org.Name%>',Value:'<%=user.Org.Value%>'}};
+    var u = {_id: '<%=user._id%>', Name: '<%=user.Name%>', Org: {Name: '<%=user.Org.Name%>', Value: '<%=user.Org.Value%>'}};
     var org = u.Org;
-    $.getJSON('/base/getobjs', {tp: 'Product', query: {}, option: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
+    $('#tbl_ds').BillTable('edit');
+    $.getJSON('/product/get', {t: 'objs', query: {}, option: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
         GV.products = d;
         $('#bt_new').show();
+        bindList();
     });
     function bindList() {
         $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未提交'}}, function (d) {

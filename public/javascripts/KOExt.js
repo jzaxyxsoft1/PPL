@@ -96,48 +96,38 @@ ko.bindingHandlers.xzqh = {
 var Bill = function (owner, creator) {
     this._id = ko.observable('');
     this.Owner = { Item1: ko.observable(owner ? owner.Item1 : ''), Item2: ko.observable(owner ? owner.Item2 : ''), Item3: ko.observable(owner ? owner.Item3 : '')  };
+    this.BillNum = ko.observable('');
     this.Remark = ko.observable('');
     this.Items = ko.observableArray([]);
     this.CreateTime = Date.ToCreateTime();
     this.Creator = {Item1: ko.observable(creator ? creator.Item1 : ''), Item2: ko.observable(creator ? creator.Item2 : ''), Item3: ko.observable(creator ? creator.Item3 : '')};
+    this.Sum = ko.computed(function () {
+        return this.Items().Sum(function (i) {
+            return i.Sum()
+        });
+    }, this);
     this.Status = ko.observable('');
     this.updateFromObj = function (obj) {
         delete obj.Sum;
-        ko.mapping.fromJS(obj, this);
-        this.Items.removeAll();
+        var _t = this;
+        _t.Owner.Item1(obj.Owner.Item1);
+        _t.Owner.Item2(obj.Owner.Item2);
+        _t.Owner.Item3(obj.Owner.Item3);
+        _t.Creator.Item1(obj.Creator.Item1);
+        _t.Creator.Item2(obj.Creator.Item2);
+        _t.Creator.Item3(obj.Creator.Item3);
+        _t.CreateTime = obj.CreateTime;
+        _t.Status(obj.Status);
+        _t.BillNum(obj.BillNum);
+        _t.Remark(obj.Remark);
+        _t._id(obj._id);
+        _t.Items.removeAll();
         obj.Items.forEach(function (i) {
             var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
             ii.Remark(i.Remark);
-            this.Items.push(ii);
+            _t.Items.push(ii);
         });
     };
-};
-Bill.prototype.Sum = ko.computed(function () {
-    return this.Items().Sum(function (iii) {
-        return iii.Sum();
-    });
-}, this);
-Bill.generateFromObj = function (obj) {
-    delete obj.Sum;
-    delete obj.Items;
-    var r = ko.mapping.fromJS(obj);
-    r.Items = ko.observableArray([]);
-    obj.Items.forEach(function (i) {
-        var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
-        ii.Remark(i.Remark);
-        r.Items.push(ii);
-    });
-    return r;
-};
-Bill.updateFromObj = function ( obj) {
-    delete obj.Sum;
-    ko.mapping.fromJS(obj, bill);
-    this.Items.removeAll();
-    obj.Items.forEach(function (i) {
-        var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
-        ii.Remark(i.Remark);
-        this.Items.push(ii);
-    });
 };
 var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
     this.RelativeObj = { Item1: ko.observable(relativeObj ? relativeObj.Item1 : ''), Item2: ko.observable(relativeObj ? relativeObj.Item2 : ''), Item3: ko.observable(relativeObj ? relativeObj.Item3 : ''), Item4: ko.observable(relativeObj ? relativeObj.Item4 : '') };
@@ -148,20 +138,19 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
     this.AmountEditable = ko.observable(amountEditable || false);
     this.Deleteable = ko.observable(true);
     this.Remark = ko.observable('');
+    this.Sum = ko.computed(function () {
+        return Math.round(this.UnitPrice() * this.Amount(), 2);
+    }, this);
 };
-BillItem.prototype.Sum = ko.computed(function () {
-    return Math.round(this.UnitPrice() * this.Amount(), 2);
-}, this);
-$.fn.BillTable = function (sltKoEvent,multSlt) {
+$.fn.BillTable = function (sltKoEvent, multSlt) {
     var _t = $(this);
-    var ops = {sltKoEvent: sltKoEvent, multiSlt:arguments.length>1?arguments[1]:false};
+    var ops = {sltKoEvent: sltKoEvent, multiSlt: arguments.length > 1 ? arguments[1] : false};
 
-    var _s = '<thead><tr>' + (ops.multiSlt ? '<td></td>' : '')
-    '<td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>状态</td></tr>' +
+    var _s = '<thead><tr>' + (ops.multiSlt ? '<td></td>' : '') + '<td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>状态</td><td>建单人</td></tr>' +
         '</thead><tbody data-bind="foreach:$data">' + '<tr data-bind="css:{\'even\':$index()%2!=0}">' +
         (ops.multiSlt ? '<td><input type="checkbox" data-bind="value:_id"/></td>' : '') +
-        '<td>'+(ops.multiSlt?'<span  data-bind="text:RelativeObj.Item2"></span>':'<a data-bind="text:RelativeObj.Item2,click:'+ sltKoEvent+'"></a>')+'</td> <td data-bind = "text:Model" > </td> <td data-bind="text:Unit"></td> <td data-bind="text:Amount"></td> <td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td> </tr></tbody>' + (ops.multiSlt ? '<tfoot><tr><td colspan="6"><input type="button" value="全选"/><input type="button" value="取消全选" /></td></tr></tfoot>' : '');
-    _t.append('_s');
+        '<td>' + (ops.multiSlt ? '<span  data-bind="text:BillNum"></span>' : '<a data-bind="text:BillNum,click:' + sltKoEvent + '"></a>') + '</td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Sum"></td> <td data-bind="text:Status"></td><td data-bind="text:Creator.Item2"></td> </tr></tbody>' + (ops.multiSlt ? '<tfoot><tr><td colspan="6"><input type="button" value="全选"/><input type="button" value="取消全选" /></td></tr></tfoot>' : '');
+    _t.append(_s);
     _t.getValues = function () {
         var _r = [];
         $('input[type=checkbox]:selected', _t).each(function () {
@@ -175,4 +164,9 @@ $.fn.BillTable = function (sltKoEvent,multSlt) {
         })
     }
     return _t;
+};
+$.fn.BillDetail = function () {
+  var _s = '<div class="mc mt10" style="width: 610px;"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">状态:</div><div class="editor-field"> <span data-bind="text:Status"></span></div><div class="editor-label">经销商:</div> <div class="editor-field"> <span data-bind="text:Owner.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc p10" style="width: 590px;"><legend><strong>订单内容:</strong></legend><table cellspacing="0" cellpadding="0" style="width:590px;"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><tddata-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td></tr></tbody></table></fieldset>';
+    this.html(_s);
+    return this;
 };

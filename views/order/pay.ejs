@@ -1,0 +1,50 @@
+<% include ../Top.ejs %>
+<div class="wp100 hp100">
+    <div class="wp98 mc hp100 oya" id="d_list">
+        <table id="tbl_ds" cellspacing="0" cellpadding="0" class="wp100 mt10"></table>
+    </div>
+    <div class="wp98 mc hp100 oya hide" id="d_edit">
+        <div id="d_ll" class="wp100">  </div>
+        <div class="cb pt10 ac">
+            <b>银行交易号:</b><input type="text" id="txt_voucherNum" style="width:200px;"/>
+        </div>
+        <div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
+            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    $('#tbl_ds').BillTable('edit');
+    $('#d_ll').BillDetail();
+    var bill = new Bill();
+    ko.applyBindings(bill, document.getElementById('d_edit'));
+    function bindList() {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未付款'} }, function (d) {
+            if (GV.List) {
+                ko.mapping.fromJS(d, GV.List);
+            }
+            else {
+                GV.List = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.List, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+    function edit(d) {
+        bill.updateFromObj(ko.mapping.toJS(d));
+        $('#txt_voucherNum').val('');
+        showPnl('d_edit');
+    }
+    function pay() {
+        if(!$('#txt_voucherNum').val()){ alert('请输入银行交易号!');return;}
+        $.getJSON('/order/get?t=pay', {id: bill._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
+            alert(d.error || '付款完成!');
+            if (d.msg) {
+                bindList();
+            }
+        });
+    }
+    bindList();
+</script>
+<% include ../Bottom.ejs %>

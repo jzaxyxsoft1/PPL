@@ -23,20 +23,21 @@ function edit(d) {
                 cb(null, o);
             }
             else {
+                d = typeof d == 'string' ? d : d._id instanceof Function ? d._id() : d._id;
                 $.getJSON('/base/getobj', {tp: 'Order', query: {_id: d}}, function (obj) {
                     cb(null, obj);
                 });
             }
         }
     ], function (e, o) {
-        bill.updateFromObj( o);
+        bill.updateFromObj(o);
         showPnl('d_edit');
     });
 }
 function addItem() {
     var p = GV.products[0];
     var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut', Item4: ''}, p.Price, 1, p.Model, p.Unit, true);
-    GV.mdl.Items.push(o);
+    bill.Items.push(o);
 }
 function proChg(d) {
     var pro = GV.products.filter(function (i) {
@@ -51,19 +52,21 @@ function proChg(d) {
 }
 function save(f) {
     if (f) {
-        GV.mdl.Status('未付款');
+        bill.Status('未付款');
     }
-    var m = ko.mapping.toJS(GV.mdl);
+    var m = ko.mapping.toJS(bill);
+    delete  m.updateFromObj;
     $.post('/base/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
         alm(d.error || '保存成功!');
         if (d.msg) {
-            GV.mdl.BillNum(d.BillNum);
+            bill._id(d.ID);
+            bill.BillNum(d.BillNum);
             bindList();
         }
     });
 }
 function del() {
-    $.getJSON('/base/delete', {tp: 'Order', query: {_id: GV.mdl._id()}}, function (d) {
+    $.getJSON('/base/delete', {tp: 'Order', query: {_id: bill._id()}}, function (d) {
         alm(d.error || '删除完成!');
         if (d.msg) {
             bindList();
