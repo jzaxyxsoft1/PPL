@@ -82,11 +82,11 @@
 </div>
 <script type="text/javascript" src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
-    var u = JSON.parse('<%=JSON.stringify(user)%>');
+    var u = {_id:'<%=user._id%>',Name:'<%=user.Name%>',Org:{Name:'<%=user.Org.Name%>',Value:'<%=user.Org.Value%>'}};
     var org = u.Org;
     $.getJSON('/base/getobjs', {tp: 'Product', query: {}, option: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
         GV.products = d;
-        $('#bt_add').show();
+        $('#bt_new').show();
     });
     function bindList() {
         $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未提交'}}, function (d) {

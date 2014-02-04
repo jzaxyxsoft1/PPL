@@ -101,6 +101,16 @@ var Bill = function (owner, creator) {
     this.CreateTime = Date.ToCreateTime();
     this.Creator = {Item1: ko.observable(creator ? creator.Item1 : ''), Item2: ko.observable(creator ? creator.Item2 : ''), Item3: ko.observable(creator ? creator.Item3 : '')};
     this.Status = ko.observable('');
+    this.updateFromObj = function (obj) {
+        delete obj.Sum;
+        ko.mapping.fromJS(obj, this);
+        this.Items.removeAll();
+        obj.Items.forEach(function (i) {
+            var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
+            ii.Remark(i.Remark);
+            this.Items.push(ii);
+        });
+    };
 };
 Bill.prototype.Sum = ko.computed(function () {
     return this.Items().Sum(function (iii) {
@@ -119,14 +129,14 @@ Bill.generateFromObj = function (obj) {
     });
     return r;
 };
-Bill.updateFromObj = function (bill, obj) {
+Bill.updateFromObj = function ( obj) {
     delete obj.Sum;
     ko.mapping.fromJS(obj, bill);
-    bill.Items.removeAll();
+    this.Items.removeAll();
     obj.Items.forEach(function (i) {
         var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
         ii.Remark(i.Remark);
-        bill.Items.push(ii);
+        this.Items.push(ii);
     });
 };
 var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {

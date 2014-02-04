@@ -29,7 +29,7 @@ function edit(d) {
             }
         }
     ], function (e, o) {
-        Bill.updateFromObj(GV.mdl, o);
+        bill.updateFromObj( o);
         showPnl('d_edit');
     });
 }
