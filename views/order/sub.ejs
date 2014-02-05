@@ -1,0 +1,45 @@
+<% include ../Top.ejs %>
+<div class="wp100 hp100 oh">
+    <div class="wp100 hp100 oya hide" id="d_list">
+        <table cellspacing="0" cellpadding="0" class="mt10 wp98 mc" id="tbl_ds"></table>
+    </div>
+    <div class="wp100 hp100 oya hide" id="d_edit">
+        <div id="d_dtl" class="mc" style="width:610px;"></div>
+        <div class="mc ac pt10">
+            <input type="button" value="提交" onclick="sub()"/>
+            <input type="button" value="返回" onclick="showPnl('d_list')" class="ml10"/>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    $('#tbl_ds').BillTable('oSlt');
+    $('#d_dtl').BillDetail();
+    var bill = new Bill();
+    ko.applyBindings(bill, document.getElementById('d_dtl'));
+    function sub() {
+        $.getJSON('/order/get', {t: 'submitorder', id: bill._id()}, function (d) {
+            alert(d.error || '订单提交完成!');
+            if (d.msg) {
+                bindList();
+            }
+        });
+    }
+    function oSlt(d) {
+        bill.updateFromObj(ko.mapping.fromJS(d));
+        showPnl('d_edit');
+    }
+    function bindList() {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未提交'}}, function (ds) {
+            if (GV.list) {
+                ko.mapping.fromJS(ds, GV.list);
+            }
+            else {
+                GV.list = ko.mapping.fromJS(ds);
+                ko.applyBindings(GV.list, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+</script>
+<% include ../Bottom.ejs %>

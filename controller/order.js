@@ -9,16 +9,18 @@ exports.get = function (req, res) {
         case 'n': //新建订单
             res.render('order/n.ejs', {user: req.currentUser});
             break;
-        case 's': //订单状态
-            var st = req.query['st']; //状态
-            res.render('order/pay.ejs', {user: req.currentUser, status: st });
-            break;
+
         case 'submitorder': //提交订单
-            var id = req.query['id'];
-            var st = req.query['st'];
-            Svc.db.Order.update({_id: id}, {$set: {Status: '未付款'}}, function (e) {
-                res.json({msg: e == null, error: e});
-            });
+            if (m) {
+                res.render('order/sub.ejs');
+            }
+            else {
+                var id = req.query['id'];
+                var st = req.query['st'];
+                Svc.db.Order.update({_id: id}, {$set: {Status: '未付款'}}, function (e) {
+                    res.json({msg: e == null, error: e});
+                });
+            }
             break;
         case 'pay': //经销商付款
             if (m) {
