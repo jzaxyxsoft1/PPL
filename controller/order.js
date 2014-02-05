@@ -33,22 +33,37 @@ exports.get = function (req, res) {
             }
             break;
         case 'paymentconfirm': //财务_经销商付款确认
+            if (m) {
+                res.render('order/paymentconfirm.ejs', {user: req.currentUser});
+            }
+            else{
             var id = req.query['id'];
             Svc.db.Order.update({_id: id}, {$set: {  Status: '付款已确认'}}, function (e) {
                 res.json({msg: e == null, error: e});
             });
+            }
             break;
         case 'ordership': //订单发货
+            if (m) {
+                res.render('order/ordership.ejs', {user: req.currentUser});
+            }
+            else{
             var id = req.query['id'];
             Svc.db.Order.update({_id: id}, {$set: {  Status: '已发货'}}, function (e) {
                 res.json({msg: e == null, error: e});
             });
+            }
             break;
         case 'complete': //订单完成
+            if (m) {
+                res.render('order/complete.ejs', {user: req.currentUser});
+            }
+            else{
             var id = req.query['id'];
             Svc.db.Order.update({_id: id}, {$set: {  Status: '完成'}}, function (e) {
                 res.json({msg: e == null, error: e});
             });
+            }
             break;
     }
 
