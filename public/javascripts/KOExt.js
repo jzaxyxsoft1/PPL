@@ -170,3 +170,69 @@ $.fn.BillDetail = function () {
     this.html(_s);
     return this;
 };
+var StockBill = function (billType, owner, creator) {
+    this.n = Bill;
+    this.n(owner, creator);
+    delete this.n;
+    this.BillType = ko.observable(billType || 'StockIn');
+    this.OrderID = ko.observable('');
+    this.Provider = {Item1: ko.observable(''), Item2: ko.observable(''), Item3: ko.observable('')};
+    this.Cost = ko.computed(function () {
+        return this.Items().Sum(function (i) {
+            return i.Cost()
+        })
+    }, this);
+    this.updateFromObj = function (obj) {
+        delete obj.Sum;
+        var _t = this;
+        _t.BillType(obj.BillType);
+        _t.OrderID(obj.OrderID);
+        _t.Provider.Item1(obj.Provider.Item1);
+        _t.Provider.Item2(obj.Provider.Item2);
+        _t.Provider.Item3(obj.Provider.Item3);
+        _t.Owner.Item1(obj.Owner.Item1);
+        _t.Owner.Item2(obj.Owner.Item2);
+        _t.Owner.Item3(obj.Owner.Item3);
+        _t.Creator.Item1(obj.Creator.Item1);
+        _t.Creator.Item2(obj.Creator.Item2);
+        _t.Creator.Item3(obj.Creator.Item3);
+        _t.CreateTime = obj.CreateTime;
+        _t.Status(obj.Status);
+        _t.BillNum(obj.BillNum);
+        _t.Remark(obj.Remark);
+        _t._id(obj._id);
+        _t.Items.removeAll();
+        obj.Items.forEach(function (i) {
+            var ii = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
+            ii.UnitCost(i.UnitCost);
+            ii.Remark(i.Remark);
+            ii.Provider.Item1(i.Provider.Item1);
+            ii.Provider.Item2(i.Provider.Item2);
+            ii.Provider.Item3(i.Provider.Item3);
+            ii.Stock.Name(i.Stock.Name);
+            ii.Stock.Value(i.Stock.Value);
+            _t.Items.push(ii);
+        });
+    };
+};
+var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
+    this.n = BillItem;
+    this.n();
+    delete this.n;
+    this.Provider = {Item1: ko.observable(''), Item2: ko.observable(''), Item3: ko.observable('')};
+    this.UnitCost = ko.observable(0);
+    this.Cost = ko.computed(function () {
+        return Math.round(this.Amount() * this.UnitCost(), 2)
+    }, this);
+    this.Stock = {Name: ko.observable(''), Value: ko.observable('')}
+};
+$.fn.StockBillTable=function (sltCallback){
+    var _s='<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>供应商</td><td>订单号</td><td>建单人</td></tr> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Sum"></td> <td data-bind="text:Provider.Item2"></td><td data-bind="text:OrderID"></td><td data-bind="text:Creator.Item2"></td> </tr></tbody>';
+    this.html(_s);
+    return this;
+};
+$.fn.StockBillDetail=function (){
+    var _s='<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><tddata-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:Stock.Name"></td></tr></tbody></table></fieldset>';
+    this.html(_s);
+    return this;
+};
