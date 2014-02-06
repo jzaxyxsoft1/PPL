@@ -58,6 +58,8 @@ exports.get = function (req, res) {
             if (m) {
                 res.render('order/complete.ejs', {user: req.currentUser});
             }
+
+
             else{
             var id = req.query['id'];
             Svc.db.Order.update({_id: id}, {$set: {  Status: '完成'}}, function (e) {
