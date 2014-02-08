@@ -186,6 +186,8 @@ var StockBill = function (billType, owner, creator) {
         })
     }, this);
     this.Status('未执行');
+    this.ShipAddress=ko.observable('');
+    this.Tel=ko.observable('');
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
