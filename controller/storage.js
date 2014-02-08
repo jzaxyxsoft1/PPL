@@ -26,8 +26,8 @@ exports.get = function (req, res) {
         case 'package': //产品封包
                 res.render('storage/package.ejs');
             break;
-        case 'stockIn'://入库
-            res.render('storage/stockin.ejs', {Org: req.currentUser.Org});
+        case 'stockin'://入库
+            res.render('storage/stockin.ejs', {u: req.currentUser});
             break;
         case 'stockout'://出库
             res.render('storage/stockout.ejs');
