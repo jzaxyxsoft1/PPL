@@ -1,16 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> </title>
-    <meta charset="utf-8" />
-    <link rel='stylesheet' href='/stylesheets/redmond/jquery-ui-1.10.2.custom.min.css'/>
+    <title></title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <script type="text/javascript" src="../javascripts/jquery-1.10.1.min.js"></script>
-    <script type="text/javascript" src="../javascripts/jquery-ui-1.10.2.custom.min.js"></script>
-    <script type="text/javascript" src="../javascripts/async.js"></script>
-    <script type="text/javascript" src="../javascripts/underscore-min.js"></script>
-    <script type="text/javascript" src="../javascripts/comm.js"></script>
-    <script type="text/javascript" src="../javascripts/knockout-2.2.1.js"></script>
+    <script type="text/javascript" src="/javascripts/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="/javascripts/jquery-ui-1.10.2.custom.min.js"></script>
+    <script type="text/javascript" src="/javascripts/async.js"></script>
+    <script type="text/javascript" src="/javascripts/underscore-min.js"></script>
+    <script type="text/javascript" src="/javascripts/comm.js"></script>
+    <script type="text/javascript" src="/javascripts/knockout-2.2.1.js"></script>
 </head>
-<body  >
+<body>
+<div class="pa"
+     style="top:0px; left:-200px ; width: 200px; height: 100%; overflow: hidden; overflow-y: auto; background-color:#000; z-index:9999;"
+     id="d_sysFuns">
+    <ul data-bind="template:{name:'tmplIHI',foreach:$data}">
+    </ul>
+</div>
+<script type="text/html" id="tmplIHI">
+    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}"><span data-bind="text:name"style="color:#fff"></span></a>
+        <ul data-bind="template:{name:'tmplIHI',foreach:items}"></ul>
+    </li>
+</script>
+<img src="/stylesheets/loading.gif" alt="" id="imgLoading"
+     style="position: absolute; top:45%; left: 46%; z-index: 9999; display: none;"/>
+
+<header style="line-height:30px; background-color: #EFEFF2;" ><span id="MM">Menu</span></header>
+<script type="text/javascript">
+    $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
+        ko.applyBindings(d, document.getElementById('d_sysFuns'));
+    });
+    $('#MM').click(function () {
+        $('#d_sysFuns').animate({left: 0}, function () {
+            $('body').on('click', function (e) {
+                console.log('a');
+                $('#d_sysFuns').animate({left: -200}, function () {
+                    $('body').off('click');
+                });
+            });
+        });
+    });
+
+    var loading = $('#imgLoading');
+    function notLogin() {
+        window.parent.location = '/';
+    }
+</script>
+<div id="mainContainer">
 

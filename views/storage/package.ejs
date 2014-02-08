@@ -1,0 +1,145 @@
+<% include ../Top.ejs %>
+<div id="d_s" class="hide">
+    <b class="ml10">产品:</b><select id="slt_product"></select>
+    <b class="ml10">批号:</b><input type="text" id="txt_batchNum"/>
+    <b class="ml10">生产日期:</b><input type="text" id="txt_prduceTime"/>
+    <b>每包装包含 </b><input type="text" id="txt_ppAmount" style="width:30px;"/><b>个产品 </b>
+    <input type="button" value="确定" onclick="setProducts()"/>
+    <input type="text" id="txt_Code"/>
+</div>
+<div class="wp100 hp95">
+    <div class="hp100 fl pp1 hide" style="width:20%" id="d_packages">
+        <div class="ac">
+            <input type="button" value="新建包装" onclick="addP()"/>
+            <input type="button" value="保存" onclick="save()"/>
+        </div>
+        <div>
+            <span class="hide ml10 fred bold  spn_alerm" id="err_NPK">*包装未扫码!</span>
+            <span class="hide ml10 fred bold spn_alerm" id="err_Ful">*包装已满!</span>
+        </div>
+        <ul class="wp100 hp90 oya" data-bind="foreach:$data">
+            <li class="lh22"><a data-bind="text:_id,click:showPros"></a></li>
+        </ul>
+    </div>
+    <div class="hp100 oya fr pp1 hide" style="width:75%" id="d_pros">
+        <h3>包装序号:<span data-bind="text:_id"></span></h3>
+
+        <div class="wp100 hp90 lh22" data-bind="foreach:Items">
+            <a class="ml10"> <b data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:_id"></span></a>
+        </div>
+    </div>
+</div>
+<div class="hide wp100 hp100 ac" id="d_msg">
+    <div style="margin-top: 27%">
+        保存完成,是否继续?
+    </div>
+    <div>
+        <input type="button" onclick="n()" value="是"/>
+    </div>
+</div>
+<audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" loop="loop" style=" display: none;"></audio>
+<script type="text/javascript">
+    var ppA = 0, packages = ko.mapping.fromJS([]), audio = document.getElementById('alrm');
+    audio.addEventListener('play', function () {
+        GV.audioPlaying = true;
+    });
+    $.getJSON('/product/get', {t: 'objs' }, function (ds) {
+        var _s = '';
+        ds.forEach(function (i) {
+            _s = _s + '<option value="' + i._id + '">' + i.Name + '</option>';
+        });
+        $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
+        $('#slt_product').html(_s);
+        $('#d_s').show();
+    });
+    ko.applyBindings(packages, document.getElementById('d_packages'));
+    function addP() {
+        if (GV.currentPackage && !GV.currentPackage._id()) {
+            audio.play();
+            $('ero_NPK').show();
+            return;
+        }
+        if (GV.currentPackage&&GV.currentPackage.Items().length>0) {
+            packages.push(ko.mapping.fromJS(ko.mapping.toJS(GV.currentPackage)));
+            audio.pause();
+            $('#err_Ful').hide();
+        }
+        var _o = ko.mapping.fromJS({_id: '', Items: []});
+        showPros(_o);
+    }
+    function showPros(d) {
+        var _o = ko.mapping.toJS(d);
+        if (GV.currentPackage) {
+            ko.mapping.fromJS(_o, GV.currentPackage);
+        }
+        else {
+            GV.currentPackage = ko.mapping.fromJS(_o);
+            ko.applyBindings(GV.currentPackage, document.getElementById('d_pros'));
+            $('#d_pros').show();
+        }
+        setFocus();
+    }
+    function setFocus() {
+        $('#txt_Code').val('').focus();
+    }
+    var kv;
+    var setProducts = function () {
+        ppA = Number($('#txt_ppAmount').val());
+        var _s = $('#slt_product option:selected') || $('#slt_product option:first');
+        GV.currentProduct = {RelativeObj: {Item1: _s.val(), Item2: _s.text(), Item3: 'Product'}, BatchNum: $('#txt_batchNum').val(), ProduceTime: $('#txt_prduceTime').val()};
+        $('#d_packages').show();
+    }
+    $('#txt_Code').on('keydown', function (e) {
+        if (e.keyCode == 13 || e.keyCode == 108) {
+            kv = e.target.value;
+            if (kv == '000000') {
+                addP();
+                return;
+            }
+            if (kv.substr(0, 1) != 'h') {
+                GV.currentPackage._id(kv);
+                if (GV.audioPlaying) {
+                    GV.audioPlaying = false;
+                    audio.pause();
+                    $('#err_NPK').hide();
+                }
+            }
+            else {
+                kv = kv.split('/').pop();
+                if (GV.currentPackage.Items.length > ppA) {
+                    audio.play();
+                    $('#err_Ful').show();
+                }
+                else {
+                    GV.currentPackage.Items.push({_id: kv, RelativeObj: GV.currentProduct.RelativeObj, BatchNum: GV.currentProduct.BatchNum, ProduceTime: GV.currentProduct.ProduceTime});
+                }
+            }
+            e.target.value = '';
+            $(e.target).focus();
+        }
+    })
+    function save() {
+        loading.show();
+        if (GV.currentPackage && GV.currentPackage.Items().length>0) {
+            packages.push(ko.mapping.fromJS(ko.mapping.toJS(GV.currentPackage)));
+        }
+        var pks = ko.mapping.toJS(packages);
+        pks = pks.filter(function (i) {
+            return i.Items.length > 0;
+        });
+        $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks)}, function (d) {
+            loading.hide();
+            showPnl('d_msg');
+        });
+    }
+    function n(){
+        $('input[type=text]').val('');
+        $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
+        $('#d_packages').hide();
+        $('#d_pros').hide();
+        packages.removeAll();
+        GV.currentPackage=null;
+        $('#d_msg').hide().siblings().show();
+    }
+</script>
+<% include ../Bottom.ejs %>

@@ -1,0 +1,145 @@
+<% include ../Top.ejs %>
+<style type="text/css">
+    #d_codePros div { width: 160px; height: 180px; overflow: hidden; display: inline-block; margin-bottom: 10px; }
+</style>
+<div class="wp100 hp100" id="d_mcc">
+    <div class="wp100 hp100 hide" id="d_menu">
+        <div class="ac" style="margin-top:17%">
+            <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
+               href="javascript:showPnl('d_pcode')">打印产品二维码</a>
+            <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
+               href="javascript:showPnl('d_pkcode')">打印包装条码</a>
+            <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
+               href="javascript:showPnl('d_npcode')">打印新建包装命令条码</a>
+        </div>
+    </div>
+    <div class="wp100 hp100 hide" id="d_npcode">
+        <div class="mc hp100" style="width:400px; overflow: hidden;">
+
+            <div id="d_codeNPk" class="wp100 oya" style="height:70%;">
+
+            </div>
+            <div class="cb ac pt10">
+                <input type="button" value="打印" id="bt_pPro" onclick="printNewPackCode()" class="ml5 hide bt_ext"/>
+                <input type="button" value="返回" onclick="showPnl('d_menu')" class="ml5"/>
+            </div>
+        </div>
+    </div>
+    <div class="wp100 hp100 hide" id="d_pkcode">
+        <div class="mc mt10" style="width:400px;">
+
+            <p><b>包装数量:</b><input type="text" id="txt_amount"/></p>
+
+            <div id="d_codePacks" class="hide hp90 wp100 oya">
+
+            </div>
+            <div class="cb ac pt10">
+                <input type="button" value="生成" onclick="generatePackageCodes()"/>
+                <input type="button" value="打印" id="bt_prntPK" onclick="printPackageCodes()" class="ml5 hide bt_ext"/>
+                <input type="button" value="返回" onclick="showPnl('d_menu')" class="ml5"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="wp100 hp100 hide" id="d_pkcode">
+        <div class="mc mt10" style="width:400px;">
+
+            <p><b>包装数量:</b><input type="text" id="txt_amount"/></p>
+
+            <div id="d_codePacks" class="hide hp90 wp100 oya">
+
+            </div>
+            <div class="cb ac pt10">
+                <input type="button" value="生成" onclick="generatePackageCodes()"/>
+                <input type="button" value="打印" id="bt_prntPK" onclick="printPackageCodes()" class="ml5 hide bt_ext"/>
+                <input type="button" value="返回" onclick="showPnl('d_menu')" class="ml5"/>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" src="/javascripts/jquery-barcode.min.js"></script>
+<script src="/javascripts/qrcode.min.js"></script>
+<script type="text/javascript">
+    showPnl('d_menu');
+    function printPackageCodes() {
+
+    }
+    function generatePackageCodes() {
+        var _c = $('#d_codePacks').html('');
+        async.series([
+            function (cb) {
+                loading.show();
+                setTimeout(cb, 400);
+            },
+            function (cb) {
+                $.getJSON('/storage/get', {t: 'codeprint', m: $('#txt_amount').val()}, function (d) {
+                    d.forEach(function (i) {
+                        var _l = $('<div></div>');
+                        _c.append(_l);
+                        _l.barcode(i, 'code128');
+                    });
+                    cb();
+                });
+            }
+        ], function (e) {
+            $('#bt_packC').show();
+            $('#bt_prntPK').show();
+        });
+
+    }
+    function generateProCodes() {
+        if ($('#txt_beginN').val().match(/\d+/) == 0 || $('#txt_endN').val().match(/\d+/) == 0) {
+            alert('产品序号必须为数字!');
+            return;
+        }
+        var _n = Number($('#txt_beginN').val());
+        var _m = Number($('#txt_endN').val());
+        if (_m < _n) {
+            alert('结束序号不能小于开始序列号!');
+            return;
+        }
+        async.series([
+            function (cb) {
+                loading.show();
+                setTimeout(cb, 1000);
+            },
+            function (cb) {
+                cCode(_n, _m);
+                cb();
+            }
+        ], function (e) {
+            loading.hide();
+            $('#bt_pPro').show();
+        });
+    }
+    function cCode(_n, _m) {
+        var _c = $('#d_codePros').html('');
+//        var _n = Number($('#txt_beginN').val());
+//        var _m = Number($('#txt_endN').val());
+        for (var i = _n; i <= _m; i++) {
+            var _l = $('<div></div>');
+            _c.append(_l);
+            var qrcode = new QRCode(_l[0], {
+                width: 100,
+                height: 100
+            });
+            qrcode.makeCode('http://www.rbc.com/q/p/' + i);
+            _l.append('<br/>' + i);
+        }
+    }
+    function printProCodes() {
+
+    }
+    $('#d_codeNPk').barcode('000000', 'code128')
+    function printNewPackCode() {
+
+
+    }
+    $('#d_mcc').on('click', 'a', function () {
+        $('input[type=text]').val('');
+        $('#d_codePacks').html('');
+        $('.bt_ext').hide();
+    });
+</script>
+<% include ../Bottom.ejs %>

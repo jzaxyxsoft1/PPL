@@ -125,6 +125,7 @@ var Bill = function (owner, creator) {
         obj.Items.forEach(function (i) {
             var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
             ii.Remark(i.Remark);
+            ii.Status(i.Status);
             _t.Items.push(ii);
         });
     };
@@ -141,6 +142,7 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
     this.Sum = ko.computed(function () {
         return Math.round(this.UnitPrice() * this.Amount(), 2);
     }, this);
+    this.Status = ko.observable('');
 };
 $.fn.BillTable = function (sltKoEvent, multSlt) {
     var _t = $(this);
@@ -166,7 +168,7 @@ $.fn.BillTable = function (sltKoEvent, multSlt) {
     return _t;
 };
 $.fn.BillDetail = function () {
-  var _s = '<div class="mc mt10" style="width: 610px;"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">状态:</div><div class="editor-field"> <span data-bind="text:Status"></span></div><div class="editor-label">经销商:</div> <div class="editor-field"> <span data-bind="text:Owner.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc p10" style="width: 590px;"><legend><strong>订单内容:</strong></legend><table cellspacing="0" cellpadding="0" style="width:590px;"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><tddata-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td></tr></tbody></table></fieldset>';
+  var _s = '<div class="mc mt10" style="width: 610px;"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">状态:</div><div class="editor-field"> <span data-bind="text:Status"></span></div><div class="editor-label">经销商:</div> <div class="editor-field"> <span data-bind="text:Owner.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc p10" style="width: 590px;"><legend><strong>订单内容:</strong></legend><table cellspacing="0" cellpadding="0" style="width:590px;"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td></tr></tbody></table></fieldset>';
     this.html(_s);
     return this;
 };
@@ -182,6 +184,7 @@ var StockBill = function (billType, owner, creator) {
             return i.Cost()
         })
     }, this);
+    this.Status('未执行');
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
@@ -232,7 +235,7 @@ $.fn.StockBillTable=function (sltCallback){
     return this;
 };
 $.fn.StockBillDetail=function (){
-    var _s='<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><tddata-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:Stock.Name"></td></tr></tbody></table></fieldset>';
+    var _s='<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:Stock.Name"></td></tr></tbody></table></fieldset>';
     this.html(_s);
     return this;
 };

@@ -1,0 +1,178 @@
+<% include ../Top.ejs %>
+<div>
+    <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
+</div>
+<div class="wp100 hp98 oh">
+    <div class="hide wp100 hp100" id="d_edit">
+        <div style="width:610px;" class="mc">
+            <div class="mc mt10">
+                <div class="editor-label"> 单号:</div>
+                <div class="editor-field"><span data-bind="text:BillNum"></span></div>
+                <div class="editor-label">订单号:</div>
+                <div class="editor-field"><input type="text" data-bind="value:OrderID,event:{'click',getOrder}"/></div>
+                <div class="editor-label">供应商:</div>
+                <div class="editor-field"><span data-bind="text:Provider.Item2"></span></div>
+                <div class="editor-label">建单时间:</div>
+                <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
+                <div class="editor-label">建单人:</div>
+                <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
+                <div class="editor-label">金额:</div>
+                <div class="editor-field"><span data-bind="text:Sum"></span></div>
+            </div>
+            <div class="hr" style="height: 10px;"></div>
+            <fieldset class="mc pp1 wp98">
+                <legend><strong>单据内容:</strong><a href="javascript:addItem" class="ml10">添加内容</a></legend>
+                <table cellspacing="0" cellpadding="0" class="wp98 mc">
+                    <thead>
+                    <tr>
+                        <td>产品</td>
+                        <td>规格</td>
+                        <td>单位</td>
+                        <td>数量</td>
+                        <td>单价</td>
+                        <td>金额</td>
+                        <td>库房</td>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach:Items">
+                    <tr data-bind="css:{\'even\':$index()%2!=0}">
+                        <td>
+                            <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change',proChg}"></select>
+                        </td>
+                        <td data-bind="text:Model"></td>
+                        <td data-bind="text:Unit"></td>
+                        <td>
+                            <input type="text" data-bind="value:Amount" style="width:50px;"/>
+                        </td>
+                        <td data-bind="text:UnitPrice"></td>
+                        <td data-bind="text:Sum"></td>
+                        <td>
+                            <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Name,event:{'change','stockChg'}"></select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="cb ac pt10">
+                <input type="button" value="保存" onclick="save()"/>
+                <input type="button" value="返回" onclick="showPnl('d_edit')" class="ml5"/>
+
+            </div>
+        </div>
+    </div>
+    <div class="hide wp100 hp100 oya" id="d_list">
+        <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bills">
+        </table>
+    </div>
+    <div class="hide wp100 hp100 oya" id="d_order">
+        <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_order">
+        </table>
+        <div class="pt10 ac">
+            <input type="button" value="返回" onclick="showPnl('d_edit')"/>
+        </div>
+    </div>
+</div>
+<script src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
+    var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
+    $('#tbl_bills').StockBillTable('edit');
+    $('#tbl_order').BillTable('orderSlt');
+    var bill = new StockBill('StockIn', org, u);
+    ko.applyBindings(bill, document.getElementById('d_edit'));
+    async.series([
+        function (cb) {
+            $.getJSON('/base/getobjs', {tp: 'Stock', query: {}, options: {Name: 1}}, function (d) {
+                GV.stocks = d;
+                cb();
+            });
+        },
+        function () {
+            $.getJSON('/base/getobjs', {tp: 'Product', query: {}, options: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
+                GV.prducts = d;
+                cb();
+            });
+        }
+    ], function (e) {
+        $('#bt_add').show();
+    });
+    function getOrder() {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '付款已确认'}}, function (d) {
+            if (GV.order) {
+                ko.mapping.fromJS(d, GV.order);
+            }
+            else {
+                GV.order = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.order, document.getElementById('d_order'));
+            }
+            showPnl('d_order');
+        });
+    }
+    function orderSlt(d){
+        bill.OrderID(d.BillNum());
+        showPnl('d_edit');
+    }
+    function addItem() {
+        var pro = GV.products[0];
+        bill.Items.push(new StockBillItem({Item1: pro._id, Item2: pro.Name, Item3: 'Product', Item4: ''}, pro.Price, 0, pro.Model, pro.Unit, true));
+    }
+    function proChg(d) {
+        var _p = GV.products.filter(function (i) {
+            return i._id == d.RelativeObj.Item1()
+        })[0];
+        d.RelativeObj.Item2(_p.Name);
+        d.Model(_p.Model);
+        d.Unit(_p.Unit);
+        d.UnitPrice(_p.Price);
+    }
+    function stockChg(d) {
+        var _st = GV.stocks.filter(function (i) {
+            return i._id == d.Stock.Value()
+        });
+        d.Stock.Name(_st.Name);
+    }
+    function bindList() {
+        $.getJSON('/base/getobjs', {tp: 'StockIn', query: {Status: '未执行'}}, function (d) {
+            if (GV.list) {
+                ko.mapping.fromJS(d, GV.list);
+            }
+            else {
+                GV.list = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.list, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+    function edit(d) {
+        async.waterfall([
+            function (cb) {
+                if (d == 0) {
+                    bill.updateFromObj(new StockBill('StockIn', org, u));
+                    cb(true);
+                }
+                else {
+                    cb(null);
+                }
+            },
+            function (cb) {
+                $.getJSON('/base/getobj', {tp: 'StockIn', query: {_id: d._id()}}, function (d) {
+                    bill.updateFromObj(d);
+                    cb(true);
+                });
+
+            }
+        ], function (e, o) {
+            showPnl('d_edit');
+        });
+    }
+    function save() {
+        var m = ko.mapping.toJS(bill);
+        $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
+            alert(d.error || '保存成功!');
+            if (d.msg) {
+                bindList();
+            }
+        });
+    }
+</script>
+<% include ../Bottom.ejs %>

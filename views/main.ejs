@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> </title>
+    <title></title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <script type="text/javascript" src="../javascripts/jquery-1.10.1.min.js"></script>
-    <style type="text/css">
-        html,body{
+    <script type="text/javascript" src="/javascripts/jquery-1.10.1.min.js"></script>
+    <script src="/javascripts/knockout-2.2.1.js"></script>
+    <script src="/javascripts/underscore-min.js"></script>
+    <script type="text/javascript" src="/javascripts/comm.js"></script>
+    <style type="text/css" media="all">
+        html, body {
             width: 100%;
-            height: 100%;
             margin: 0px;
             padding: 0px;
         }
     </style>
+    <style type="text/css" media="screen">
+        .iconC{ width: 420px; margin: 30px auto;}
+        .iconWrap{ width: 110px; display: inline-block; height: 50px; line-height: 50px; text-align: center; letter-spacing: 0px; }
+    </style>
 </head>
-<body style="width: 100%; height: 97%">
-       main
+<body style="width: 100%;">
+<div id="d_sysFuns" class="mc iconC" data-bind="foreach:$data">
+    <div class="mt10" data-bind="foreach:items" style=" letter-spacing: -8px;">
+        <a  data-bind="attr:{class:cls,href:Url}" target="_self">
+            <span data-bind="text:name" style="color: #fff"></span>
+        </a>
+    </div>
+</div>
+<script type="text/javascript">
+    $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
+        var m = bgColor.length-1;
+        d.forEach(function (di) {
+            di.items.forEach(function (i, idx) {
+                i.cls = bgColor[_.random(0, m)]+' iconWrap';
+            });
+        })
+        ko.applyBindings(d, document.getElementById('d_sysFuns'));
+    });
+</script>
 </body>
 </html>

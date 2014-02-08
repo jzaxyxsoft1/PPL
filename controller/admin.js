@@ -32,7 +32,10 @@ exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
     var tp, id;
     switch (t) {
-        case "delbo":
+        case "sysfuns":
+            Svc.db.SysFun.find({}).toArray(function (e,ds){
+                res.json(ds);
+            });
             break;
         default :
             break;
