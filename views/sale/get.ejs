@@ -1,0 +1,78 @@
+<% include ../Top.ejs %>
+<div>
+    <input type="text" value="" id="txt_code"/>
+</div>
+<div class="wp100 hp98 oh">
+    <div class="hide wp100 hp100" id="d_list">
+        <div style="width:610px;" class="mc">
+            <fieldset class="mc pp1 wp98">
+                <legend><strong>单据内容:</strong></legend>
+                <table cellspacing="0" cellpadding="0" class="wp98 mc">
+                    <thead>
+                    <tr>
+                        <td>产品</td>
+                        <td>规格</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td data-bind="text:Name"></td>
+                        <td data-bind="text:Model"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="cb ac pt10">
+                手机:<input type="text" id="txt_tel"/>
+                车型:<input type="text" id="txt_carType"/>
+                车号:<input type="text" id="txt_carNum"/>
+                <input type="button" value="保存" onclick="save()"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#txt_code').on('keydown', function (e) {
+            if (e.keyCode == 13 || e.keyCode == 108) {
+                bindList();
+            }
+        })
+    });
+    function bindList() {
+        async.series([
+            function (cb) {
+                var currCode = $('#txt_code').val();
+                $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}, options: {}}, function (d) {
+                    GV.productid = _.find(d.Items,function (i) {
+                        return i._id == currCode;
+                    }).RelativeObj.Item1;
+                    cb();
+                });
+            },
+            function (cb) {
+                $.getJSON('/product/get?t=obj', {query: {_id: GV.productid}}, function (d) {
+                    GV.products = d;
+                    cb();
+                });
+            }
+        ], function (e) {
+            if (GV.list) {
+                ko.mapping.fromJS(GV.products, GV.list);
+            }
+            else {
+                GV.list = ko.mapping.fromJS(GV.products);
+                ko.applyBindings(GV.list, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+    function save() {
+        var m = {phoneNum:$('#txt_tel').val(),carType:$('#txt_carType').val(),carNum:$('#txt_carNum').val(),RelativeObj:{Item1:GV.products._id,Item2:GV.products.Name,Item3:'Product',Item4:''}};
+        $.post('/base/postsave', {tp: 'SaveBill', obj: JSON.stringify(m)}, function (d) {
+            alert(d.error || '保存成功!');
+        });
+    }
+</script>
+<% include ../Bottom.ejs %>
