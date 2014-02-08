@@ -896,3 +896,117 @@ ul, li { margin-left: 0px; padding-left: 0px;
 #menu .act a, .menu .act a { color: #000; }
 
 #menu .act li, .menu .act li { clear: both; }
+
+@font-face {
+    font-family: 'icomoon';
+    src: url('fonts/icomoon.eot?fzi79t');
+    src: url('fonts/icomoon.eot?#iefixfzi79t') format('embedded-opentype'), url('fonts/icomoon.woff?fzi79t') format('woff'), url('fonts/icomoon.ttf?fzi79t') format('truetype'), url('fonts/icomoon.svg?fzi79t#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-xiaoshou04:before {
+    content: "\e601";
+}
+
+.icon-xiaoshou03:before {
+    content: "\e602";
+}
+
+.icon-xiaoshou02:before {
+    content: "\e603";
+}
+
+.icon-server05:before {
+    content: "\e604";
+}
+
+.icon-server04:before {
+    content: "\e605";
+}
+
+.icon-server03:before {
+    content: "\e606";
+}
+
+.icon-server02:before {
+    content: "\e607";
+}
+
+.icon-house04:before {
+    content: "\e608";
+}
+
+.icon-house03:before {
+    content: "\e609";
+}
+
+.icon-house02:before {
+    content: "\e60a";
+}
+
+.icon-base04:before {
+    content: "\e60b";
+}
+
+.icon-base03:before {
+    content: "\e60c";
+}
+
+.icon-base02:before {
+    content: "\e60d";
+}
+
+.icon-order04:before {
+    content: "\e60e";
+}
+
+.icon-order03:before {
+    content: "\e60f";
+}
+
+.icon-order022:before {
+    content: "\e610";
+}
+
+.icon-sale:before {
+    content: "\e611";
+}
+
+.icon-saleafter:before {
+    content: "\e612";
+}
+
+.icon-stock:before {
+    content: "\e613";
+}
+
+.icon-order:before {
+    content: "\e614";
+}
+
+.icon-setting:before {
+    content: "\e615";
+}
+
+.icon-key:before {
+    content: "\e616";
+}
+
+.icon-home:before {
+    content: "\e617";
+}
