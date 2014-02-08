@@ -47,7 +47,7 @@
                         <td data-bind="text:UnitPrice"></td>
                         <td data-bind="text:Sum"></td>
                         <td>
-                            <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Name,event:{'change':'stockChg'}"></select>
+                            <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Value,event:{'change':stockChg}"></select>
                         </td>
                     </tr>
                     </tbody>
@@ -72,6 +72,9 @@
         </div>
     </div>
 </div>
+
+
+
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
     var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
@@ -114,7 +117,10 @@
     }
     function addItem() {
         var pro = GV.products[0];
-        bill.Items.push(new StockBillItem({Item1: pro._id, Item2: pro.Name, Item3: 'Product', Item4: ''}, pro.Price, 0, pro.Model, pro.Unit, true));
+        var stockB = new StockBillItem({Item1: pro._id, Item2: pro.Name, Item3: 'Product', Item4: ''}, pro.Price, 0, pro.Model, pro.Unit, true);
+        stockB.Stock.Name(GV.stocks[0].Name);
+        stockB.Stock.Value(GV.stocks[0]._id);
+        bill.Items.push(stockB);
     }
     function proChg(d) {
         var _p = GV.products.filter(function (i) {
@@ -126,7 +132,7 @@
         d.UnitPrice(_p.Price);
     }
     function stockChg(d) {
-        var _st = GV.stocks.filter(function (i) {
+        var _st = _.find(GV.stocks,function (i) {
             return i._id == d.Stock.Value()
         });
         d.Stock.Name(_st.Name);
@@ -173,5 +179,6 @@
             }
         });
     }
+    bindList();
 </script>
 <% include ../Bottom.ejs %>
