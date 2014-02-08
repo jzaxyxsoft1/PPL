@@ -60,7 +60,7 @@
 
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
-    $('#tbl_bill').StockBillTable('bSlt');
+    $('#tbl_bill').StockBillTable('dSlt');
     $('#d_detail').StockBillDetail();
     var bill = new StockBill();
     ko.applyBindings(bill, document.getElementById('d_detail'));
@@ -80,6 +80,7 @@
         $.getJSON('/base/getobj', {tp: 'StockIn', query: {_id: d._id()}}, function (d) {
             bill.updateFromObj(d);
             showPnl('d_edit');
+            $('txt_code').focus();
         });
     }
     function save() {
