@@ -122,12 +122,13 @@ var Bill = function (owner, creator) {
         _t.Remark(obj.Remark);
         _t._id(obj._id);
         _t.Items.removeAll();
-        obj.Items.forEach(function (i) {
+        _.each(obj.Items,function (i){
             var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
             ii.Remark(i.Remark);
             ii.Status(i.Status);
             _t.Items.push(ii);
         });
+
     };
 };
 var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
@@ -205,7 +206,7 @@ var StockBill = function (billType, owner, creator) {
         _t.Remark(obj.Remark);
         _t._id(obj._id);
         _t.Items.removeAll();
-        obj.Items.forEach(function (i) {
+        _.each(obj.Items,function (i){
             var ii = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
             ii.UnitCost(i.UnitCost);
             ii.Remark(i.Remark);
@@ -216,6 +217,7 @@ var StockBill = function (billType, owner, creator) {
             ii.Stock.Value(i.Stock.Value);
             _t.Items.push(ii);
         });
+
     };
 };
 var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
