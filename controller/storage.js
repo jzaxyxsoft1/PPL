@@ -24,10 +24,13 @@ exports.get = function (req, res) {
             }
             break;
         case 'package': //产品封包
-                res.render('storage/package.ejs');
+            res.render('storage/package.ejs');
             break;
         case 'stockin'://入库
-            res.render('storage/stockin.ejs', {u: req.currentUser});
+            res.render('storage/stockin.ejs', {u:req.currentUser});
+            break;
+        case 'stockinconfirm'://入库确认
+            res.render('storage/stockinc.ejs');
             break;
         case 'stockout'://出库
             res.render('storage/stockout.ejs');
@@ -42,6 +45,12 @@ exports.post=function (req,res){
             Svc.db.Package.insert(objs, function (e){
                 res.json(true);
             })
+            break;
+        case 'stockinconfirm':
+            var obj=JSON.parse(req.body['obj']);
+            Svc.db.StockIn.update({_id:obj._id},{$set:{Status:obj.Status, Items:obj.Items}},function (e){
+                res.json({msg:e ==null,error:e});
+            });
             break;
     }
 }

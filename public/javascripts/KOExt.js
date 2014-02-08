@@ -222,7 +222,7 @@ var StockBill = function (billType, owner, creator) {
 };
 var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
     this.n = BillItem;
-    this.n();
+    this.n(relativeObj, unitPrice, amount, model, unit, amountEditable);
     delete this.n;
     this.Provider = {Item1: ko.observable(''), Item2: ko.observable(''), Item3: ko.observable('')};
     this.UnitCost = ko.observable(0);
@@ -244,7 +244,7 @@ var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amoun
     }, this);
 };
 $.fn.StockBillTable = function (sltCallback) {
-    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>供应商</td><td>订单号</td><td>建单人</td></tr> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Sum"></td> <td data-bind="text:Provider.Item2"></td><td data-bind="text:OrderID"></td><td data-bind="text:Creator.Item2"></td> </tr></tbody>';
+    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>供应商</td><td>订单号</td><td>建单人</td></tr></thead><tbody data-bind="foreach:$data"> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Sum"></td> <td data-bind="text:Provider.Item2"></td><td data-bind="text:OrderID"></td><td data-bind="text:Creator.Item2"></td> </tr></tbody>';
     this.html(_s);
     return this;
 };
