@@ -109,8 +109,8 @@
             var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, false);
             bi.Status('待执行');
         });
-        bill.ShipAddress = d.ShipAddress;
-        bill.Tel = d.Tel;
+        bill.ShipAddress (d.ShipAddress);
+        bill.Tel (d.Tel);
         showPnl('d_edit');
     }
 

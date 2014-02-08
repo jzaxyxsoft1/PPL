@@ -107,6 +107,8 @@ var Bill = function (owner, creator) {
         });
     }, this);
     this.Status = ko.observable('');
+    this.ShipAddress=ko.observable('');
+    this.Tel=ko.observable('');
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
@@ -120,6 +122,8 @@ var Bill = function (owner, creator) {
         _t.Status(obj.Status);
         _t.BillNum(obj.BillNum);
         _t.Remark(obj.Remark);
+        _t.ShipAddress(obj.ShipAddress||'');
+        _t.Tel(obj.Tel||'');
         _t._id(obj._id);
         _t.Items.removeAll();
         _.each(obj.Items, function (i) {
@@ -186,8 +190,6 @@ var StockBill = function (billType, owner, creator) {
         })
     }, this);
     this.Status('未执行');
-    this.ShipAddress=ko.observable('');
-    this.Tel=ko.observable('');
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
@@ -206,6 +208,8 @@ var StockBill = function (billType, owner, creator) {
         _t.Status(obj.Status);
         _t.BillNum(obj.BillNum);
         _t.Remark(obj.Remark);
+        _t.ShipAddress(obj.ShipAddress);
+        _t.Tel(obj.Tel);
         _t._id(obj._id);
         _t.Items.removeAll();
         _.each(obj.Items, function (i) {
