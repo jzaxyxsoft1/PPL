@@ -912,11 +912,13 @@ ul, li { margin-left: 0px; padding-left: 0px;
     font-weight: normal;
     font-variant: normal;
     text-transform: none;
-    line-height: 1;
-
+    line-height:12pt;
+    font-size:12pt;
+    cursor: pointer;
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
 }
 
 .icon-xiaoshou04:before {

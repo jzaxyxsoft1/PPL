@@ -59,12 +59,12 @@
             $('ero_NPK').show();
             return;
         }
-        if (GV.currentPackage&&GV.currentPackage.Items().length>0) {
+        if (GV.currentPackage && GV.currentPackage.Items().length > 0) {
             packages.push(ko.mapping.fromJS(ko.mapping.toJS(GV.currentPackage)));
             audio.pause();
             $('#err_Ful').hide();
         }
-        var _o = ko.mapping.fromJS({_id: '', Items: []});
+        var _o = ko.mapping.fromJS({_id: '', Items: [], flag: 1});
         showPros(_o);
     }
     function showPros(d) {
@@ -120,25 +120,26 @@
     })
     function save() {
         loading.show();
-        if (GV.currentPackage && GV.currentPackage.Items().length>0) {
+        if (GV.currentPackage && GV.currentPackage.Items().length > 0) {
             packages.push(ko.mapping.fromJS(ko.mapping.toJS(GV.currentPackage)));
         }
         var pks = ko.mapping.toJS(packages);
         pks = pks.filter(function (i) {
             return i.Items.length > 0;
         });
+
         $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks)}, function (d) {
             loading.hide();
             showPnl('d_msg');
         });
     }
-    function n(){
+    function n() {
         $('input[type=text]').val('');
         $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
         $('#d_packages').hide();
         $('#d_pros').hide();
         packages.removeAll();
-        GV.currentPackage=null;
+        GV.currentPackage = null;
         $('#d_msg').hide().siblings().show();
     }
 </script>

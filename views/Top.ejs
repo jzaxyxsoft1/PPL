@@ -27,7 +27,7 @@
 <img src="/stylesheets/loading.gif" alt="" id="imgLoading"
      style="position: absolute; top:45%; left: 46%; z-index: 9999; display: none;"/>
 
-<header style="line-height:30px; background-color: #EFEFF2;" ><span id="MM">Menu</span></header>
+<header style="line-height:30px; background-color: #EFEFF2;" ><span id="MM" class="icon-home ml10 fg-color-darken" title="菜单"> </span></header>
 <script type="text/javascript">
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         ko.applyBindings(d, document.getElementById('d_sysFuns'));
@@ -42,7 +42,6 @@
             });
         });
     });
-
     var loading = $('#imgLoading');
     function notLogin() {
         window.parent.location = '/';

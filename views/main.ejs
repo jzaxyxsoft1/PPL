@@ -25,7 +25,7 @@
 <div id="d_sysFuns" class="mc iconC" data-bind="foreach:$data">
     <div class="mt10" data-bind="foreach:items" style=" letter-spacing: -8px;">
         <a  data-bind="attr:{class:cls,href:Url}" target="_self">
-            <span data-bind="text:name" style="color: #fff"></span>
+          <span data-bind="attr:{'class':icon}"></span>  <span data-bind="text:name" style="color: #fff"></span>
         </a>
     </div>
 </div>
