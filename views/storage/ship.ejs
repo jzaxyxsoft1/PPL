@@ -1,0 +1,149 @@
+<% include ../Top.ejs %>
+
+<div class="wp100 hp100 oya hide" id="d_list">
+    <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bill">
+    </table>
+</div>
+<div class="wp100 hp100 oya hide" id="d_edit">
+    <div class="mt10 mc" id="d_detail" style="width: 610px;">
+        <div class="mc mt10">
+            <div class="editor-label"> 单号:</div>
+            <div class="editor-field"><span data-bind="text:BillNum"></span></div>
+            <div class="editor-label">订单号:</div>
+            <div class="editor-field"><span data-bind="text:OrderID"></span></div>
+            <div class="editor-label">供应商:</div>
+            <div class="editor-field"><span data-bind="text:Provider.Item2"></span></div>
+            <div class="editor-label">建单时间:</div>
+            <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
+            <div class="editor-label">建单人:</div>
+            <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
+            <div class="editor-label">金额:</div>
+            <div class="editor-field"><span data-bind="text:Sum"></span></div>
+        </div>
+        <div class="hr" style="height: 10px;"></div>
+        <fieldset class="mc pp1 wp98">
+            <legend><strong>单据内容:</strong></legend>
+            <table cellspacing="0" cellpadding="0" class="wp98 mc">
+                <thead>
+                <tr>
+                    <td>产品</td>
+                    <td>规格</td>
+                    <td>单位</td>
+                    <td>数量</td>
+                    <td>单价</td>
+                    <td>金额</td>
+                    <td>完成数量</td>
+                    <td>库房</td>
+                </tr>
+                </thead>
+                <tbody data-bind="foreach:Items">
+                <tr data-bind="css:{\'even\':$index()%2!=0}">
+                    <td data-bind="text:RelativeObj.Item2"></td>
+                    <td data-bind="text:Model"></td>
+                    <td data-bind="text:Unit"></td>
+                    <td data-bind="text:Amount"></td>
+                    <td data-bind="text:UnitPrice"></td>
+                    <td data-bind="text:Sum"></td>
+                    <td><input type="text" data-bind="value:CompleteAmount" style="width:50px"/></td>
+                    <td data-bind="text:Stock.Name"></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+    <div class="mc cb " style="width:610px;">
+        <b>物流公司:</b><input type="text" name="" id="txt_WLGS"/>
+        <b class="ml10">运单号码:</b><input type="text" name="" id="txt_WLNum"/>
+    </div>
+    <div class="ac cb pt10">
+        <input type="text" id="txt_code"/>
+        <input type="button" value="确定" onclick="save()"/>
+        <input type="button" value="返回" onclick="showPnl('d_list')"/>
+    </div>
+</div>
+
+<script src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    $('#tbl_bill').StockBillTable('bSlt');
+    $('#d_detail').StockBillDetail();
+    var bill = new StockBill();
+    ko.applyBindings(bill, document.getElementById('d_detail'));
+    function bindList() {
+        $.getJSON('/base/getobjs', {tp: 'StockOut', query: {Status: {$ne: '已完成'}}}, function (d) {
+            if (GV.list) {
+                ko.mapping.fromJS(d, GV.list);
+            }
+            else {
+                GV.list = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.list, document.getElementById('d_list'));
+            }
+            showPnl('d_list');
+        });
+    }
+    function dSlt(d) {
+        $.getJSON('/base/getobj', {tp: 'StockOut', query: {_id: d._id()}}, function (d) {
+            bill.updateFromObj(d);
+            showPnl('d_edit');
+        });
+    }
+    function save() {
+        $.post('/storage/post', {t: 'savetransbill', obj: JSON.stringify(ko.mapping.toJS(bill)),trbill:{LogisticsOrg:$('#txt_WLGS').val(),LogisticsNum:$('#txt_WLNum').val()}}, function (d) {
+            alert(d.error || '发货完成!');
+            if (d.msg) {
+                bindList();
+            }
+        });
+    }
+    var kv;
+    $('#txt_code').on('keydown', function (e) {
+        if (e.keyCode == 13 || e.keyCode == 108) {
+            kv = e.target.value;
+            if (kv.substr(0, 1) != 'h') {
+                //包装
+                $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
+                    _.each(d.Items, function (i) {
+                        setItemVal(i, i.Amount)
+                    });
+                });
+            }
+            else {
+                //产品
+                setItemVal(kv, 1);
+            }
+        }
+        e.target.value = '';
+        e.target.focus();
+    });
+    var ca;
+    function setItemVal(itmID, amount) {
+        var _p = _.find(bill.Items(), function (i) {
+            return i.RelativeObj.Item1() == itmID;
+        });
+        if (_p == null) {
+            alert('产品错误!');
+            return;
+        }
+        ca = _p.CompleteAmount() + amount;
+        if (ca > _p.Amount()) {
+            alert('数量超额!');
+            return;
+        }
+        _p.CompleteAmount(ca);
+        checkBillStatus();
+    }
+    function checkBillStatus() {
+        if (_.any(bill.Items(), function (i) {
+            return i.Status() == '执行中'
+        })) {
+            bill.Status('执行中');
+        }
+        else if (!_.any(bill.Items(), function (i) {
+            return i.Status() != '已完成'
+        })) {
+            bill.Status('已完成');
+        }
+    }
+    bindList();
+</script>
+
+<% include ../Bottom.ejs %>

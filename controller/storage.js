@@ -57,7 +57,7 @@ exports.post = function (req, res) {
                  * 单据更新
                  */
                 bill: function (cb) {
-                    Svc.db.StockIn.update({_id: obj._id}, {$set: {Status: obj.Status, Items: obj.Items, StockInComfirmOperator: req.currentUser}}, cb);
+                    Svc.db.StockIn.update({_id: obj._id}, {$set: {Status: obj.Status, Items: obj.Items, StockInConfirmOperator: req.currentUser, StockInConfirmTime: Date.ToCreateTime()}}, cb);
                 },
                 /**
                  * 库存更新
@@ -91,6 +91,87 @@ exports.post = function (req, res) {
                  */
                 del: function (cb) {
                     Svc.db.Storage.remove({Amount: 0}, cb);
+                }
+            }, function (e) {
+                res.json({msg: e == null, error: e});
+            })
+            break;
+        case 'savetransbill':
+            var obj = req.body['obj'];
+            var trBill = req.body['trbill'];
+            async.waterfall({
+                /**
+                 * 出库单更新
+                 */
+                outUpdate: function (cb) {
+                    Svc.db.StockOut.update({_id: obj._id}, {$set: {Status: obj.Status, Items: obj.Items, StockOutConfirmOperator: req.currentUser, StockOutConfrimTime: Date.ToCreateTime()}}, cb);
+                },
+                /**
+                 * 库存更新
+                 */
+                storageUpdate: function (cb) {
+                    async.each(obj.Items, function (i, icb) {
+                        Svc.db.Storage.findOne({'RelativeObj.Item1': i.RelativeObj.Item1, 'Stock.Value': i.Stock.Value},
+                            function (ee, d) {
+                                if (d) {
+                                    var am = d.Amount - i.Amount;
+                                    Svc.db.Storage.update({_id: d._id}, {$set: {Amount: am }}, icb);
+                                }
+                                else(icb());
+                            });
+                    }, cb);
+                },
+                /**
+                 * 清理库存
+                 */
+                delStorage: function (cb) {
+                    Svc.db.Storage.remove({Amount: 0}, cb);
+                },
+                /**
+                 * 物流单更新
+                 */
+                transBill: function (cb) {
+                    Svc.getObj('Order', {BillNum: obj.OrderID}, {}, function (ee, order) {
+                        var tb = {
+                            _id: '',
+                            LogisticsOrg: trBill.LogisticsOrg,
+                            LogisticsNum: trBill.LogisticsNum,
+                            Status: '已发货',
+                            OrderID: obj.OrderID,
+                            ShipAddress: obj.ShipAddress,
+                            Tel: obj.Tel,
+                            StockBillNum: obj.BillNum,
+                            Receiver: order.Owner
+                        };
+                        tb.Items = _.filter(obj.Items, function (i) {
+                            return i.CompleteAmount > 0
+                        });
+                        Svc.insert('TranseferBill', tb, req.currentUser, function (e, ds) {
+                            cb(e, order, tb);
+                        });
+                    });
+                },
+                /**
+                 * 订单更新
+                 */
+                order: function (order, tb, cb) {
+                    _.each(tb.Items, function (ti) {
+                        var oi = _.find(order.Items, function (i) {
+                            return i.RelativeObj.Item1 == ti.RelativeObj.Item1
+                        });
+                        oi.Status = ti.CompleteAmount >= oi.Amount ? '已发货' : '部分发货';
+                    });
+                    if (!_.any(order.Items, function (i) {
+                        return i.Status != '已发货'
+                    })) {
+                        order.Status = '全部发货';
+                    }
+                    else if (_.any(order.Items, function (i) {
+                        return i.Status == '部分发货'
+                    })) {
+                        order.Status = '部分发货';
+                    }
+                    Svc.db.Order.update('Order', {_id: order._id}, {$set: {Items: order.Items, Status: order.Status}}, cb);
                 }
             }, function (e) {
                 res.json({msg: e == null, error: e});
