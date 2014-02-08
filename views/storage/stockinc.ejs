@@ -44,7 +44,7 @@
                     <td data-bind="text:Amount"></td>
                     <td data-bind="text:UnitPrice"></td>
                     <td data-bind="text:Sum"></td>
-                    <td><input type="text" data-bind="value:CompleteAmont" style="width:50px"/></td>
+                    <td><input type="text" data-bind="value:CompleteAmount" style="width:50px"/></td>
                     <td data-bind="text:Stock.Name"></td>
                 </tr>
                 </tbody>
@@ -65,7 +65,7 @@
     var bill = new StockBill();
     ko.applyBindings(bill, document.getElementById('d_detail'));
     function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'StockIn', query: {Status:{$ne:'已完成'}}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'StockIn', query: {Status: {$ne: '已完成'}}}, function (d) {
             if (GV.list) {
                 ko.mapping.fromJS(d, GV.list);
             }
@@ -77,14 +77,17 @@
         });
     }
     function dSlt(d) {
-        $.getJSON('/base/getobj',{tp:'StockIn',query:{_id: d._id()}},function(d){
+        $.getJSON('/base/getobj', {tp: 'StockIn', query: {_id: d._id()}}, function (d) {
             bill.updateFromObj(d);
             showPnl('d_edit');
         });
     }
     function save() {
-        $.post('/storage/post',{t:'stockinconfirm',obj:JSON.stringify(ko.mapping.toJS(bill))},function(d){
-
+        $.post('/storage/post', {t: 'stockinconfirm', obj: JSON.stringify(ko.mapping.toJS(bill))}, function (d) {
+            alert(d.error || '入库确认完成!');
+            if (d.msg) {
+                bindList();
+            }
         });
     }
     var kv;
@@ -124,11 +127,15 @@
         _p.CompleteAmount(ca);
         checkBillStatus();
     }
-    function checkBillStatus(){
-        if(_.any(bill.Items(), function (i) {
+    function checkBillStatus() {
+        if (_.any(bill.Items(), function (i) {
             return i.Status() == '执行中'
-        })){ bill.Status('执行中');}
-        else if(!_.any(bill.Items(),function (i){return i.Status()!='已完成'})){
+        })) {
+            bill.Status('执行中');
+        }
+        else if (!_.any(bill.Items(), function (i) {
+            return i.Status() != '已完成'
+        })) {
             bill.Status('已完成');
         }
     }
