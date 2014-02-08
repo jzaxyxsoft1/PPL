@@ -32,8 +32,8 @@ function edit(d) {
         function (o, cb) {
             $.getJSON('/base/getobj', {tp: 'Org', query: {_id: o.Owner.Item1()}}, function (d) {
                 if (d) {
-                    o.ShipAddress = d.ShipAddress;
-                    o.Tel = d.SMSNum
+                    o.ShipAddress = d.Address;
+                    o.Tel = d.SMSNum;
                 }
                 else {
                     o.ShipAddress = '';
