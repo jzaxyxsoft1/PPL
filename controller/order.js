@@ -5,6 +5,7 @@ var Svc = require('Svc').Svc;
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
     var m = req.query['m'];
+
     switch (t) {
         case 'n': //新建订单
             res.render('order/n.ejs', {user: req.currentUser});

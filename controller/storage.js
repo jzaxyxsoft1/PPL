@@ -36,6 +36,9 @@ exports.get = function (req, res) {
         case 'stockout'://出库
             res.render('storage/stockout.ejs');
             break;
+        case 'ship': //发货
+            res.render('storage/ship.ejs');
+            break;
     }
 }
 exports.post = function (req, res) {

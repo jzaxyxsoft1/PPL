@@ -28,6 +28,19 @@ function edit(d) {
                     cb(null, obj);
                 });
             }
+        },
+        function (o, cb) {
+            $.getJSON('/base/getobj', {tp: 'Org', query: {_id: o.Owner.Item1()}}, function (d) {
+                if (d) {
+                    o.ShipAddress = d.ShipAddress;
+                    o.Tel = d.SMSNum
+                }
+                else {
+                    o.ShipAddress = '';
+                    o.Tel = '';
+                }
+                cb(null, o);
+            });
         }
     ], function (e, o) {
         bill.updateFromObj(o);

@@ -54,7 +54,7 @@
                 </table>
             </fieldset>
             <div class="cb wp100 pt10">
-
+                <b>送货地址:</b><span></span> <b class="ml10">联系电话:</b><span></span>
             </div>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
@@ -109,6 +109,8 @@
             var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, false);
             bi.Status('待执行');
         });
+        bill.ShipAddress = d.ShipAddress;
+        bill.Tel = d.Tel;
         showPnl('d_edit');
     }
 
