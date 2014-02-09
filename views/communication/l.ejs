@@ -1,0 +1,35 @@
+<% include ../Top.ejs %>
+<div data-bind="foreach:$data" class="wp100">
+    <a data-bind="attr:{'href':url}" target="_self" style="border-radius: 5px; color:#fff;display: block; margin:2px auto; padding: 1%;"
+       class="wp96 bg-color-gray border-color-grayDark">
+        <b><span data-bind="text:Owner.Name"></span>:</b> <span data-bind="text:Creator.Item2"></span>
+        <div>
+            [<span data-bind="text:ContentType"></span>] <span data-bind="text:CreateTime.Item1" class="fr mr10"></span>
+        </div>
+    </a>
+</div>
+
+<div class="bg-color-gray border-color-grayDark ac p10 cb wp98 mc " id="bt_more">
+    更多
+</div>
+<script type="text/javascript">
+    var pager = {cp: 0, ps: 20};
+    GV.list = ko.observableArray([]);
+    ko.applyBindings(GV.list);
+    function get() {
+        $.getJSON('/communication/get', {t: 'list', p: pager}, function (d) {
+            if (d && d.length) {
+                d.forEach(function (i) {
+                    i.url = '/communication/get?t=d&id=' + i._id;
+                    GV.list.push(i);
+                });
+            }
+        });
+    }
+    $('#bt_more').click(function () {
+        pager.cp = pager.cp + 1;
+        get();
+    })
+    get();
+</script>
+<% include ../Bottom.ejs %>

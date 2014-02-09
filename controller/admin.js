@@ -33,20 +33,27 @@ exports.get = function (req, res) {
     var tp, id;
     switch (t) {
         case "sysfuns":
-            Svc.db.SysFun.find({}).toArray(function (e,ds){
+            Svc.db.SysFun.find({}).toArray(function (e, ds) {
                 res.json(ds);
             });
+            break;
+        case 'adduser':
+            var oid = req.query['oid'];
+            Svc.db.Org.findOne({_id: oid}, function (e, org) {
+                Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id,Type:'Org'},flag:1,TypeFullName:'User'}, function () {  });
+            });
+
             break;
         default :
             break;
     }
 };
 exports.xzqhpost = function (req, res) {
-   var obj=  (  req.body['obj']);
+    var obj = (  req.body['obj']);
     var fs = require('fs');
     var path = require('path');
-   var _p=  path.resolve('public/javascripts')+'\\xzqh.js';
-    var xs ='var xzqh='+obj+';';
+    var _p = path.resolve('public/javascripts') + '\\xzqh.js';
+    var xs = 'var xzqh=' + obj + ';';
     fs.writeFileSync(_p, xs);
     res.json('done');
 }

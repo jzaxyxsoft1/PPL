@@ -86,7 +86,7 @@
     }
     function save() {
         var m = {phoneNum: $('#txt_tel').val(), carType: $('#txt_carType').val(), carNum: $('#txt_carNum').val(), RelativeObj: {Item1: GV.products._id, Item2: GV.products.Name, Item3: 'Product', Item4: ''}};
-        $.post('/base/postsave', {tp: 'SaveBill', obj: JSON.stringify(m)}, function (d) {
+        $.post('/base/postsave', {tp: 'SaleBill', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
         });
     }

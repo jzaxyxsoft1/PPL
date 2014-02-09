@@ -1,0 +1,42 @@
+<% include ../Top.ejs%>
+<div class="wp96 pp1 mc" id="d_m">
+
+</div>
+<div class="wp96 pp1 mc" id="d_r">
+
+</div>
+<div class="cb ac mt10 wp100">
+
+    <div class="bg-color-gray border-color-grayDark ac p10 ilblk" id="bt_more" style="width:45%;">
+        更多
+    </div>
+    <a href="/communication/get?t=e&pid=<%=id%>" target="_self" class="bg-color-gray border-color-grayDark ac p10 ilblk" id="bt_more" style="width:45%;">
+        回复
+    </a>
+</div>
+<div class="bg-color-gray border-color-grayDark ac p10 cb wp98 mc" id="bt_more">
+    更多
+</div>
+<script type="text/javascript">
+    var _id= '<%=id%>';
+     $.getJSON('/communication/get',{t:'detail',id:_id},function(d){
+         ko.applyBindings(d, document.getElementById('d_m'));
+     });
+    var pager={cp:0,ps:20};
+    GV.list=ko.observableArray([]);
+    function get(){
+        $.getJSON('/communication/get',{t:'replay',id:_id, p:pager},function(d){
+             if(d&&d.length){
+                 d.forEach(function (i){
+                     GV.list.push(i);
+                 });
+             }
+        });
+    }
+    $('#bt_more').click(function (){
+        pager.cp = pager.cp+1;
+        get();
+    });
+    get();
+</script>
+<% include ../Bottom.ejs%>

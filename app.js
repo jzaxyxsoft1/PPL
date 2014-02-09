@@ -32,6 +32,7 @@ var files = fs.readdirSync('./controller');
 var _s = '', controllers = {};
 
 app.get('/', routes.index);
+app.get('/index',routes.index);
 app.post('/index/postl',routes.postl);
 app.get('/main',routes.main);
  function checkUser (req,res,next){

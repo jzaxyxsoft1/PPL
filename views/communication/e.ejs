@@ -1,0 +1,62 @@
+<% include ../Top.ejs%>
+<style type="text/css">
+    #m div{ width: 23%;}
+</style>
+<div class="wp100 ac" id="m">
+    <div class="bg-color-gray border-color-grayDark pt10 pb10 ac ilblk">
+        语音
+    </div>
+    <div class="bg-color-gray border-color-grayDark pt10 pb10 ac ilblk">
+        图片
+    </div>
+    <div class="bg-color-gray border-color-grayDark pt10 pb10 ac ilblk">
+        视频
+    </div>
+    <div class="bg-color-gray border-color-grayDark pt10 pb10 ac ilblk">
+        文字
+    </div>
+</div>
+<div class="wp100 pt10 hide" id="d_c">
+    <div id="d_cnt" class="wp100 hide">
+        <textarea style="width:100%;" rows="10" data-bind="Content"></textarea>
+    </div>
+    <div id="d_upload" class="wp100 hide">
+        <form id="form1" action="/file/postupload" method="post" enctype="multipart/form-data">
+
+        </form>
+    </div>
+    <div class="cb ac pt10">
+        <div class="bg-color-gray border-color-grayDark pt10 pb10 ac" onclick="save()">
+            保存
+        </div>
+    </div>
+</div>
+<div>
+
+</div>
+<script type="text/javascript">
+    GV.mdl=ko.mapping.fromJS({_id:'<%=id%>',ContentType:'',Content:'',Url:'',ParentID:'<%=pid%>'});
+    ko.applyBindings(GV.mdl);
+    $('#m a').click(function (){
+        GV.mdl.ContentType($(this.text()));
+        if(GV.mdl.ContentType()=='文字'){
+            $('#d_cnt').show();
+            $('#d_upload').hide();
+        }
+        else{
+            $('#d_upload').show();
+            $('#d_cnt').hide();
+        }
+        $('#d_c').show();
+    });
+    function save(){
+        $('#form1').submit(function (d){
+            GV.mdl.Url(d);
+            var m = ko.mapping.toJS(GV.mdl);
+            $.post('/base/postsave',{tp:'Communication',obj:JSON.stringify(m)},function(d){
+
+            });
+        });
+    }
+</script>
+<% include ../Bottom.ejs%>

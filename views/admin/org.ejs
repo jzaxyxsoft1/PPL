@@ -1,16 +1,16 @@
 <% include ../Top.ejs %>
-<ul id="menu">
-    <li><a href="javascript:edit(0)">添加合作伙伴</a></li>
-</ul>
+<link rel="stylesheet" href="/stylesheets/redmond/jquery-ui-1.10.2.custom.min.css"/>
 <div class="wp100 hp95">
-
     <div class="wp100 hp95 oya">
-        <div class="mc" style="width:610px;">
+        <div class="mc mt10" style="width:610px;">
             <b class="ml10">名称/简码包含:</b><input type="text" id="txt_ac"/><input type="button" value="查询" onclick="q()"/>
+            <input type="button" value="添加合作伙伴" onclick="edit(0)"/>
         </div>
-        <div class="mt10 mc hide mt20" id="d_edit" style="width:610px;">
+        <div class="mt10 mc hide mt10" id="d_edit" style="width:610px;">
             <div class="editor-label">ID:</div>
             <div class="editor-field"><span data-bind="text:_id"></span></div>
+            <div class="editor-label">经销商代码:</div>
+            <div class="editor-field"><input type="text" data-bind="value:OrgNum ,event:{'blur':chkNum}"/></div>
             <div class="editor-label">名称:</div>
             <div class="editor-field"><input type="text" data-bind="value:Name"/></div>
             <div class="editor-label">类型:</div>
@@ -26,6 +26,8 @@
             <div class="editor-field"><input type="text" data-bind="value:SMSNum"/></div>
             <div class="editor-label">简码:</div>
             <div class="editor-field"><span data-bind="text:Simcode"></span></div>
+            <div class="editor-label">送货地址:</div>
+            <div class="editor-field"><input type="text" data-bind="value:ShipAddress"/> </div>
             <div class="hr" style="height: 10px;"></div>
             <fieldset class="wp98 pp1">
                 <legend><strong>区域</strong><a href="javascript:addR()" class="ml10">添加区域</a></legend>
@@ -36,11 +38,10 @@
             </fieldset>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
-                <input type="button" value="删除" onclick="del()" class="ml10"/>
+                <input type="button" value="删除" onclick="del()" class="ml5  "/>
             </div>
         </div>
     </div>
-
 </div>
 <script type="text/javascript" src="../javascripts/xzqh.js"></script>
 <script type="text/javascript" src="../javascripts/KOExt.js"></script>
@@ -56,13 +57,23 @@
     });
     function edit(id) {
         if (id == 0) {
-            bindObj({_id: '', Name: '', Simcode: '', OrgType: '预约经销商', OverTime: '', SMSNum: '', Ranges: []});
+            var _d= new Date();
+            _d.setMonth(_d.getMonth()+4);
+           _d= Date.ToDateTimeString(_d, 1, '-');
+            bindObj({_id: '', Name: '', Simcode: '', OrgType: '预约经销商', OverTime: _d, SMSNum: '',ShipAddress:'',OrgNum:'', Ranges: []});
         }
         else {
             $.getJSON('/base/getobj', {tp: 'Org', query: {_id: id}}, bindObj);
         }
     }
-
+    function chkNum(d, e) {
+        $.getJSON('/base/getobj', {tp: 'Org', m: 1, query: {OrgNum: d.OrgNum(), _id: {$ne: d._id()}}}, function (d) {
+            if (d) {
+                alert('代码重复!');
+                e.target.focus()
+            }
+        });
+    }
     function bindObj(d) {
         if (GV.mdl) {
             ko.mapping.fromJS(d, GV.mdl);
@@ -72,43 +83,40 @@
             ko.applyBindings(GV.mdl, document.getElementById('d_edit'));
             $('#d_edit').show();
         }
-
     }
     function addR() {
         GV.mdl.Ranges.push(ko.mapping.fromJS({Name: '', Value: ''}));
     }
     function save() {
+        var m = ko.mapping.toJS(GV.mdl);
+        var msg = '';
+        if (!m.Name) {
+            msg = '请输入名称!\r';
+        }
+        if (m.Ranges == 0) {
+            msg = msg + '请选择经销区域!\r';
+        }
+        if (msg) {
+            alert(msg);
+            return;
+        }
+
         async.waterfall([
             function (cb) {
-                var m = ko.mapping.toJS(GV.mdl);
-                var msg = '';
-                if (!m.Name) {
-                    msg = '请输入名称!\r';
-                }
-                if (m.Ranges == 0) {
-                    msg = msg + '请选择经销区域!\r';
-                }
-                if (msg) {
-                    cb(msg);
+                if (m._id) {
+                    $.post('/base/postupdate', {tp: 'Org', query: {_id: GV.mdl._id()}, option: JSON.stringify(m)}, function (d) {
+                        cb(d.error, null);
+                    });
                 }
                 else {
                     cb(null, m);
                 }
             },
             function (obj, cb) {
-                if (obj._id) {
-                    $.post('/base/postupdate', {tp: 'Org', query: {_id: GV.mdl._id()}, option: JSON.stringify(obj)}, function (d) {
-                        cb(d.error, null);
-                    });
-                }
-                else {
-                    cb(null, obj);
-                }
-            },
-            function (obj, cb) {
                 if (obj) {
                     $.post('/base/postinsert', {tp: 'Org', obj: JSON.stringify(obj)}, function (d) {
                         GV.mdl._id(d.ID);
+                        $.getJSON('/admin/get',{t:'adduser',oid:GV.mdl._id()});
                         cb(d.error ? d.error : null, null);
                     })
                 } else {

@@ -14,7 +14,8 @@ exports.getobjs = function (req, res) {
     var option = req.query['option'] || {};
     var order = req.query['od'] || null;
     var pager = req.query['pg'] || null;
-    if (Svc.IOrgObj[tp] && req.currentUser.Org.Value != '0') {
+    var m=req.query['m'];
+    if (m ==undefined && Svc.IOrgObj[tp] && req.currentUser.Org.Value != '0') {
         query.Org.Value = req.currentUser.Org.Value;
     }
     convertObjValue(option);
@@ -39,8 +40,9 @@ exports.getobj = function (req, res) {
     var tp = req.query['tp'];
     var query = req.query['query'];
     var option = req.query['option'] || {};
+    var m=req.query['m'];
     convertObjValue(option);
-    if (Svc.IOrgObj[tp] && req.currentUser.Org.Value != '0') {
+    if (m ==undefined&& Svc.IOrgObj[tp] && req.currentUser.Org.Value != '0') {
         query.Org.Value = req.currentUser.Org.Value;
     }
     Svc.getObj(tp, query, option, function (e, d) {
