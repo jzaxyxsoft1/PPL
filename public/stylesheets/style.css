@@ -899,8 +899,8 @@ ul, li { margin-left: 0px; padding-left: 0px;
 
 @font-face {
     font-family: 'icomoon';
-    src: url('fonts/icomoon.eot?fzi79t');
-    src: url('fonts/icomoon.eot?#iefixfzi79t') format('embedded-opentype'), url('fonts/icomoon.woff?fzi79t') format('woff'), url('fonts/icomoon.ttf?fzi79t') format('truetype'), url('fonts/icomoon.svg?fzi79t#icomoon') format('svg');
+    src: url('fonts/icomoon.eot?-hr5hx8');
+    src: url('fonts/icomoon.eot?#iefix-hr5hx8') format('embedded-opentype'), url('fonts/icomoon.woff?-hr5hx8') format('woff'), url('fonts/icomoon.ttf?-hr5hx8') format('truetype'), url('fonts/icomoon.svg?-hr5hx8#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -912,13 +912,11 @@ ul, li { margin-left: 0px; padding-left: 0px;
     font-weight: normal;
     font-variant: normal;
     text-transform: none;
-    line-height:12pt;
-    font-size:12pt;
-    cursor: pointer;
+    line-height: 1;
+
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
 }
 
 .icon-xiaoshou04:before {
@@ -1011,4 +1009,24 @@ ul, li { margin-left: 0px; padding-left: 0px;
 
 .icon-home:before {
     content: "\e617";
+}
+
+.icon-close:before {
+    content: "\e600";
+}
+
+.icon-checkmark:before {
+    content: "\e618";
+}
+
+.icon-list:before {
+    content: "\e619";
+}
+
+.icon-library:before {
+    content: "\e61a";
+}
+
+.icon-bubble:before {
+    content: "\e61b";
 }

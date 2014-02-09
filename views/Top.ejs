@@ -20,14 +20,19 @@
     </ul>
 </div>
 <script type="text/html" id="tmplIHI">
-    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}"><span data-bind="text:name"style="color:#fff"></span></a>
+    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}" style="color:#fff;"><span
+            data-bind="attr:{'class':icon}" class="color:#fff"></span>
+        <span data-bind="text:name" style="color:#fff"></span></a>
         <ul data-bind="template:{name:'tmplIHI',foreach:items}"></ul>
     </li>
 </script>
 <img src="/stylesheets/loading.gif" alt="" id="imgLoading"
      style="position: absolute; top:45%; left: 46%; z-index: 9999; display: none;"/>
 
-<header style="line-height:30px; background-color: #EFEFF2;" ><span id="MM" class="icon-home ml10 fg-color-darken" title="菜单"> </span></header>
+<header style=" height:30px; line-height:30px; background-color: #EFEFF2;"><span id="MM" class="icon-list ml10 fg-color-darken fl ml10 mt10"  title="菜单"> </span>
+<span class="icon-library fg-color-darken fr mr10 mi  mt10" title="主页" u="/main"></span>
+    <span class="icon-key fg-color-darken fr mr10 mi  mt10" title="更改密码" u="/user/m?t=changepwd"></span>
+</header>
 <script type="text/javascript">
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         ko.applyBindings(d, document.getElementById('d_sysFuns'));
@@ -41,6 +46,9 @@
                 });
             });
         });
+    });
+    $('header .mi').click(function (){
+        window.location=$(this).attr('u');
     });
     var loading = $('#imgLoading');
     function notLogin() {

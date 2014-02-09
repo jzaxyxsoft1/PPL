@@ -69,6 +69,10 @@ function save(f) {
         bill.Status('未付款');
     }
     var m = ko.mapping.toJS(bill);
+    _.each(m.Items,function (i){
+        i.Amount=Number(i.Amount);
+        i.UnitPrice= Number(i.UnitPrice);
+    });
     delete  m.updateFromObj;
     $.post('/base/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
         alm(d.error || '保存成功!');

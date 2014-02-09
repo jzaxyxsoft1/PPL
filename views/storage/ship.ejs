@@ -67,6 +67,8 @@
     $('#tbl_bill').StockBillTable('bSlt');
     $('#d_detail').StockBillDetail();
     var bill = new StockBill();
+    bill.Packages = ko.observableArray([]);
+    bill.Products = ko.observableArray([]);
     ko.applyBindings(bill, document.getElementById('d_detail'));
     function bindList() {
         $.getJSON('/base/getobjs', {tp: 'StockOut', query: {Status: {$ne: '已完成'}}}, function (d) {
@@ -80,14 +82,20 @@
             showPnl('d_list');
         });
     }
-    function dSlt(d) {
+    function bSlt(d) {
         $.getJSON('/base/getobj', {tp: 'StockOut', query: {_id: d._id()}}, function (d) {
+            bill.Packages.removeAll();
             bill.updateFromObj(d);
             showPnl('d_edit');
         });
     }
     function save() {
-        $.post('/storage/post', {t: 'savetransbill', obj: JSON.stringify(ko.mapping.toJS(bill)),trbill:{LogisticsOrg:$('#txt_WLGS').val(),LogisticsNum:$('#txt_WLNum').val()}}, function (d) {
+        var m = ko.mapping.toJS(bill);
+        _.each(m.Items, function (i) {
+            i.Amount = Number(i.Amount);
+            i.UnitPrice = Number(i.UnitPrice);
+        });
+        $.post('/storage/post', {t: 'savetransbill', obj: JSON.stringify(ko.mapping.toJS(bill)), trbill: {LogisticsOrg: $('#txt_WLGS').val(), LogisticsNum: $('#txt_WLNum').val()}}, function (d) {
             alert(d.error || '发货完成!');
             if (d.msg) {
                 bindList();
@@ -99,20 +107,28 @@
         if (e.keyCode == 13 || e.keyCode == 108) {
             kv = e.target.value;
             if (kv.substr(0, 1) != 'h') {
+                bill.Packages.push(kv);
                 //包装
                 $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
                     _.each(d.Items, function (i) {
-                        setItemVal(i, i.Amount)
+                        setItemVal(i.RelativeObj.Item1, 1);
                     });
                 });
             }
             else {
+                bill.Products.push(kv);
                 //产品
-                setItemVal(kv, 1);
+                $.getJSON('/base/getobj', {tp: 'Package', query: {Items: {$elemMatch: {'_id': kv}}}}, function (d) {
+                    var _l = _.find(d.Items, function (i) {
+                        return i._id == kv;
+                    });
+                    setItemVal(_l.RelativeObj.Item1, 1);
+                });
+
             }
+            e.target.value = '';
+            e.target.focus();
         }
-        e.target.value = '';
-        e.target.focus();
     });
     var ca;
     function setItemVal(itmID, amount) {

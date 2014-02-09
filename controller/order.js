@@ -1,6 +1,8 @@
 /**
  *订单
  */
+var _=require('underscore');
+var async = require('async');
 var Svc = require('Svc').Svc;
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
@@ -41,7 +43,7 @@ exports.get = function (req, res) {
             }
             else {
                 var id = req.query['id'];
-                Svc.db.Order.update({_id: id}, {$set: {  Status: '付款已确认'}}, function (e) {
+                Svc.db.Order.update({_id: id}, {$set: {  Status: '付款已确认', PayConfirmOperator: req.currentUser, PayConfirmTime: Date.ToCreateTime()}}, function (e) {
                     res.json({msg: e == null, error: e});
                 });
             }
@@ -63,9 +65,38 @@ exports.get = function (req, res) {
             }
             else {
                 var id = req.query['id'];
-                Svc.db.Order.update({_id: id}, {$set: {  Status: '完成'}}, function (e) {
+                var pid = req.query['pid'];
+                async.waterfall([
+                    function (cb) {
+                        Svc.db.TranseferBill.findOne({BillNum:id}, function (e, trBill) {
+                            var itm = _.find(trBill.Items, function (i) {
+                                return i.RelativeObj.Item1 == pid;
+                            });
+                            itm.Status = '已完成';
+                            if(!_.any(trBill.Items,function (i){return i.Status!='已完成'})){
+                                trBill.Status='已完成';
+                            }
+                            Svc.db.TranseferBill.update({_id:trBill._id},{$set:{Statues:trBill.Statues,Items:trBill.Items}},function (e){
+                                cb(e,trBill.OrderID);
+                            });
+                        });
+                    },
+                    function (orderID,cb) {
+                        Svc.db.Order.findOne({BillNum: orderID}, function (e, order) {
+                            var itm = _.find(order.Items, function (i) {
+                                return i.RelativeObj.Item1 == pid;
+                            });
+                            itm.Status = itm.Status.replace(/发货/, '完成');
+                            Svc.db.Order.update({_id: order._id}, {$set: {Items: order.Items}}, function (e) {
+                                cb(e, order);
+                            });
+                        });
+                    }
+
+                ], function (e) {
                     res.json({msg: e == null, error: e});
-                });
+                })
+
             }
             break;
     }

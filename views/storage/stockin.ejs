@@ -169,6 +169,10 @@
     }
     function save() {
         var m = ko.mapping.toJS(bill);
+        _.each(m.Items,function (i){
+            i.Amount=Number(i.Amount);
+            i.UnitPrice=Number(i.UnitPrice);
+        });
         $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
             if (d.msg) {

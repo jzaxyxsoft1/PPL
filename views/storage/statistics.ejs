@@ -1,0 +1,35 @@
+<% include ../Top.ejs %>
+<table cellspacing="0" cellpadding="0" class="wp98 mc " id="d_list">
+    <thead>
+    <tr>
+        <td>产品</td>
+        <td>规格型号</td>
+        <td>单位</td>
+        <td>数量</td>
+        <td>库房</td>
+        <td>库存成本</td>
+    </tr>
+    </thead>
+    <tbody data-bind="foreach:$data">
+    <tr data-bind="css:{'even':$index()%2!=0}">
+        <td data-bind="text:RelativeObj.Item2"></td>
+        <td data-bind="text:Model"></td>
+        <td data-bind="text:Unit"></td>
+        <td data-bind="text:Amount"></td>
+        <td data-bind="text:Stock.Name"></td>
+        <td data-bind="text:Cost"></td>
+    </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    $.getJSON('/storage/get', {t: 'storages', query: {}}, function (d) {
+        if (GV.list) {
+            ko.mapping.fromJS(d, GV.list);
+        }
+        else {
+            GV.list = ko.mapping.fromJS(d);
+            ko.applyBindings(GV.list, document.getElementById('d_list'));
+        }
+    });
+</script>
+<% include ../Bottom.ejs %>

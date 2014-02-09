@@ -10,8 +10,8 @@
                 <div class="editor-field"><span data-bind="text:BillNum"></span></div>
                 <div class="editor-label">订单号:</div>
                 <div class="editor-field"><input type="text" data-bind="value:OrderID,event:{'click':getOrder}"/></div>
-                <div class="editor-label">供应商:</div>
-                <div class="editor-field"><span data-bind="text:Provider.Item2"></span></div>
+                <div class="editor-label">经销商:</div>
+                <div class="editor-field"><span data-bind="text:Owner.Item2"></span></div>
                 <div class="editor-label">建单时间:</div>
                 <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
                 <div class="editor-label">建单人:</div>
@@ -36,19 +36,17 @@
                     </thead>
                     <tbody data-bind="foreach:Items">
                     <tr data-bind="">
-                        <td>
-                            <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
+                        <td data-bind="text:RelativeObj.Item2">
                         </td>
                         <td data-bind="text:Model"></td>
                         <td data-bind="text:Unit"></td>
-                        <td>
-                            <input type="text" data-bind="value:Amount" style="width:50px;"/>
-                        </td>
+                        <td data-bind="text:Amount">  </td>
                         <td data-bind="text:UnitPrice"></td>
                         <td data-bind="text:Sum"></td>
                         <td>
                             <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Value,event:{'change':stockChg}"></select>
                         </td>
+
                     </tr>
                     </tbody>
                 </table>
@@ -58,7 +56,7 @@
             </div>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
-                <input type="button" value="返回" onclick="showPnl('d_edit')" class="ml5"/>
+                <input type="button" value="返回" onclick="showPnl('d_list')" class="ml5"/>
 
             </div>
         </div>
@@ -104,10 +102,14 @@
     function orderSlt(d) {
         d = ko.mapping.toJS(d);
         bill.OrderID(d.BillNum);
+        bill.Owner.Item1(d.Owner.Item1);
+        bill.Owner.Item2(d.Owner.Item2);
+        bill.Owner.Item3(d.Owner.Item3);
         bill.Items.removeAll();
         _.each(d.Items, function (i) {
             var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, false);
-            bi.Status('待执行');
+            bill.Items.push(bi);
+          //  bi.Status('待执行');
         });
         bill.ShipAddress (d.ShipAddress);
         bill.Tel (d.Tel);
@@ -155,6 +157,10 @@
     }
     function save() {
         var m = ko.mapping.toJS(bill);
+        _.each(m.Items,function (i){
+            i.UnitPrice=Number(i.UnitPrice);
+            i.Amount=Number(i.Amount);
+        });
         $.post('/base/postsave', {tp: 'StockOut', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
             if (d.msg) {

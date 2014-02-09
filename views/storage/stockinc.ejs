@@ -84,7 +84,14 @@
         });
     }
     function save() {
-        $.post('/storage/post', {t: 'stockinconfirm', obj: JSON.stringify(ko.mapping.toJS(bill))}, function (d) {
+        checkBillStatus();
+        var  m = ko.mapping.toJS(bill);
+        _.each(m.Items,function (i){
+            i.Amount= Number(i.Amount);
+            i.CompleteAmount= Number(i.CompleteAmount);
+            i.UnitPrice=Number(i.UnitPrice);
+        });
+        $.post('/storage/post', {t: 'stockinconfirm', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '入库确认完成!');
             if (d.msg) {
                 bindList();
@@ -99,17 +106,24 @@
                 //包装
                 $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
                     _.each(d.Items, function (i) {
-                        setItemVal(i, i.Amount)
+                        setItemVal(i.RelativeObj.Item1, 1);
                     });
                 });
             }
             else {
                 //产品
-                setItemVal(kv, 1);
+                $.getJSON('/base/getobj', {tp: 'Package', query: {Items: {$elemMatch: {'_id': kv}}}}, function (d) {
+                    var _l = _.find(d.Items, function (i) {
+                        return i._id == kv;
+                    });
+                    setItemVal(_l.RelativeObj.Item1,1);
+
+                });
+
             }
+            e.target.value = '';
+            e.target.focus();
         }
-        e.target.value = '';
-        e.target.focus();
     });
     var ca;
     function setItemVal(itmID, amount) {
@@ -126,7 +140,7 @@
             return;
         }
         _p.CompleteAmount(ca);
-        checkBillStatus();
+
     }
     function checkBillStatus() {
         if (_.any(bill.Items(), function (i) {
