@@ -1,0 +1,50 @@
+<% include ../Top.ejs %>
+<div class="mt10 mc hide mt10 editor-container" id="d_edit" >
+    <div class="editor-label">ID:</div>
+    <div class="editor-field"><span data-bind="text:_id"></span></div>
+    <div class="editor-label">经销商代码:</div>
+    <div class="editor-field"><span data-bind="text:OrgNum"></span></div>
+    <div class="editor-label">名称:</div>
+    <div class="editor-field"><span data-bind="text:Name"></span></div>
+    <div class="editor-label">类型:</div>
+    <div class="editor-field"><span data-bind="text:OrgType"></span>
+    </div>
+    <div class="editor-label">合同到期时间:</div>
+    <div class="editor-field"><span data-bind="text:OverTime"></span></div>
+    <div class="editor-label">短信接收手机:</div>
+    <div class="editor-field"><input type="text" data-bind="value:SMSNum"/></div>
+    <div class="editor-label">简码:</div>
+    <div class="editor-field"><span data-bind="text:Simcode"></span></div>
+    <div class="editor-label">送货地址:</div>
+    <div class="editor-field"><input type="text" data-bind="value:ShipAddress"/></div>
+    <div class="hr" style="height: 10px;"></div>
+    <fieldset class="wp97 pp1 mc">
+        <legend><strong>区域</strong></legend>
+        <ul data-bind="foreach:Ranges">
+            <li><span data-bind="text:Name"></span></li>
+        </ul>
+    </fieldset>
+    <div class="cb ac pt10">
+        <input type="button" value="保存" onclick="save()"/>
+    </div>
+</div>
+<script type="text/javascript">
+    $.getJSON('/base/getobj', {tp: 'Org', query: {_id: '<%u.Org.Value%>'}}, function (d) {
+        if (GV.mdl) {
+            ko.mapping.fromJS(d, GV.mdl);
+        }
+        else {
+            GV.mdl = ko.mapping.fromJS(d);
+            ko.applyBindings(GV.mdl, document.getElementById('d_edit'));
+        }
+        $('#d_edit').show();
+    });
+    function save() {
+        var m = ko.mapping.toJS(GV.mdl);
+        $.post('/base/postupdate', {tp: 'Org', query: {_id:GV.mdl._id()}, option: {$set: {ShipAddress: m.ShipAddress,
+            SMSNum: m.SMSNum}}}, function (d) {
+            alert(d.error || '保存成功!');
+        });
+    }
+</script>
+<% include ../Bottom.ejs %>

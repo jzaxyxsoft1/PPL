@@ -6,7 +6,7 @@
             <b class="ml10">名称/简码包含:</b><input type="text" id="txt_ac"/><input type="button" value="查询" onclick="q()"/>
             <input type="button" value="添加合作伙伴" onclick="edit(0)"/>
         </div>
-        <div class="mt10 mc hide mt10" id="d_edit" style="width:610px;">
+        <div class="mt10 mc hide mt10 editor-container" id="d_edit" >
             <div class="editor-label">ID:</div>
             <div class="editor-field"><span data-bind="text:_id"></span></div>
             <div class="editor-label">经销商代码:</div>
@@ -29,7 +29,7 @@
             <div class="editor-label">送货地址:</div>
             <div class="editor-field"><input type="text" data-bind="value:ShipAddress"/> </div>
             <div class="hr" style="height: 10px;"></div>
-            <fieldset class="wp98 pp1">
+            <fieldset class="wp97 mc pp1">
                 <legend><strong>区域</strong><a href="javascript:addR()" class="ml10">添加区域</a></legend>
                 <ul data-bind="foreach:Ranges">
                     <li><span data-bind="xzqh:$data"></span><a
@@ -128,6 +128,9 @@
         });
     }
     function del() {
+    }
+    function q(){
+        $("#txt_ac").autocomplete("search" );
     }
 </script>
 <% include ../Bottom.ejs %>

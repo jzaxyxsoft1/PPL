@@ -13,8 +13,8 @@
     <script type="text/javascript" src="/javascripts/knockout-2.2.1.js"></script>
 </head>
 <body>
-<div class="pa"
-     style="top:0px; left:-200px ; width: 200px; height: 100%; overflow: hidden; overflow-y: auto; background-color:#000; z-index:9999;"
+<div class="pa fg-color-grayDark"
+     style="top:0px; left:-200px ; width: 200px; height: 100%; overflow: hidden; overflow-y: auto;  z-index:9999;"
      id="d_sysFuns">
     <ul data-bind="template:{name:'tmplIHI',foreach:$data}">
     </ul>
@@ -29,9 +29,10 @@
 <img src="/stylesheets/loading.gif" alt="" id="imgLoading"
      style="position: absolute; top:45%; left: 46%; z-index: 9999; display: none;"/>
 
-<header style=" height:30px; line-height:30px; background-color: #EFEFF2;"><span id="MM" class="icon-list ml10 fg-color-darken fl ml10 mt10"  title="菜单"> </span>
-<span class="icon-library fg-color-darken fr mr10 mi  mt10" title="主页" u="/main"></span>
-    <span class="icon-key fg-color-darken fr mr10 mi  mt10" title="更改密码" u="/user/m?t=changepwd"></span>
+<header style=" height:30px; line-height:30px; background-color: #EFEFF2;">
+    <span id="MM" class="icon-list ml10 fg-color-darken fl ml10 mt10"  title="菜单"> </span>
+<span class="icon-windows8 fg-color-blue fr mr20 mi  mt10" title="主页" u="/main"></span>
+    <span class="icon-key fg-color-darken fr mr20 mi  mt10" title="更改密码" u="/user/m?t=changepwd"></span>
 </header>
 <script type="text/javascript">
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {

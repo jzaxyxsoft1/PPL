@@ -94,8 +94,6 @@ html, body { width: 100%; height: 100%; margin: 0px; padding: 0px; font-size: 10
 
 .bg-color-violet { background-color: #b91d47 !important; }
 
-.bg-color-pink { background-color: #ff99ff !important; }
-
 .bg-color-magenta { background-color: #ff0099 !important; }
 
 .bg-color-crimson { background-color: #cc0033 !important; }
@@ -241,6 +239,7 @@ a {
 
 .wp95 { width: 95%; }
 
+.wp97 { width: 97%; }
 .wp98 { width: 98%; }
 
 .wp96 { width: 96%; }
@@ -324,16 +323,17 @@ ul, li { margin-left: 0px; padding-left: 0px;
     clear: both;
 }
 
+.editor-container{  }
 .editor-label {
     width: 95px;
     padding-right: 5px;
     text-align: right;
     font-weight: bold;
     background-color: #336699;
-    float: left;
     height: 25px;
     line-height: 25px;
     color: #FFFFFF;
+    float: left;
 }
 
 .editor-field {
@@ -341,15 +341,22 @@ ul, li { margin-left: 0px; padding-left: 0px;
     padding-left: 5px;
     height: 25px;
     line-height: 25px;
-    text-align: left;
+    text-align: left ;
+    background-color:#F0F0F0;
     float: left;
-    background-color: #F0F0F0;
 }
 
-.editor-field input[type=text] {
+.editor-field input[type=text] ,.editor-field select,.editor_container textarea,{
     width: 90%;
 }
 
+@media (min-width: 900px) {
+    .editor-container { width: 600px; }
+}
+
+@media (max-width: 600px) {
+    .editor-container { width: 300px; }
+}
 .fbold .bold {
     font-weight: bold;
 }
@@ -901,8 +908,8 @@ ul, li { margin-left: 0px; padding-left: 0px;
 
 @font-face {
     font-family: 'icomoon';
-    src: url('fonts/icomoon.eot?-hr5hx8');
-    src: url('fonts/icomoon.eot?#iefix-hr5hx8') format('embedded-opentype'), url('fonts/icomoon.woff?-hr5hx8') format('woff'), url('fonts/icomoon.ttf?-hr5hx8') format('truetype'), url('fonts/icomoon.svg?-hr5hx8#icomoon') format('svg');
+    src: url('fonts/icomoon.eot?-wde1vl');
+    src: url('fonts/icomoon.eot?#iefix-wde1vl') format('embedded-opentype'), url('fonts/icomoon.woff?-wde1vl') format('woff'), url('fonts/icomoon.ttf?-wde1vl') format('truetype'), url('fonts/icomoon.svg?-wde1vl#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -1029,6 +1036,106 @@ ul, li { margin-left: 0px; padding-left: 0px;
     content: "\e61a";
 }
 
-.icon-bubble:before {
+.icon-user:before {
     content: "\e61b";
+}
+
+.icon-user2:before {
+    content: "\e61c";
+}
+
+.icon-users:before {
+    content: "\e61d";
+}
+
+.icon-pencil:before {
+    content: "\e61e";
+}
+
+.icon-qrcode:before {
+    content: "\e61f";
+}
+
+.icon-barcode:before {
+    content: "\e620";
+}
+
+.icon-plus:before {
+    content: "\e621";
+}
+
+.icon-minus:before {
+    content: "\e622";
+}
+
+.icon-play:before {
+    content: "\e623";
+}
+
+.icon-image:before {
+    content: "\e624";
+}
+
+.icon-camera:before {
+    content: "\e625";
+}
+
+.icon-file:before {
+    content: "\e626";
+}
+
+.icon-windows8:before {
+    content: "\e627";
+}
+
+.icon-bell:before {
+    content: "\e628";
+}
+
+.icon-alarm:before {
+    content: "\e629";
+}
+
+.icon-phone:before {
+    content: "\e62a";
+}
+
+.icon-spinner:before {
+    content: "\e62b";
+}
+
+.icon-search:before {
+    content: "\e62c";
+}
+
+.icon-bubbles:before {
+    content: "\e62d";
+}
+
+.icon-bubbles2:before {
+    content: "\e62e";
+}
+
+.icon-forward:before {
+    content: "\e62f";
+}
+
+.icon-reply:before {
+    content: "\e630";
+}
+
+.icon-cog:before {
+    content: "\e631";
+}
+
+.icon-profile:before {
+    content: "\e632";
+}
+
+.icon-mobile:before {
+    content: "\e633";
+}
+
+.icon-phone2:before {
+    content: "\e634";
 }

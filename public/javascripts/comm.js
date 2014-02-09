@@ -24,7 +24,7 @@ $.fn.loadFrame = function (u) {
 };
 var WS = { w: $(window).width(), h: $(window).height(), clos: Math.floor($(window).width / 300) };
 $(window).resize(function () { WS = { w: $(window).width(), h: $(window).height() }; });
-var bgColor = ["bg-color-blue", "bg-color-blueDark", "bg-color-green", "bg-color-greenLight", "bg-color-greenDark", "bg-color-red",   "bg-color-orange", "bg-color-pink", "bg-color-pinkDark", "bg-color-purple", "bg-color-darken", "bg-color-magenta", "bg-color-teal", "bg-color-redLight"];
+var bgColor = ['bg-color-blueDark', 'bg-color-green', 'bg-color-greenLight', 'bg-color-greenDark', 'bg-color-red', 'bg-color-orange', 'bg-color-orangeDark', 'bg-color-pink', 'bg-color-pinkDark', 'bg-color-purple', 'bg-color-grayDark', 'bg-color-magenta', 'bg-color-emerald', 'bg-color-teal', 'bg-color-indigo', 'bg-color-violet', 'bg-color-magenta', 'bg-color-crimson', 'bg-color-brown'];
 var fgColor = ["border-color-blue", "border-color-blueLight", "border-color-blueDark", "border-color-green", "border-color-greenLight", "border-color-greenDark", "border-color-red", "border-color-yellow", "border-color-orange", "border-color-pink", "border-color-pinkDark", "border-color-purple", "border-color-darken", "border-color-magenta", "border-color-teal", "border-color-redLight"];
 $(function () {
     $('input[type=text]').on('keydown', function (e) { if (e.keyCode == 13 || e.keyCode == 108) { if (window.event) { event.keyCode = 9; } else { e.which = 9; } } });

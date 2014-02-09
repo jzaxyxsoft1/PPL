@@ -7,7 +7,12 @@ exports.bo = function (req, res) {
     res.render('admin/bo.ejs', {id: id, bo: bo, manageFlg: m});
 }
 exports.org = function (req, res) {
-    res.render('admin/org.ejs');
+    if(req.currentUser.Org.Value =='0'){
+        res.render('admin/org.ejs');
+    }
+    else{
+        res.render('admin/orgc.ejs',{u:req.currentUser});
+    }
 }
 exports.orgpost = function (req, res) {
     var t = req.body['t'].toLowerCase();

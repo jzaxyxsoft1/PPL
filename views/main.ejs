@@ -16,29 +16,67 @@
             padding: 0px;
         }
     </style>
+    <style type="text/css" media="all">
+        .mainC { margin: 30px auto; letter-spacing: -8px; }
+
+        .iconWrap { display: inline-block; padding-top: 5px; padding-bottom: 5px; text-align: center; letter-spacing: 0px; }
+
+        .siteTitle { text-shadow: #ff9900 0 1px 0; color: #ffff00 }
+    </style>
     <style type="text/css" media="screen">
-        .iconC{ width: 420px; margin: 30px auto;}
-        .iconWrap{ width: 140px; display: inline-block; height: 50px; line-height: 50px; text-align: center; letter-spacing: 0px;  }
+        .mainC { width: 60%; margin: 30px auto; }
+
+        .iconWrap { width: 140px; word-break: break-all; padding: 25px;; }
+
+        .ico { font-size: 50px; margin: 10px 45px; }
+
+        .siteTitle { font-size: 50px; margin-left: 30px; }
     </style>
 </head>
 <body style="width: 100%;" class="bg-color-blue">
-<div id="d_sysFuns" class="mc iconC" data-bind="foreach:$data">
-    <div class="mt10" data-bind="foreach:items" style=" letter-spacing: -8px;">
-        <a  data-bind="attr:{class:cls,href:Url}" target="_self" style="color: #fff">
-          <span data-bind="attr:{'class':icon}"></span>  <span data-bind="text:name" style="color: #fff"></span>
-        </a>
+<div>
+    <b class="siteTitle">
+        瑞保驰合作伙伴自助平台</b>
+
+    <div onclick="chgPwd()" class="fr mr10 lnk" style="width: 150px; color:#fff; text-align: right; line-height: 20px;">
+        <b class="icon-user fr" style="font-size:50px; margin-left: 10px; "></b>
+        <b id="b_un" style="font-size: 25px; margin-top:12px; display:inline-block"></b><br/>
+        <span id="spn_time"></span>
     </div>
 </div>
+
+<div id="d_sysFuns" class="mainC cb" data-bind="foreach:$data">
+    <a data-bind="attr:{class:cls,href:Url}" target="_self" style="color: #fff">
+        <span data-bind="attr:{'class':icon}"></span> <span data-bind="text:name" style="color: #fff"></span>
+    </a>
+
+</div>
 <script type="text/javascript">
+
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
-        var m = bgColor.length-1;
+        var m = 0;
+        var ts = [];
         d.forEach(function (di) {
             di.items.forEach(function (i, idx) {
-                i.cls = bgColor[_.random(0, m)]+' iconWrap';
+                i.icon = 'ico icon-order04';
+                i.cls = bgColor[m] + ' iconWrap';
+                i.Url = '#';
+                ts.push(i);
+                m++;
             });
         })
-        ko.applyBindings(d, document.getElementById('d_sysFuns'));
+        ko.applyBindings(ts, document.getElementById('d_sysFuns'));
     });
+    function getCookie(name) {
+        var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+        if (arr != null) return unescape(arr[2]);
+        return null;
+    }
+    $('#b_un').html(JSON.parse(getCookie('InnerUser')).Name);
+    $('#spn_time').text(Date.ToDateTimeString(null, true, '-'));
+    function chgPwd(){
+        window.location='/user/m?t=changepwd';
+    }
 </script>
 </body>
 </html>
