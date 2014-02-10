@@ -2,10 +2,7 @@
 GV.NodeSvcUrl = "http://www.jzaxyx.com:9777/";
 GV.BSDExtUrl = "http://www.jzaxyx.com:8888";
 GV.AndroidEvent = {
-    CallBack: function () {},
-    exec: function () {
-        GV.AndroidEvent.CallBack(arguments);
-    }
+    callback: function () {}
 };
 $.ajaxSetup({ cache: false });
 window.onunload = function () {
