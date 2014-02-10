@@ -13,15 +13,15 @@
     <script type="text/javascript" src="/javascripts/knockout-2.2.1.js"></script>
 </head>
 <body>
-<div class="pa fg-color-grayDark"
+<div class="pa bg-color-grayDark"
      style="top:0px; left:-200px ; width: 200px; height: 100%; overflow: hidden; overflow-y: auto;  z-index:9999;"
      id="d_sysFuns">
     <ul data-bind="template:{name:'tmplIHI',foreach:$data}">
     </ul>
 </div>
 <script type="text/html" id="tmplIHI">
-    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}" style="color:#fff;"><span
-            data-bind="attr:{'class':icon}" class="color:#fff"></span>
+    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}" style="color:#fff;">
+        <!--<span data-bind="attr:{'class':icon}" class="color:#fff"></span>-->
         <span data-bind="text:name" style="color:#fff"></span></a>
         <ul data-bind="template:{name:'tmplIHI',foreach:items}"></ul>
     </li>

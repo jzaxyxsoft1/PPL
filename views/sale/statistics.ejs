@@ -1,8 +1,23 @@
-<% include ../Top.ejs%>
+<% include ../Top.ejs %>
+<script src="/RGraph/RGraph.common.core.js"></script>
+<script src="/RGraph/RGraph.common.dynamic.js"></script>
+<script src="/RGraph/RGraph.common.tooltips.js"></script>
+<script src="/RGraph/RGraph.pie.js"></script>
 <div class="wp98 mc mt10">
-    <b class="ml10">开始时间:</b><input type="text"  id="txt-bTime"/>
+    <b class="ml10">开始时间:</b><input type="text" id="txt-bTime"/>
     <b class="ml10">结束时间:</b><input type="text" id="txt-eTime">
     <input type="button" value="查询" onclick="q()"/>
 </div>
+<div style="margin:20px auto; width: 400px;">
+    <canvas id="cvs" width="400" height="400" style="margin-left: auto; margin-right: auto">[No canvas support]</canvas>
+</div>
 
-<% include ../Bottom.ejs%>
+<script type="text/javascript">
+
+    var pie = new RGraph.Pie('cvs', [4, 8, 4, 6, 5, 3, 2, 5])
+            .Set('tooltips', ['Alvin', 'Pete', 'Hoolio', 'Jack', 'Kev', 'Luis', 'Lou', 'Jesse'])
+            .Set('labels', ['Alvin', 'Pete', 'Hoolio', 'Jack', 'Kev', 'Luis', 'Lou', 'Jesse'])
+            .Draw();
+
+</script>
+<% include ../Bottom.ejs %>
