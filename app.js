@@ -40,9 +40,11 @@ app.get('/main',routes.main);
     if(req.currentUser){next();}
     else{res.redirect('/');res.end();}
 };
+app.post('/file/pos',require('./controller/file.js').pos);
 files.forEach(function (f) {
     _s = f.replace(/\.js/, '');
     controllers[_s] = require('./controller/' + f);
+    if(_s!='file'){
     for (var ex  in controllers[_s]) {
         if (ex.indexOf('post') > -1) {
             app.post('/' + _s + '/' + ex, checkUser, controllers[_s][ex]);
@@ -50,6 +52,7 @@ files.forEach(function (f) {
         else {
             app.get('/' + _s + '/' + ex, checkUser, controllers[_s][ex]);
         }
+    }
     }
 });
 

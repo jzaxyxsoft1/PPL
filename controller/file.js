@@ -4,13 +4,17 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-exports.post = function (req, res) {
+
+
+exports.pos = function (req, res) {
+    res.set({'Access-Control-Allow-Origin': '*'});
     var _d = new Date();
     _d = (_d.getFullYear().toString() + (_d.getMonth() + 1) + _d.getDate());
     var p = req.body['p'];
     var fPath = "/upload/" + p + '/' + _d;
     if (!fs.existsSync(__dirname + '/../public' + fPath)) {
-        fs.mkdirSync(__dirname + '/../public' + fPath);
+        //fs.mkdirSync(__dirname + '/../public' + fPath);
+        mkdirp.sync(__dirname + '/../public' + fPath);
     }
 
     var filePath = req.files.file.path;

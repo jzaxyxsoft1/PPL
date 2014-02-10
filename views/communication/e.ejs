@@ -36,12 +36,18 @@
 </div>
 <script type="text/javascript">
     GV.mdl=ko.mapping.fromJS({_id:'<%=id%>',ContentType:'',Content:'',Url:'',ParentID:'<%=pid%>'});
-    ko.applyBindings(GV.mdl);
-    $('#m a').click(function (){
-        GV.mdl.ContentType($(this.text()));
+    ko.applyBindings(GV.mdl,document.getElementById('m'));
+    $('#m div').click(function (){
+        GV.mdl.ContentType($(this).text().trim());
         if(GV.mdl.ContentType()=='文字'){
             $('#d_cnt').show();
             $('#d_upload').hide();
+        }
+        if(GV.mdl.ContentType()=='语音'){
+            if(AndroidObj){AndroidObj.soundRecorderMethod('http://113.230.149.212:3000/file/pos', 'test');}
+        }
+        if(GV.mdl.ContentType()=='图片'){
+            if(AndroidObj){AndroidObj.cameraMethod('http://113.230.149.212:3000/file/pos', 'test');}
         }
         else{
             $('#d_upload').show();
@@ -49,6 +55,7 @@
         }
         $('#d_c').show();
     });
+    GV.AndroidEvent.callback=function(u){alert(u);}
     function save(){
         $('#form1').submit(function (d){
             GV.mdl.Url(d);
