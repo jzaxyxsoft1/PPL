@@ -173,7 +173,7 @@ $.fn.BillTable = function (sltKoEvent, multSlt) {
     return _t;
 };
 $.fn.BillDetail = function () {
-    var _s = '<div class="mc mt10" style="width: 610px;"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">状态:</div><div class="editor-field"> <span data-bind="text:Status"></span></div><div class="editor-label">经销商:</div> <div class="editor-field"> <span data-bind="text:Owner.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc p10" style="width: 590px;"><legend><strong>订单内容:</strong></legend><table cellspacing="0" cellpadding="0" style="width:590px;"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td></tr></tbody></table></fieldset>';
+    var _s = '<div class="mc mt10" style="width: 610px;"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">状态:</div><div class="editor-field"> <span data-bind="text:Status"></span></div><div class="editor-label">经销商:</div> <div class="editor-field"> <span data-bind="text:Owner.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc p10" style="width: 590px;"><legend><strong>订单内容:</strong></legend><table cellspacing="0" cellpadding="0" style="width:590px;"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td></tr></tbody><tfoot><tr><td colspan="6" class="ac even"><b>金额合计:</b><span data-bind="text:Sum"></span></td></tr></tfoot></table></fieldset>';
     this.html(_s);
     return this;
 };
@@ -226,12 +226,12 @@ var StockBill = function (billType, owner, creator) {
 
     };
 };
-var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
+var StockBillItem = function (relativeObj, unitCost, amount, model, unit, amountEditable) {
     this.n = BillItem;
-    this.n(relativeObj, unitPrice, amount, model, unit, amountEditable);
+    this.n(relativeObj, 0, amount, model, unit, amountEditable);
     delete this.n;
     this.Provider = {Item1: ko.observable(''), Item2: ko.observable(''), Item3: ko.observable('')};
-    this.UnitCost = ko.observable(0);
+    this.UnitCost = ko.observable(unitCost);
     this.Cost = ko.computed(function () {
         return Math.round(this.Amount() * this.UnitCost(), 2)
     }, this);
@@ -249,13 +249,14 @@ var StockBillItem = function (relativeObj, unitPrice, amount, model, unit, amoun
         }
     }, this);
 };
-$.fn.StockBillTable = function (sltCallback) {
-    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>供应商</td><td>订单号</td><td>建单人</td></tr></thead><tbody data-bind="foreach:$data"> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Sum"></td> <td data-bind="text:Provider.Item2"></td><td data-bind="text:OrderID"></td><td data-bind="text:Creator.Item2"></td> </tr></tbody>';
+$.fn.StockBillTable = function (sltCallback,showOrderID) {
+    var sOrder= showOrderID||false;
+    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>成本</td> '+(sOrder?'< td > 订单号 < /td>':'')+'<td>建单人</td><td>状态</td></tr></thead><tbody data-bind="foreach:$data"> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Cost"></td> '+(sOrder?'<td data-bind="text:OrderID"></td>':'')+'<td data-bind="text:Creator.Name"></td><td data-bind="text:Status"></td> </tr></tbody>';
     this.html(_s);
     return this;
 };
 $.fn.StockBillDetail = function () {
-    var _s = '<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>完成数量</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:CompleteAmount"></td><td data-bind="text:Stock.Name"></td></tr></tbody></table></fieldset>';
+    var _s = '<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>完成数量</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:CompleteAmount"></td><td data-bind="text:Stock.Name"></td></tr></tbody><tfoot><tr><td colspan="8" class="ac even"><b>金额合计:</b><span data-bind="text:Sum"></span></td></tr></tfoot></table></fieldset>';
     this.html(_s);
     return this;
 

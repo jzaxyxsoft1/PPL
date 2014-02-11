@@ -1,0 +1,55 @@
+<% include ../Top.ejs %>
+<style type="text/css">
+    td input[type=text]{width: 60px;}
+</style>
+<div class="wp100 hp100 oya">
+    <table cellspacing="0" cellpadding="0" class="wp98 mc mt10" id="d_list">
+        <thead>
+        <tr>
+            <td>名称</td>
+            <td>规格型号</td>
+            <td>销售价</td>
+            <td>经销商价</td>
+            <td>成本价</td>
+        </tr>
+        </thead>
+        <tbody data-bind="foreach:$data">
+        <tr data-bind="css:{even:$index()%2!=0}">
+            <td data-bind="text:Name"></td>
+            <td data-bind="text:Model"></td>
+            <td><input type="text" data-bind="value:Price"/></td>
+            <td><input type="text" data-bind="value:PartnerPrice"/></td>
+            <td><input type="text" data-bind="value:UnitCost"/></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="ac pt10 cb"><input type="button" value="保存" onclick="s()"/></div>
+</div>
+
+<script type="text/javascript">
+    $.getJSON('/product/get', {t: 'price', m: 1}, function (d) {
+        d.forEach(function (i) {
+            i.PartnerPrice = i.PartnerPrice || 0;
+            i.UnitCost = i.UnitCost || 0;
+            i.Price = i.Price || 0;
+        });
+        GV.prices = d;
+        GV.mdl = ko.mapping.fromJS(d);
+        ko.applyBindings(GV.mdl,document.getElementById('d_list'));
+    });
+    function s() {
+        var m = ko.mapping.toJS(GV.mdl);
+        var chgs = [];
+        _.each(m, function (i) {
+            var _p = _.any(GV.prices, function (oi) { return oi._id == i._id && (oi.Price != i.Price || oi.PartnerPrice != i.PartnerPrice || oi.UnitCost != i.UnitCost);});
+            if (_p) {
+                chgs.push(i);
+            }
+        });
+        if (chgs.length) {
+            $.post('/product/post', {t: 'updateprices', objs: JSON.stringify(chgs)}, function (d) { });
+        }
+        alert('保存成功!');
+    }
+</script>
+<% include ../Bottom.ejs %>

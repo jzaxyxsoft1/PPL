@@ -1,3 +1,32 @@
-<% include ../Top.ejs%>
-
-<% include ../Bottom.ejs%>
+<% include ../Top.ejs %>
+<div class="mc mt20" style="width:300px;">
+    <div class="editor-label">原密码</div>
+    <div class="editor-field"><input type="password" id="txt-op"/></div>
+    <div class="editor-label">新密码</div>
+    <div class="editor-field"><input type="password" id="txt-np"/></div>
+    <div class="editor-label">确认新密码</div>
+    <div class="editor-field"><input type="password" id="txt-np1"/></div>
+    <div class="cb ac pt10">
+        <input type="button" value="更改密码" onclick="q()"/>
+    </div>
+</div>
+<script type="text/javascript">
+    $('input[type=password]').on('blur', function () {
+        var _t = $(this);
+        if (!_t.val()) {
+            alert(_t.parent().prev().text() + '不能为空');
+            _t.focus();
+            return;
+        }
+    });
+    function q() {
+        if ($('#txt-np').val() != $('#txt-np1').val()) {
+            alert('确认新密码与新密码不符!');
+            return;
+        }
+        $.getJSON('/user/get',{t:'changepwd',m:1,op:$('#txt-op').val(),np:$('#txt-np').val()},function(d){
+            alert(d.msg);
+        });
+    }
+</script>
+<% include ../Bottom.ejs %>

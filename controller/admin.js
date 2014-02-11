@@ -7,11 +7,11 @@ exports.bo = function (req, res) {
     res.render('admin/bo.ejs', {id: id, bo: bo, manageFlg: m});
 }
 exports.org = function (req, res) {
-    if(req.currentUser.Org.Value =='0'){
+    if (req.currentUser.Org.Value == '0') {
         res.render('admin/org.ejs');
     }
-    else{
-        res.render('admin/orgc.ejs',{u:req.currentUser});
+    else {
+        res.render('admin/orgc.ejs', {u: req.currentUser});
     }
 }
 exports.orgpost = function (req, res) {
@@ -26,36 +26,37 @@ exports.orgpost = function (req, res) {
             break;
         case 'ixzqh':
             var objs = req.body['objs'];
-
             break;
     }
 }
 function orgTypeProcess() {
-
 }
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
     var tp, id;
     switch (t) {
         case "sysfuns":
-            var sfs ;
-            if(req.currentUser._id=='0'){
-                sfs = Svc.getGVObjs('SysFun',function (i){return true;});
+            var sfs;
+            if (req.currentUser._id == '0') {
+                sfs = Svc.getGVObjs('SysFun', function (i) {return true;});
             }
-            else if(req.currentUser.Org.Value=='0'){
-                sfs = Svc.getGVObjs('SysFun',function (i){ return i._id=='100'});
+            else if (req.currentUser.Org.Value == '0') {
+                sfs = Svc.getGVObjs('SysFun', function (i) { return i._id == '100'});
             }
-            else{
-                sfs = Svc.getGVObjs('SysFun',function (i){return i._id!='100';})
+            else {
+                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id != '100';})
             }
             res.json(sfs);
             break;
         case 'adduser':
             var oid = req.query['oid'];
             Svc.db.Org.findOne({_id: oid}, function (e, org) {
-                Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id,Type:'Org'},flag:1,TypeFullName:'User'}, function () {  });
+                Svc.db.user.findOne({Name: 'Admin', 'Org.Value': org._id}, function (e, d) {
+                    if (!d) {
+                        Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id, Type: 'Org'}, flag: 1, TypeFullName: 'User'}, function () { });
+                    }
+                });
             });
-
             break;
         default :
             break;

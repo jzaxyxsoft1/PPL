@@ -1,8 +1,8 @@
 <% include ../Top.ejs %>
-<link rel="stylesheet" href="/stylesheets/redmond/jquery-ui-1.10.2.custom.min.css"/>
+
 <div class="wp100 hp95">
     <div class="wp100 hp95 oya">
-        <div class="mc mt10" style="width:610px;">
+        <div class="mc mt10 editor-container"  >
             <b class="ml10">名称/简码包含:</b><input type="text" id="txt_ac"/><input type="button" value="查询" onclick="q()"/>
             <input type="button" value="添加合作伙伴" onclick="edit(0)"/>
         </div>
@@ -100,7 +100,6 @@
             alert(msg);
             return;
         }
-
         async.waterfall([
             function (cb) {
                 if (m._id) {

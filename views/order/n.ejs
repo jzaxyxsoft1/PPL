@@ -7,7 +7,7 @@
         <table id="tbl_ds" cellspacing="0" cellpadding="0" class="mc mt10 wp98"></table>
     </div>
     <div id="d_edit" class="wp100 hp100 oya hide">
-        <div class="mc mt10" style="width: 610px;">
+        <div class="mc mt10 editor-container">
             <div class="editor-label">单号:</div>
             <div class="editor-field"><span data-bind="text:BillNum"></span></div>
             <div class="editor-label">状态:</div>
@@ -20,53 +20,45 @@
             <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
             <div class="editor-label">金额:</div>
             <div class="editor-field"><span data-bind="text:Sum"></span></div>
-
-        <div class="cb">
-            <div class="editor-label ilblk">送货地址:</div> <span data-bind="text:ShipAddress"></span>
-        </div>
-        <div class="cb">
-            <div class="editor-label ilblk">联系电话:</div>
-            <span data-bind="text:Tel"></span>
-        </div>
-    </div>
-        <div class="hr" style="height: 10px;"></div>
-        <fieldset class="mc p10" style="width: 590px;">
-            <legend><strong>订单内容:</strong><a href="javascript:addItem()" class="lnk ml10">添加产品</a></legend>
-            <table cellspacing="0" cellpadding="0" style="width:590px;">
-                <thead>
-                <tr>
-                    <td>产品</td>
-                    <td>规格</td>
-                    <td>单位</td>
-                    <td>数量</td>
-                    <td>单价</td>
-                    <td>金额</td>
-                    <td style="width:30px;" data-bind="visible:$data.Status()=='未提交'"></td>
-                </tr>
-                </thead>
-                <tbody data-bind="foreach:Items">
-                <tr data-bind="css:{'even':$index()%2!=0}">
-                    <td>
-                        <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
-                    </td>
-                    <td data-bind="text:Model"></td>
-                    <td data-bind="text:Unit"></td>
-                    <td><input type="text" data-bind="value:Amount" style="width:40px;"/></td>
-                    <td data-bind="text:UnitPrice"></td>
-                    <td data-bind="text:Sum"></td>
-                    <td data-bind="visible:$parent.Status()=='未提交'"><a class="lnk fred"
-                                                                       data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}">删除</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </fieldset>
-        <div class="cb ac pt10">
-            <input type="button" value="保存" onclick="save()"/>
-            <input class="ml10" type="button" value="保存并提交" onclick="save(1)"/>
-            <input class="ml10" type="button" value="删除" onclick="del()"
-                   data-bind="visible:$data.Status()=='未提交'&& $data.BillNum()!=''"/>
-            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+            <div class="hr" style="height: 10px;"></div>
+            <fieldset class="mc wp97 pp1"  >
+                <legend><strong>订单内容:</strong><a href="javascript:addItem()" class="lnk ml10">添加产品</a></legend>
+                <table cellspacing="0" cellpadding="0" style="width:590px;">
+                    <thead>
+                    <tr>
+                        <td>产品</td>
+                        <td>规格</td>
+                        <td>单位</td>
+                        <td>数量</td>
+                        <td>单价</td>
+                        <td>金额</td>
+                        <td style="width:30px;" data-bind="visible:$data.Status()=='未提交'"></td>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach:Items">
+                    <tr data-bind="css:{'even':$index()%2!=0}">
+                        <td>
+                            <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
+                        </td>
+                        <td data-bind="text:Model"></td>
+                        <td data-bind="text:Unit"></td>
+                        <td><input type="text" data-bind="value:Amount" style="width:40px;"/></td>
+                        <td data-bind="text:UnitPrice"></td>
+                        <td data-bind="text:Sum"></td>
+                        <td data-bind="visible:$parent.Status()=='未提交'">
+                            <a class="ilblk bg-color-red" style="padding: 5px;"  data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}"><b class="icon-close fg-color-white"></b></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <div class="cb ac pt10">
+                <input type="button" value="保存" onclick="save()"/>
+                <input class="ml10" type="button" value="保存并提交" onclick="save(1)"/>
+                <input class="ml10" type="button" value="删除" onclick="del()"
+                       data-bind="visible:$data.Status()=='未提交'&& $data.BillNum()!=''"/>
+                <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+            </div>
         </div>
     </div>
 </div>
@@ -80,7 +72,6 @@
         $('#bt_new').show();
         bindList();
     });
-
     function bindList() {
         $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未提交'}}, function (d) {
             if (GV.list) {

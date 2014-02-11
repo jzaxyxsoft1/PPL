@@ -1,23 +1,17 @@
 <% include ../Top.ejs %>
-<div>
-    <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
-</div>
-<div class="wp100 hp98 oh">
+
+<div class="wp100 hp100 oh">
     <div class="hide wp100 hp100" id="d_edit">
-        <div style="width:610px;" class="mc">
+        <div class="mc editor-container mt10">
             <div class="mc mt10">
+                <div class="editor-label">ID:</div>
+                <div class="editor-field"><span data-bind="text:_id"></span></div>
                 <div class="editor-label"> 单号:</div>
                 <div class="editor-field"><span data-bind="text:BillNum"></span></div>
-                <div class="editor-label">订单号:</div>
-                <div class="editor-field"><input type="text" data-bind="value:OrderID,event:{'click':getOrder}"/></div>
-                <div class="editor-label">供应商:</div>
-                <div class="editor-field"><span data-bind="text:Provider.Item2"></span></div>
                 <div class="editor-label">建单时间:</div>
                 <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
                 <div class="editor-label">建单人:</div>
-                <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
-                <div class="editor-label">金额:</div>
-                <div class="editor-field"><span data-bind="text:Sum"></span></div>
+                <div class="editor-field"><span data-bind="text:Creator.Name"></span></div>
             </div>
             <div class="hr" style="height: 10px;"></div>
             <fieldset class="mc pp1 wp98">
@@ -29,13 +23,14 @@
                         <td>规格</td>
                         <td>单位</td>
                         <td>数量</td>
-                        <td>单价</td>
-                        <td>金额</td>
+                        <td>单位成本</td>
+                        <td>成本</td>
                         <td>库房</td>
+                        <td style="width:20px"></td>
                     </tr>
                     </thead>
                     <tbody data-bind="foreach:Items">
-                    <tr data-bind="">
+                    <tr data-bind="css:{even:$index()%2!=0}">
                         <td>
                             <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
                         </td>
@@ -44,45 +39,51 @@
                         <td>
                             <input type="text" data-bind="value:Amount" style="width:50px;"/>
                         </td>
-                        <td data-bind="text:UnitPrice"></td>
-                        <td data-bind="text:Sum"></td>
+                        <td data-bind="text:UnitCost"></td>
+                        <td data-bind="text:Cost"></td>
                         <td>
                             <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Value,event:{'change':stockChg}"></select>
                         </td>
+                        <td>
+                            <b class="icon-close fg-color-red"   data-bind="if:$parent.Status()=='待执行',click:function(){if(window.confirm('是否删除?')){$parent.Items.remove($data)}}" title="单击删除">
+                            </b>
+                        </td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="8" class="ac bg-color-blue fg-color-white">
+                            <b>成本合计:</b><span data-bind="text:Cost"></span>
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
             </fieldset>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
-                <input type="button" value="返回" onclick="showPnl('d_edit')" class="ml5"/>
-
+                <input type="button" value="返回" onclick="showPnl('d_list')" class="ml5"/>
             </div>
         </div>
     </div>
     <div class="hide wp100 hp100 oya" id="d_list">
+        <div>
+            <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
+        </div>
         <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bills">
         </table>
     </div>
-    <div class="hide wp100 hp100 oya" id="d_order">
-        <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_order">
-        </table>
-        <div class="pt10 ac">
-            <input type="button" value="返回" onclick="showPnl('d_edit')"/>
-        </div>
-    </div>
+
 </div>
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
     var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
     var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
     $('#tbl_bills').StockBillTable('edit');
-    $('#tbl_order').BillTable('orderSlt');
     var bill = new StockBill('StockIn', org, u);
     ko.applyBindings(bill, document.getElementById('d_edit'));
     async.series([
         function (cb) {
-            $.getJSON('/base/getobjs', {tp: 'Stock', query: {}, options: {Name: 1}}, function (d) {
+            $.getJSON('/base/getobjs', {tp: 'Stock',m:1, option: {Name: 1}}, function (d) {
                 GV.stocks = d;
                 cb();
             });
@@ -96,25 +97,9 @@
     ], function (e) {
         $('#bt_add').show();
     });
-    function getOrder() {
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '付款已确认'}}, function (d) {
-            if (GV.order) {
-                ko.mapping.fromJS(d, GV.order);
-            }
-            else {
-                GV.order = ko.mapping.fromJS(d);
-                ko.applyBindings(GV.order, document.getElementById('d_order'));
-            }
-            showPnl('d_order');
-        });
-    }
-    function orderSlt(d){
-        bill.OrderID(d.BillNum());
-        showPnl('d_edit');
-    }
     function addItem() {
         var pro = GV.products[0];
-        var stockB = new StockBillItem({Item1: pro._id, Item2: pro.Name, Item3: 'Product', Item4: ''}, pro.Price, 0, pro.Model, pro.Unit, true);
+        var stockB = new StockBillItem({Item1: pro._id, Item2: pro.Name, Item3: 'Product', Item4: ''}, pro.UnitCost, 0, pro.Model, pro.Unit, true);
         stockB.Stock.Name(GV.stocks[0].Name);
         stockB.Stock.Value(GV.stocks[0]._id);
         bill.Items.push(stockB);
@@ -126,10 +111,10 @@
         d.RelativeObj.Item2(_p.Name);
         d.Model(_p.Model);
         d.Unit(_p.Unit);
-        d.UnitPrice(_p.Price);
+        d.UnitCost(_p.UnitCost);
     }
     function stockChg(d) {
-        var _st = _.find(GV.stocks,function (i) {
+        var _st = _.find(GV.stocks, function (i) {
             return i._id == d.Stock.Value()
         });
         d.Stock.Name(_st.Name);
@@ -169,9 +154,9 @@
     }
     function save() {
         var m = ko.mapping.toJS(bill);
-        _.each(m.Items,function (i){
-            i.Amount=Number(i.Amount);
-            i.UnitPrice=Number(i.UnitPrice);
+        _.each(m.Items, function (i) {
+            i.Amount = Number(i.Amount);
+            i.UnitPrice = Number(i.UnitPrice);
         });
         $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');

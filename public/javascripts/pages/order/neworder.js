@@ -50,7 +50,7 @@ function edit(d) {
 }
 function addItem() {
     var p = GV.products[0];
-    var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut', Item4: ''}, p.Price, 1, p.Model, p.Unit, true);
+    var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut', Item4: ''}, p.PartnerPrice, 1, p.Model, p.Unit, true);
     bill.Items.push(o);
 }
 function proChg(d) {

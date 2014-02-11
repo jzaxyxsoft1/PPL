@@ -4,6 +4,7 @@
     <title></title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/stylesheets/redmond/jquery-ui-1.10.2.custom.min.css"/>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <script type="text/javascript" src="/javascripts/jquery-1.10.1.min.js"></script>
     <script type="text/javascript" src="/javascripts/jquery-ui-1.10.2.custom.min.js"></script>
@@ -20,8 +21,9 @@
     </ul>
 </div>
 <script type="text/html" id="tmplIHI">
-    <li style="margin-left: 20px; line-height:30px;"><a data-bind="attr:{href:Url}" style="color:#fff;">
-        <!--<span data-bind="attr:{'class':icon}" class="color:#fff"></span>-->
+    <li style="margin-left: 20px; line-height:30px;">
+        <a data-bind="attr:{href:Url}" style="color:#fff;">
+        <span data-bind="attr:{'class':icon}" class="color:#fff"></span>
         <span data-bind="text:name" style="color:#fff"></span></a>
         <ul data-bind="template:{name:'tmplIHI',foreach:items}"></ul>
     </li>
