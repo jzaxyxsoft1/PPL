@@ -36,10 +36,10 @@ exports.get = function (req, res) {
                     function (cb) {
                         Svc.db.Order.findOne({_id: id}, cb);
                     },
-                    function (order, rnp, cb) {
+                    function (order, cb) {
                         //订单处理
                         Svc.db.Order.update({_id: id}, {$set: {VoucherNum: voucherNum, Status: '已付款', PayOperator: req.currentUser, PayTime: Date.ToCreateTime()}}, function (e) {
-                            cb(e, order, rnp);
+                            cb(e, order);
                         });
                     },
                     function (order, cb) {
