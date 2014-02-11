@@ -9,7 +9,7 @@
     <script src="/javascripts/knockout-2.2.1.js"></script>
     <script src="/javascripts/underscore-min.js"></script>
     <script type="text/javascript" src="/javascripts/comm.js"></script>
-    <style type="text/css" >
+    <style type="text/css">
         html, body {
             width: 100%;
             margin: 0px;
@@ -28,11 +28,11 @@
             .icoU { font-size: 50px; margin-left: 10px; }
             #b_un { font-size: 25px; margin-top: 12px; display: inline-block }
         }
-        @media (max-width: 900px){
-            .mainC { width: 95%; margin: 30px auto;  }
+        @media (max-width: 900px) {
+            .mainC { width: 95%; margin: 30px auto; }
             .iconWrap { word-break: break-all; padding: 15px;; }
-            .ico { font-size: 14px; margin: 5px ; }
-            .ico-txt { font-size:10px; }
+            .ico { font-size: 14px; margin: 5px; }
+            .ico-txt { font-size: 10px; }
             .icoU { font-size: 30px; margin-left: 10px; }
             .siteTitle { font-size: 12px; margin-left: 10px; }
             #b_un { font-size: 12px; margin-top: 12px; display: inline-block }
@@ -44,9 +44,10 @@
 <div>
     <b class="siteTitle">
         瑞保驰合作伙伴自助平台</b>
+
     <div onclick="chgPwd()" class="fr mr10 lnk" style="width: 150px; color:#fff; text-align: right; line-height: 20px;">
-        <b class="icon-user fr icoU" ></b>
-        <b id="b_un" ></b><br/>
+        <b class="icon-user fr icoU"></b>
+        <b id="b_un"></b><br/>
         <span id="spn_time"></span>
     </div>
 </div>
@@ -62,13 +63,14 @@
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         var m = 0;
         var ts = [];
-        d=  _.sortBy(d,function(i){return i._id});
+        d = _.sortBy(d, function (i) {return i._id});
         d.forEach(function (di) {
             di.items.forEach(function (i, idx) {
-                i.icon ='ico ' + i.icon;
+                i.icon = 'ico ' + i.icon;
                 i.cls = bgColor[m] + ' iconWrap';
                 ts.push(i);
                 m++;
+                m = m > bgColor.length - 1 ? 0 : m;
             });
         })
         ko.applyBindings(ts, document.getElementById('d_sysFuns'));
@@ -80,8 +82,8 @@
     }
     $('#b_un').html(JSON.parse(getCookie('InnerUser')).Name);
     $('#spn_time').text(Date.ToDateTimeString(null, true, '-'));
-    function chgPwd(){
-        window.location='/user/m?t=changepwd';
+    function chgPwd() {
+        window.location = '/user/m?t=changepwd';
     }
 </script>
 </body>

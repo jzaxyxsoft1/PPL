@@ -38,9 +38,17 @@ exports.get = function (req, res) {
     var tp, id;
     switch (t) {
         case "sysfuns":
-            Svc.db.SysFun.find({}).toArray(function (e, ds) {
-                res.json(ds);
-            });
+            var sfs ;
+            if(req.currentUser._id=='0'){
+                sfs = Svc.getGVObjs('SysFun',function (i){return true;});
+            }
+            else if(req.currentUser.Org.Value=='0'){
+                sfs = Svc.getGVObjs('SysFun',function (i){ return i._id=='100'});
+            }
+            else{
+                sfs = Svc.getGVObjs('SysFun',function (i){return i._id!='100';})
+            }
+            res.json(sfs);
             break;
         case 'adduser':
             var oid = req.query['oid'];
