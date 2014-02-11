@@ -62,11 +62,11 @@
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         var m = 0;
         var ts = [];
+        d=  _.sortBy(d,function(i){return i._id});
         d.forEach(function (di) {
             di.items.forEach(function (i, idx) {
-                i.icon = 'ico icon-order04';
+                i.icon ='ico ' + i.icon;
                 i.cls = bgColor[m] + ' iconWrap';
-                i.Url = '#';
                 ts.push(i);
                 m++;
             });

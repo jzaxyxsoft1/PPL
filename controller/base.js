@@ -21,7 +21,7 @@ exports.getobjs = function (req, res) {
     convertObjValue(option);
     convertObjValue(order);
     convertObjValue(pager);
-    var user = cookie.get(req, cookie.defaultUserCookieName);
+
     Svc.getObjs(tp, query, option, order, pager, function (e, ds) {
         if (e) {
             res.json({msg: false, error: e});
@@ -151,7 +151,7 @@ exports.postsave = function (req, res) {
         delete obj._id;
         var up = {$set:obj};
         Svc.update(tp, {_id: oi}, up, req.currentUser, function (e) {
-            res.json({msg: e == null, error: e, ID: obj._id, BillNum: (Svc.IBill[tp] ? obj.BillNum : '')});
+            res.json({msg: e == null, error: e, ID: oi, BillNum: (Svc.IBill[tp] ? obj.BillNum : '')});
         });
     }
     else {

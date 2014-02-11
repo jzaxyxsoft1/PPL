@@ -3,8 +3,6 @@
  */
 var fs = require('fs');
 var path = require('path');
-var mkdirp = require('mkdirp');
-
 
 exports.pos = function (req, res) {
     res.set({'Access-Control-Allow-Origin': '*'});

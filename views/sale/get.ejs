@@ -1,8 +1,14 @@
 <% include ../Top.ejs %>
 <style type="text/css">
-    #d_list li { line-height: 22px; }
+    #d_list li {
+        line-height: 22px;
+    }
 
-    #d_list ul li b { display: inline-block; width: 110px; text-align: right; }
+    #d_list ul li b {
+        display: inline-block;
+        width: 110px;
+        text-align: right;
+    }
 </style>
 
 <div class="wp100 hp98 oh">
@@ -10,7 +16,6 @@
         <div class="mc" style="width: 610px;">
             <b> 客户车型:</b><input type="text" id="txt_carType"/>
             <b class="ml10"> 客户车号:</b><input type="text" id="txt_carNum"/>
-
             <p>
                 <b> 客户手机:</b><input type="text" id="txt_tel"/>
             </p>
@@ -19,7 +24,7 @@
             <fieldset class="mc pp1 wp98">
                 <legend><strong>产品信息:</strong></legend>
                 <img id="img1" style="width: 120px;" class="fl mt10 ml10"/>
-                <ul class="fl" style="width:auto;">
+                <ul class="fl"   style="width:auto;">
                     <li><b>产品名称:</b><span data-bind="text:Product.Name"></span></li>
                     <li><b>规格型号:</b><span data-bind="text:Product.Model"></span></li>
                     <li><b>单位:</b><span data-bind="text:Product.Unit"></span></li>
@@ -29,6 +34,7 @@
                     <li><b>产品序号:</b><span data-bind="text:Instance._id"></span></li>
                     <li><b>授权经销商:</b><span data-bind="text:Instance.JXS"></span></li>
                 </ul>
+
             </fieldset>
 
         </div>
@@ -52,41 +58,67 @@
         $('#txt_code').html('').focus();
     }
     function bindList() {
-        async.series([
-            function (cb) {
-                var currCode = $('#txt_code').val();
-                $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}, options: {}}, function (d) {
-                    var _o = _.find(d.Items, function (i) {
-                        return i._id == currCode;
+        var currCode = $('#txt_code').val();
+        $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}, options: {}}, function (_package) {
+            if(_package==null){
+                alert('产品序列号无效!\r请提防假冒产品!');
+                return;
+            }
+            var _o = _.find(_package.Items, function (i) {
+                return i._id == currCode;
+            });
+            _o.JXS = _package.Rounte ? _package.Rounte.Value : '';
+            GV.ProInstance = _o;
+            async.parallel([
+                function (cb) {
+                    $.getJSON('/base/getobj', {tp: '', query: {'ProductInstanceID': currCode}, option: {Org:1,CreateTime:1}}, function (d) {
+                        GV.sb= d;
+                        cb();
                     });
-                    _o.JXS = d.Rounte ? d.Rounte.Value : '';
-                    GV.ProInstance = _o;
-                    cb();
-                });
-            },
-            function (cb) {
-                $.getJSON('/product/get?t=obj', {query: {_id: GV.productid}}, function (d) {
-                    GV.product = d;
-                    $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
-                    cb();
-                });
-            }
-        ], function (e) {
-            var o = {Instance: GV.ProInstance, Product: GV.product};
-            if (GV.list) {
-                ko.mapping.fromJS(o, GV.list);
-            }
-            else {
-                GV.list = ko.mapping.fromJS(o);
-                ko.applyBindings(GV.list, document.getElementById('d_list'));
-            }
-            $('#d_list').show();
-            $('#bt_save').show();
+                },
+                function (cb) {
+                    $.getJSON('/product/get?t=obj', {query: {_id: GV.productid}}, function (d) {
+                        GV.product = d;
+                        $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
+                        cb();
+                    });
+                }
+            ], function (e) {
+                if(GV.sb){
+                    alert(GV.product.Name+'\r序列号:'+currCode+'\r'+'已由'+GV.sb.Org.Name+'于'+GV.sb.CreateTime.Item1+'售出\r请提防假冒产品或不良品!');
+                    return;
+                }
+                var o = {Instance: GV.ProInstance, Product: GV.product };
+                if (GV.list) {
+                    ko.mapping.fromJS(o, GV.list);
+                }
+                else {
+                    GV.list = ko.mapping.fromJS(o);
+                    ko.applyBindings(GV.list, document.getElementById('d_list'));
+                }
+                $('#d_list').show();
+                $('#bt_save').show();
+            });
         });
     }
     function save() {
-        var m = {phoneNum: $('#txt_tel').val(), carType: $('#txt_carType').val(), carNum: $('#txt_carNum').val(), RelativeObj: {Item1: GV.products._id, Item2: GV.products.Name, Item3: 'Product', Item4: ''}};
-        $.post('/base/postsave', {tp: 'SaleBill', obj: JSON.stringify(m)}, function (d) {
+        var m = {
+            _id: '',
+            BillNum: '',
+            phoneNum: $('#txt_tel').val(),
+            carType: $('#txt_carType').val(),
+            carNum: $('#txt_carNum').val(),
+            RelativeObj: {Item1: GV.product._id, Item2: GV.product.Name, Item3: 'Product', Item4: ''},
+            Model: GV.product.Model,
+            Unit: GV.product.Unit,
+            Cost: GV.product.Price,
+            Amount: 1,
+            UnitPrice: GV.product.Price,
+            Sum: GV.product.Price,
+            ProductInstanceID: GV.ProInstance._id,
+            flag: 1
+        };
+        $.post('/sale/post', { obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
         });
     }

@@ -79,7 +79,9 @@ exports.post = function (req, res) {
                             var mc = i.Amount;
                             if (storage) {
                                 storage.Amount = storage.Amount + i.Amount;
-                                Svc.db.Storage.update({_id: storage._id}, {$set: {Amount: storage.Amount}}, icb);
+                                var cst = (storage.Cost + i.Sum);
+                                var uc = Math.round(cst / storage.Amount, 2);
+                                Svc.db.Storage.update({_id: storage._id}, {$set: {Amount: storage.Amount + i.Amount, Cost: cst, UnitCost: uc}}, icb);
                             }
                             else {
                                 Svc.db.Storage.insert({
@@ -88,9 +90,9 @@ exports.post = function (req, res) {
                                     Amount: i.Amount,
                                     Model: i.Model,
                                     Unit: i.Unit,
-                                    UnitCost: i.UnitCost,
-                                    Cost: Math.round((i.Amount * i.UnitCost), 2),
+                                    Cost: Math.round(i.Sum, 2),
                                     Stock: i.Stock,
+                                    UnitCost: i.UnitCost,
                                     Org: req.currentUser.Org
                                 }, icb);
                             }
@@ -122,9 +124,10 @@ exports.post = function (req, res) {
                             function (ee, d) {
                                 if (d) {
                                     var am = d.Amount - i.Amount;
-                                    Svc.db.Storage.update({_id: d._id}, {$set: {Amount: am }}, icb);
+                                    var cst = d.Cost - d.UnitCost * am;
+                                    Svc.db.Storage.update({_id: d._id}, {$set: {Amount: am, Cost: cst}}, icb);
                                 }
-                                else(icb());
+                                else icb(null);
                             });
                     }, function () {
                         cb(null);
