@@ -26,7 +26,7 @@ exports.get = function (req, res) {
             option = typeof option == 'string' ? JSON.parse(option) : option;
             db.Product.findOne(query, option, function (e, d) {
                 if(cb){
-                    res.jsonp(cb);
+                    res.jsonp(d);
                 }
                 else{res.json(d);}
             });
@@ -42,10 +42,23 @@ exports.get = function (req, res) {
                 res.render('product/price.ejs');
             }
             break;
+        case 'updateproduct':
+            var obj= JSON.parse(req.query['obj']);
+            var pid= obj._id;
+            delete obj._id;
+            Svc.db.Product.update({_id:pid}, {$set:obj},function(e){
+                var r={msg:e==null,error:e};
+                if(req.query['callback']){
+                    res.jsonp(r);
+                }
+                else{
+                    res.json(r);
+                }
+            });
+            break;
     }
 };
 exports.post = function (req, res) {
-    res.set({'Access-Control-Allow-Origin': '*'});
     var t = req.body['t'].toLowerCase();
     switch (t) {
         case 'updateprices':
@@ -60,19 +73,6 @@ exports.post = function (req, res) {
                 }, function (e) {}
             )
             break;
-        case 'updateproduct':
-            var obj= JSON.parse(req..body['obj']);
-            var pid= obj._id;
-            delete obj._id;
-            Svc.db.Product.update({_id:pid}, {$set:obj},function(e){
-                var r={msg:e==null,error:e};
-                if(req.body['callback']){
-                    res.jsonp(r);
-                }
-                else{
-                    res.json(r);
-                }
-            });
-            break;
+
     }
 }
