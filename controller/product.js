@@ -4,20 +4,32 @@ var _ = require('underscore');
 var Svc = require('Svc').Svc;
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
+    var cb=req.query['callback'];
     switch (t) {
+        case 'e':
+            res.render('product/edit.ejs');
+            break;
         case 'objs':
             var query = req.query['query'] || {};
             var option = req.query['option'] || {};
             option = typeof option == 'string' ? JSON.parse(option) : option;
             db.Product.find(query, option).toArray(function (e, ds) {
-                res.json(ds);
+                if(cb){
+                    res.jsonp(ds);
+                }else{ res.json(ds);}
+
             });
             break;
         case 'obj':
             var query = req.query['query'];
             var option = req.query['option'] || {};
             option = typeof option == 'string' ? JSON.parse(option) : option;
-            db.Product.findOne(query, option, function (e, d) {res.json(d);});
+            db.Product.findOne(query, option, function (e, d) {
+                if(cb){
+                    res.jsonp(cb);
+                }
+                else{res.json(d);}
+            });
             break;
         case 'price':
             var m = req.query['m'];
@@ -33,6 +45,7 @@ exports.get = function (req, res) {
     }
 };
 exports.post = function (req, res) {
+    res.set({'Access-Control-Allow-Origin': '*'});
     var t = req.body['t'].toLowerCase();
     switch (t) {
         case 'updateprices':
@@ -46,6 +59,20 @@ exports.post = function (req, res) {
                     Svc.db.Product.update({_id: oid}, {$set: i}, function (e) { icb(e);});
                 }, function (e) {}
             )
+            break;
+        case 'updateproduct':
+            var obj= JSON.parse(req..body['obj']);
+            var pid= obj._id;
+            delete obj._id;
+            Svc.db.Product.update({_id:pid}, {$set:obj},function(e){
+                var r={msg:e==null,error:e};
+                if(req.body['callback']){
+                    res.jsonp(r);
+                }
+                else{
+                    res.json(r);
+                }
+            });
             break;
     }
 }

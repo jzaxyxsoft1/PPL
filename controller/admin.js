@@ -58,6 +58,14 @@ exports.get = function (req, res) {
                 });
             });
             break;
+        case 'agg':
+            Svc.db.Order.aggregate([
+                {$match:{'Owner.Item1':'0'}},
+                {$group:{_id:'$Owner',totle:{$sum:'$Sum'}}}
+            ],function (e,r){
+                var t=r;
+            });
+            break;
         default :
             break;
     }

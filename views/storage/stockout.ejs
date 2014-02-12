@@ -1,15 +1,12 @@
 <% include ../Top.ejs %>
-<div>
-    <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
-</div>
-<div class="wp100 hp98 oh">
+<div class="wp100 hp100 oh">
     <div class="hide wp100 hp100" id="d_edit">
         <div style="width:610px;" class="mc">
             <div class="mc mt10">
                 <div class="editor-label"> 单号:</div>
                 <div class="editor-field"><span data-bind="text:BillNum"></span></div>
                 <div class="editor-label">订单号:</div>
-                <div class="editor-field"><input type="text" data-bind="value:OrderID,event:{'click':getOrder}"/></div>
+                <div class="editor-field"><input type="text" data-bind="value:OrderID,event:{'click':getOrders}"/></div>
                 <div class="editor-label">经销商:</div>
                 <div class="editor-field"><span data-bind="text:Owner.Item2"></span></div>
                 <div class="editor-label">建单时间:</div>
@@ -62,6 +59,9 @@
         </div>
     </div>
     <div class="hide wp100 hp100 oya" id="d_list">
+        <div>
+            <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
+        </div>
         <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bills">
         </table>
     </div>
@@ -87,7 +87,8 @@
         $('#bt_add').show();
     });
 
-    function getOrder() {
+    function getOrders() {
+        loading.show();
         $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '付款已确认'}}, function (d) {
             if (GV.order) {
                 ko.mapping.fromJS(d, GV.order);
@@ -96,6 +97,7 @@
                 GV.order = ko.mapping.fromJS(d);
                 ko.applyBindings(GV.order, document.getElementById('d_order'));
             }
+            loading.hide();
             showPnl('d_order');
         });
     }
@@ -109,13 +111,11 @@
         _.each(d.Items, function (i) {
             var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, false);
             bill.Items.push(bi);
-          //  bi.Status('待执行');
         });
         bill.ShipAddress (d.ShipAddress);
         bill.Tel (d.Tel);
         showPnl('d_edit');
     }
-
     function stockChg(d) {
         var _st = _.find(GV.stocks, function (i) {
             return i._id == d.Stock.Value()
