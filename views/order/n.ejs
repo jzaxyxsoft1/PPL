@@ -67,7 +67,7 @@
     var u = {_id: '<%=user._id%>', Name: '<%=user.Name%>', Org: {Name: '<%=user.Org.Name%>', Value: '<%=user.Org.Value%>'}};
     var org = u.Org;
     $('#tbl_ds').BillTable('edit');
-    $.getJSON('/product/get', {t: 'objs', query: {}, option: {Name: 1, Model: 1, Unit: 1, Price: 1}}, function (d) {
+    $.getJSON('/product/get', {t: 'objs', query: {}, option: {Name: 1, Model: 1, Unit: 1, PartnerPrice: 1,Price:1}}, function (d) {
         GV.products = d;
         $('#bt_new').show();
         bindList();
