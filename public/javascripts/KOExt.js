@@ -109,6 +109,7 @@ var Bill = function (owner, creator) {
     this.Status = ko.observable('');
     this.ShipAddress=ko.observable('');
     this.Tel=ko.observable('');
+    this.Org={Name:ko.observable(owner? owner.Name:''),Value:ko.observable(owner? owner._id:'')};
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
@@ -119,6 +120,8 @@ var Bill = function (owner, creator) {
         _t.Creator.Item2(obj.Creator.Item2);
         _t.Creator.Item3(obj.Creator.Item3);
         _t.CreateTime = obj.CreateTime;
+        _t.Org.Name(obj.Org.Name);
+        _t.Org.Value(obj.Org.Value);
         _t.Status(obj.Status);
         _t.BillNum(obj.BillNum);
         _t.Remark(obj.Remark);

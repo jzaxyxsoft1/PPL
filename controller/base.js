@@ -16,7 +16,7 @@ exports.getobjs = function (req, res) {
     var pager = req.query['pg'] || null;
     var m=req.query['m'];
     if (m ==undefined && Svc.IOrgObj[tp] && req.currentUser.Org.Value != '0') {
-        query.Org.Value = req.currentUser.Org.Value;
+        query['Org.Value'] = req.currentUser.Org.Value;
     }
     convertObjValue(option);
     convertObjValue(order);

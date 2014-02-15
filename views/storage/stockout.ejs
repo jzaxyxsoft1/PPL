@@ -89,7 +89,7 @@
 
     function getOrders() {
         loading.show();
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '付款已确认'}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {$or:[{Status: '付款已确认'},{Status:'已部分发货'}]}}, function (d) {
             if (GV.order) {
                 ko.mapping.fromJS(d, GV.order);
             }
@@ -109,7 +109,7 @@
         bill.Owner.Item3(d.Owner.Item3);
         bill.Items.removeAll();
         _.each(d.Items, function (i) {
-            if(i.Status!='已发货'){
+            if(i.Status!='已发货' || i.Status==''){
                 var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.CompleteAmount- i.Amount, i.Model, i.Unit, false);
                 bi.Status(i.Statues);
                 bill.Items.push(bi);
