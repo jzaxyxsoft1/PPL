@@ -30,6 +30,7 @@
         </div>
         <div class="hp100 oya fr pp1 hide" style="width:75%" id="d_pros">
             <h3>包装序号:<span data-bind="text:_id"></span></h3>
+
             <div class="wp100 hp90 lh22" data-bind="foreach:Items">
                 <a class="ml10"> <b data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:_id"></span></a>
             </div>
@@ -38,20 +39,21 @@
 </div>
 <audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" loop="loop" style=" display: none;"></audio>
 <script type="text/javascript">
-    var org = {Name:'<%=u.Org.Name%>',Value:'<%=u.Org.Value%>'};
-    var u={Item1:'<%=u._id%>',Item2:'<%=u.Name%>',Item3:'User'};
+    var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
+    var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
 </script>
+<script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
     var ppA = 0, packages = ko.mapping.fromJS([]), audio = document.getElementById('alrm');
     audio.addEventListener('play', function () {
         GV.audioPlaying = true;
     });
-    function setPTYPE(flg){
-        GV.createStockInBill= flg;
+    function setPTYPE(flg) {
+        GV.createStockInBill = flg;
         showPnl('d_mmc');
     }
     $.getJSON('/product/get', {t: 'objs' }, function (ds) {
-        GV.pros=ds;
+        GV.pros = ds;
         var _s = '';
         ds.forEach(function (i) {
             _s = _s + '<option value="' + i._id + '">' + i.Name + '</option>';
@@ -97,7 +99,7 @@
         GV.currentProduct = {RelativeObj: {Item1: _s.val(), Item2: _s.text(), Item3: 'Product'}, BatchNum: $('#txt_batchNum').val(), ProduceTime: $('#txt_prduceTime').val()};
         $('#d_packages').show();
     }
-    GV.proCounts=0;
+    GV.proCounts = 0;
     $('#txt_Code').on('keydown', function (e) {
         if (e.keyCode == 13 || e.keyCode == 108) {
             kv = e.target.value;
@@ -105,7 +107,7 @@
                 addP();
                 return;
             }
-            if (kv.length<12 ) {
+            if (kv.length < 12) {
                 //包装
                 GV.currentPackage._id(kv);
                 if (GV.audioPlaying) {
@@ -130,40 +132,51 @@
         }
     })
     function save() {
+        if (!GV.currentPackage._id()) {
+            audio.play();
+            $('#err_Ful').show();
+            return;
+        }
+        if (!_.any(packages, function (i) {return i._id() == GV.currentPackage._id()})) {
+            packages.push(GV.currentPackage);
+        }
         var pks = ko.mapping.toJS(packages);
         pks = pks.filter(function (i) {
             return i.Items.length > 0;
         });
         loading.show();
+        if (GV.createStockInBill) {
+            if (window.confirm('产品:' + GV.currentProduct.RelativeObj.Item2 + '\r数量:' + GV.proCounts + '\r是否新建入库单?')) {
+                var stockIn = new StockBill('StockIn', org, u);
+                var _p = _.find(GV.pros, function (i) {return i._id == GV.currentProduct.RelativeObj.Item1});
+                var itm = new StockBillItem(_p.RelativeObj, _p.UnitCost, GV.proCounts, _p.Model, _p.Unit, true);
+                stockIn.Items.push(itm);
+                var m = ko.mapping.toJS(stockIn);
+                _.each(m.Items, function (i) {
+                    i.Amount = Number(i.Amount);
+                    i.UnitCost = Number(i.UnitCost);
+                });
+                $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
+                    alert(d.error || '保存成功!');
+                    if (d.msg) {
+                        ps(pks);
+                    }
+                });
+            }
+        }
+        else {
+            ps(pks);
+        }
+    }
+    function ps(pks) {
         $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks)}, function (d) {
             loading.hide();
-            if (GV.createStockInBill) {
-                if (window.confirm('产品:' + GV.currentProduct.RelativeObj.Item2 + '\r数量:' + GV.proCounts + '\r是否新建入库单?')) {
-                    var stockIn = new StockBill('StockIn',org, u);
-                    var _p = _.find(GV.pros, function (i){return i._id== GV.currentProduct.RelativeObj.Item1});
-                    var itm = new StockBillItem(_p.RelativeObj,_p.UnitCost,GV.proCounts,_p.Model,_p.Unit,true);
-                    stockIn.Items.push(itm);
-                    var m = ko.mapping.toJS(stockIn);
-                    _.each(m.Items, function (i) {
-                        i.Amount = Number(i.Amount);
-                        i.UnitPrice = Number(i.UnitPrice);
-                    });
-                    $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
-                        alert(d.error || '保存成功!');
-                        if (d.msg) {
-                            showPnl('d_menu');
-                        }
-                    });
-                }
-            }
-            else {
-                showPnl('d_menu');
-            }
+            showPnl('d_menu');
         });
     }
     function n() {
-        GV.createStockInBill=false;
-        GV.proCounts=0;
+        GV.createStockInBill = false;
+        GV.proCounts = 0;
         $('input[type=text]').val('');
         $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
         $('#d_packages').hide();

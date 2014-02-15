@@ -93,6 +93,7 @@ exports.post = function (req, res) {
                                     Cost: Math.round(i.Sum, 2),
                                     Stock: i.Stock,
                                     UnitCost: i.UnitCost,
+                                    Locked:0,
                                     Org: req.currentUser.Org
                                 }, icb);
                             }

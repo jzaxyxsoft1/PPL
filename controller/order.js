@@ -44,10 +44,6 @@ exports.get = function (req, res) {
                         Svc.db.Org.findOne({_id: '0'}, function (e, org) {
                             cb(e, order, org);
                         });
-                    },
-                    function (order, org, cb) {
-                        //往来处理
-                        Svc.createRnP(req.currentUser.Org, {Name: org.Name, Value: org._id}, '付货款(' + order.BillNum + ')', order.Sum, 0, req.currentUser, '', cb);
                     }
                 ], function (e) {
                     res.json({msg: e == null, error: e});
@@ -71,9 +67,9 @@ exports.get = function (req, res) {
                                 cb(e, order);
                             });
                     },
-                    function (order, cb) {
+                    function (order, org, cb) {
                         //往来处理
-                        Svc.createRnP(req.currentUser.Org, order.Org, '收货款(' + order.BillNum + ')', 0, order.Sum, req.currentUser, '', function (e) {cb(e, order);});
+                        Svc.createRnP(order.Org,req.currentUser.Org, '付货款(' + order.BillNum + ')', order.Sum, 0, req.currentUser, '', cb);
                     },
                     function (order, cb) {
                         //锁定库存
