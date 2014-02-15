@@ -89,7 +89,7 @@
 
     function getOrders() {
         loading.show();
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '付款已确认'}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {$or:[{Status: '付款已确认'},{Status:'已部分发货'}]}}, function (d) {
             if (GV.order) {
                 ko.mapping.fromJS(d, GV.order);
             }
