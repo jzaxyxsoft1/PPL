@@ -7,12 +7,10 @@ var Svc = require('Svc').Svc;
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
     var m = req.query['m'];
-
     switch (t) {
         case 'n': //新建订单
             res.render('order/n.ejs', {user: req.currentUser});
             break;
-
         case 'submitorder': //提交订单
             if (m) {
                 res.render('order/sub.ejs');
@@ -54,7 +52,6 @@ exports.get = function (req, res) {
                 ], function (e) {
                     res.json({msg: e == null, error: e});
                 });
-
             }
             break;
         case 'paymentconfirm': //财务_经销商付款确认
@@ -76,12 +73,30 @@ exports.get = function (req, res) {
                     },
                     function (order, cb) {
                         //往来处理
-                        Svc.createRnP(req.currentUser.Org, order.Org, '收货款(' + order.BillNum + ')', 0, orer.Sum, req.currentUser, '', cb);
+                        Svc.createRnP(req.currentUser.Org, order.Org, '收货款(' + order.BillNum + ')', 0, orer.Sum, req.currentUser, '', function (e) {cb(e, order);});
+                    },
+                    function (order, cb) {
+                        //锁定库存
+                        async.each(order.Items,
+                            function (i, acb) {
+                                Svc.db.Storage.findOne({'RelativeObj': i.RelativeObj.Item1}, {Amount: 1, Locked: 1}, function (e, storage) {
+                                    var lck = 0;
+                                    if (storage) {
+                                        lck = storage.Locked + i.Amount;
+                                        Svc.db.Storage.update({_id: storage._id}, {$set: {Locked: lck}}, function (e) { acb(null);});
+                                    }
+                                    else {
+                                        storage = {_id: '', RelativeObj: i.RelativeObj, Model: i.Model, Unit: i.Unit, Cost: 0, Amount: 0, UnitCost: 0, Stock: {Name: '', Value: ''}, Org: {Name: '1', Value: ''}, Locked: i.Amount};
+                                        Svc.db.Storage.insert(storage, function (e) {acb(null);});
+                                    }
+                                });
+                            }, function (e) {
+                                cb(null);
+                            });
                     }
                 ], function (e) {
                     res.json({msg: e == null, error: e})
                 });
-
             }
             break;
         case 'ordership': //订单发货
@@ -126,14 +141,14 @@ exports.get = function (req, res) {
                             Svc.db.Storage.fineOne({'OrgID': trBill.Org.Value, 'RelativeObj.Item1': i.RelativeObj.Item1}, function (e, storage) {
                                 if (storage) {
                                     var ca = storage.Amount + i.Amount;
-                                    var cst =storage.Cost + i.Sum
+                                    var cst = storage.Cost + i.Sum
                                     var uc = Math.round(cst / ca, 2);
-                                    Svc.db.Storage.update({_id: storage._id}, {$set: {Amount: ca, Cost: cst,UnitCost:uc}}, function (e) {
+                                    Svc.db.Storage.update({_id: storage._id}, {$set: {Amount: ca, Cost: cst, UnitCost: uc}}, function (e) {
                                         icb(e);
                                     });
                                 }
                                 else {
-                                    Svc.db.Storage.insert({Org: trBill.Org, RelativeObj: i.RelativeObj, Amount: i.Amount,UnitCost: i.UnitCost,Model: i.Model,Unit: i.Unit, Cost: i.Sum}, function (e) {
+                                    Svc.db.Storage.insert({Org: trBill.Org, RelativeObj: i.RelativeObj, Amount: i.Amount, UnitCost: i.UnitCost, Model: i.Model, Unit: i.Unit, Cost: i.Sum}, function (e) {
                                         icb(e);
                                     });
                                 }
@@ -152,7 +167,7 @@ exports.get = function (req, res) {
                         Svc.createRnP(req.currentUser.Org, {Name: org.Name, Value: org._id}, '收货(' + trBill.OrderID + ')', 0, trBill.Sum, req.currentUser, '运单:' + trBill.BillNum,
                             function (e) {
                                 Svc.createRnP({Name: org.Name, Value: org._id}, req.currentUser.Org, '收货(' + trBill.OrderID + ')', trBill.Sum, 0, req.currentUser, '运单:' + trBill.BillNum, function (ee) {
-                                    cb(e,trBill.OrderID);
+                                    cb(e, trBill.OrderID);
                                 });
                             });
                     },
@@ -174,5 +189,4 @@ exports.get = function (req, res) {
             }
             break;
     }
-
 };

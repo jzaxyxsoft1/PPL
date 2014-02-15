@@ -171,6 +171,7 @@ exports.post = function (req, res) {
                         });
                         oi.Status = ti.CompleteAmount >= oi.Amount ? '已全部发货' : '已部分发货';
                         oi.ShipAmount = ti.CompleteAmount;
+                        oi.CompleteAmount =oi.CompleteAmount+ ti.CompleteAmount;
                     });
                     if (!_.any(order.Items, function (i) {
                         return i.Status != '已全部发货'

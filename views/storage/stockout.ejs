@@ -109,8 +109,11 @@
         bill.Owner.Item3(d.Owner.Item3);
         bill.Items.removeAll();
         _.each(d.Items, function (i) {
-            var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, false);
-            bill.Items.push(bi);
+            if(i.Status!='已发货'){
+                var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.CompleteAmount- i.Amount, i.Model, i.Unit, false);
+                bi.Status(i.Statues);
+                bill.Items.push(bi);
+            }
         });
         bill.ShipAddress (d.ShipAddress);
         bill.Tel (d.Tel);
@@ -157,6 +160,7 @@
     }
     function save() {
         var m = ko.mapping.toJS(bill);
+        m.Items = _.filter(m.Items, function (i) {return i.Status != '已发货'});
         _.each(m.Items,function (i){
             i.UnitPrice=Number(i.UnitPrice);
             i.Amount=Number(i.Amount);
