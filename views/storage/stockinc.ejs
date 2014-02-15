@@ -4,7 +4,7 @@
     <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bill">
     </table>
     <div class="ac pt10">
-        <input type="button" onclick="showPnl('d_stock')" value="选择库房"/>
+       <b>当前库房:</b> <span id="spn_stockName"></span><input class="ml10" type="button" onclick="showPnl('d_stock')" value="更改库房"/>
     </div>
 </div>
 <div class="wp100 hp100 oya hide" id="d_edit">
@@ -66,12 +66,9 @@
 </div>
 
 <div class=" wp100 hp100" id="d_stock">
-    <div class="ac" style="margin-top: 12%"></div>
-    <b>入库库房:</b><select id="slt_stock"></select>
-
-    <div class="ac">
-        <input type="button" value="确定" onclick="setStock()"/>
-    </div>
+    <div class="ac wp100" style="margin-top: 12%">
+    <b>入库库房:</b><select id="slt_stock"></select><input type="button" value="确定" onclick="setStock()"/>
+</div>
 </div>
 <audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" style=" display: none;"></audio>
 <script src="/javascripts/KOExt.js"></script>
@@ -99,11 +96,11 @@
             $('#slt_stock').append('<option value="' + i._id + '">' + i.Name + '</option>');
         });
         $('#slt_stock option:first').select();
-        bindList();
     });
     function setStock() {
         var _t = $('#slt_stock option:selected').length ? $('#slt_stock option:selected') : $('#slt_stock option:first');
         GV.stock = {Name: _t.text(), Value: _t.val()};
+        $('#spn_stockName').text(_t.text());
         bindList();
     }
     function bindList() {
@@ -145,7 +142,7 @@
         if (e.keyCode == 13 || e.keyCode == 108) {
             stopAlrm();
             kv = e.target.value;
-            if (kv.length > 11) {
+            if (kv.length <12 ) {
                 //包装
                 $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
                     if (!_.any(d.Items, function (i) {return _.any(bill.Items(), function (bi) {return bi.RelativeObj.Item1() == i.RelativeObj.Item1;})})) {

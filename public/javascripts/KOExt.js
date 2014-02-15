@@ -218,7 +218,7 @@ var StockBill = function (billType, owner, creator) {
         _t._id(obj._id);
         _t.Items.removeAll();
         _.each(obj.Items, function (i) {
-            var ii = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
+            var ii = new StockBillItem(i.RelativeObj, i.UnitCost, i.Amount, i.Model, i.Unit, true);
             ii.UnitCost(i.UnitCost);
             ii.Remark(i.Remark);
             ii.Provider.Item1(i.Provider.Item1);

@@ -44,14 +44,15 @@
         var m = ko.mapping.toJS(GV.mdl);
         var chgs = [];
         _.each(m, function (i) {
-            var _p = _.any(GV.prices, function (oi) { return oi._id == i._id && (oi.Price != i.Price || oi.PartnerPrice != i.PartnerPrice || oi.UnitCost != i.UnitCost || oi.DelegatePricei.DelegatePrice);});
-            if (_p) {
-                chgs.push(i);
-            }
+            i.Price =Number(i.Price);
+            i.UnitCost= Number(i.UnitCost);
+            i.PartnerPrice= Number(i.PartnerPrice);
+            i.DelegatePrice= Number(i.DelegatePrice);
+
         });
-        if (chgs.length) {
-            $.post('/product/post', {t: 'updateprices', objs: JSON.stringify(chgs)}, function (d) { });
-        }
+
+            $.post('/product/post', {t: 'updateprices', objs: JSON.stringify(m)}, function (d) { });
+
         alert('保存成功!');
     }
 </script>
