@@ -54,7 +54,7 @@ exports.get = function (req, res) {
         case 'adduser':
             var oid = req.query['oid'];
             Svc.db.Org.findOne({_id: oid}, function (e, org) {
-                Svc.db.user.findOne({Name: 'Admin', 'Org.Value': org._id}, function (e, d) {
+                Svc.db.User.findOne({Name: 'Admin', 'Org.Value': org._id}, function (e, d) {
                     if (!d) {
                         Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id, Type: 'Org'}, flag: 1, TypeFullName: 'User'}, function () { });
                     }
