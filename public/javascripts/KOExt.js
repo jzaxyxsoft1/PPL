@@ -109,6 +109,7 @@ var Bill = function (owner, creator) {
     this.Status = ko.observable('');
     this.ShipAddress=ko.observable('');
     this.Tel=ko.observable('');
+    this.Org=ko.computed(function(){return this.Creator.Item3},this);
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
