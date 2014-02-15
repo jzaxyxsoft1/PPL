@@ -4,11 +4,12 @@
     <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bill">
     </table>
     <div class="ac pt10">
-       <b>当前库房:</b> <span id="spn_stockName"></span><input class="ml10" type="button" onclick="showPnl('d_stock')" value="更改库房"/>
+        <b>当前库房:</b> <span id="spn_stockName"></span><input class="ml10" type="button" onclick="showPnl('d_stock')"
+                                                            value="更改库房"/>
     </div>
 </div>
 <div class="wp100 hp100 oya hide" id="d_edit">
-    <div class="mt10 mc editor-container" id="d_detail" >
+    <div class="mt10 mc editor-container" id="d_detail">
         <div class="mc mt10">
             <div class="editor-label"> 单号:</div>
             <div class="editor-field"><span data-bind="text:BillNum"></span></div>
@@ -67,8 +68,8 @@
 
 <div class=" wp100 hp100" id="d_stock">
     <div class="ac wp100" style="margin-top: 12%">
-    <b>入库库房:</b><select id="slt_stock"></select><input type="button" value="确定" onclick="setStock()"/>
-</div>
+        <b>入库库房:</b><select id="slt_stock"></select><input type="button" value="确定" onclick="setStock()"/>
+    </div>
 </div>
 <audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" style=" display: none;"></audio>
 <script src="/javascripts/KOExt.js"></script>
@@ -142,19 +143,19 @@
         if (e.keyCode == 13 || e.keyCode == 108) {
             stopAlrm();
             kv = e.target.value;
-            if (kv.length <12 ) {
+            if (kv.length < 12) {
                 //包装
                 $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
-                    if (!_.any(d.Items, function (i) {return _.any(bill.Items(), function (bi) {return bi.RelativeObj.Item1() == i.RelativeObj.Item1;})})) {
+                    if (_.any(d.Items, function (i) {return _.any(bill.Items(), function (bi) {return bi.RelativeObj.Item1() != i.RelativeObj.Item1;})})) {
                         alrm('包装内容与入库单不符!');
-                        return ;
+                        return;
                     }
-                    var _ps =_.chain(d.Items).
-                            countBy(function (i){return i.RelativeObj.Item1})
+                    var _ps = _.chain(d.Items).
+                            countBy(function (i) {return i.RelativeObj.Item1})
                             .ToArray().value();
-                    for(var i = 0;i <_ps.length;i++){
-                        var ii = _.find(bill.Items(),function (iti){ return iti.RelativeObj.Item1()== _ps[i].key;});
-                        if(ii && (ii.CompleteAmount()+ _ps[i].value)>ii.Amount()){
+                    for (var i = 0; i < _ps.length; i++) {
+                        var ii = _.find(bill.Items(), function (iti) { return iti.RelativeObj.Item1() == _ps[i].key;});
+                        if (ii && (ii.CompleteAmount() + _ps[i].value) > ii.Amount()) {
                             alrm('包装数量超额!');
                             return;
                         }
@@ -192,6 +193,9 @@
             alrm('数量超额!');
             return;
         }
+//        _p.Stock.Name(GV.stock.Name);
+//        _p.Stock.Value(GV.stock.Value);
+        _p.Stock = GV.stock;
         _p.CompleteAmount(ca);
         checkBillStatus();
     }

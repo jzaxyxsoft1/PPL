@@ -153,7 +153,7 @@
             if (window.confirm('产品:' + GV.currentProduct.RelativeObj.Item2 + '\r数量:' + GV.proCounts + '\r是否新建入库单?')) {
                 var stockIn = new StockBill('StockIn', org, u);
                 var _p = _.find(GV.pros, function (i) {return i._id == GV.currentProduct.RelativeObj.Item1});
-                var itm = new StockBillItem({Item1:_._id,Item2:_p.Name,Item3:'Product' }, _p.UnitCost, GV.proCounts, _p.Model, _p.Unit, true);
+                var itm = new StockBillItem({Item1:_p._id,Item2:_p.Name,Item3:'Product' }, _p.UnitCost, GV.proCounts, _p.Model, _p.Unit, true);
                 stockIn.Items.push(itm);
                 var m = ko.mapping.toJS(stockIn);
                 _.each(m.Items, function (i) {
