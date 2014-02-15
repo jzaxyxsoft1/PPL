@@ -60,7 +60,7 @@
     </div>
     <div class="hide wp100 hp100 oya" id="d_list">
         <div>
-            <input type="button" value="新建入库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
+            <input type="button" value="新建出库单" onclick="edit(0)" class="ml10 hide" id="bt_add"/>
         </div>
         <table cellspacing="0" cellpadding="0" class="wp98 mc " id="tbl_bills">
         </table>
@@ -123,7 +123,7 @@
         d.Stock.Name(_st.Name);
     }
     function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'StockOut', query: {Status: '未执行'}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'StockOut', query: {Status: '待执行'}}, function (d) {
             if (GV.list) {
                 ko.mapping.fromJS(d, GV.list);
             }

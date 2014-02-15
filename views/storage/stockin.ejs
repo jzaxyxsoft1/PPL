@@ -25,7 +25,7 @@
                         <td>数量</td>
                         <td>单位成本</td>
                         <td>成本</td>
-                        <td>库房</td>
+
                         <td style="width:20px"></td>
                     </tr>
                     </thead>
@@ -41,9 +41,7 @@
                         </td>
                         <td data-bind="text:UnitCost"></td>
                         <td data-bind="text:Cost"></td>
-                        <td>
-                            <select data-bind="options:GV.stocks,optionsValue:'_id',optionsText:'Name',value:Stock.Value,event:{'change':stockChg}"></select>
-                        </td>
+
                         <td>
                             <b class="icon-close fg-color-red"   data-bind="if:$parent.Status()=='待执行',click:function(){if(window.confirm('是否删除?')){$parent.Items.remove($data)}}" title="单击删除">
                             </b>

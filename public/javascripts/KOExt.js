@@ -261,3 +261,47 @@ $.fn.StockBillDetail = function () {
     return this;
 
 };
+$.fn.barcode =function (bill){
+    var _t= $(this);
+    var bill= bill;
+   _t.on('keydown', function (e) {
+        if (e.keyCode == 13 || e.keyCode == 108) {
+            kv = e.target.value;
+            if (kv.substr(0, 1) != 'h') {
+                //包装
+                $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
+                    _.each(d.Items, function (i) {
+                        _t.setItemVal(i.RelativeObj.Item1, 1);
+                    });
+                });
+            }
+            else {
+                //产品
+                $.getJSON('/base/getobj', {tp: 'Package', query: {Items: {$elemMatch: {'_id': kv}}}}, function (d) {
+                    var _l = _.find(d.Items, function (i) {
+                        return i._id == kv;
+                    });
+                    _t.setItemVal(_l.RelativeObj.Item1, 1);
+                });
+            }
+            e.target.value = '';
+            e.target.focus();
+        }
+    });
+    _t.setItemVal=function(itmID, amount)  {
+        var _p = _.find(bill.Items(), function (i) {
+            return i.RelativeObj.Item1() == itmID;
+        });
+        if (_p == null) {
+            alert('产品错误!');
+            return;
+        }
+        ca = _p.CompleteAmount() + amount;
+        if (ca > _p.Amount()) {
+            alert('数量超额!');
+            return;
+        }
+        _p.CompleteAmount(ca);
+    }
+    return _t;
+};

@@ -63,7 +63,6 @@
 <script type="text/javascript">
     showPnl('d_menu');
     function printPackageCodes() {
-
     }
     function generatePackageCodes() {
         var _c = $('#d_codePacks').html('');
@@ -86,32 +85,43 @@
             $('#bt_packC').show();
             $('#bt_prntPK').show();
         });
-
     }
     function generateProCodes() {
         if ($('#txt_beginN').val().match(/\d+/) == 0 || $('#txt_endN').val().match(/\d+/) == 0) {
             alert('产品序号必须为数字!');
             return;
         }
+        if ($('#txt_beginN').val().length < 11 || $('#txt_endN').val().length < 11) {
+            alert('产品序号必须大于11位数字!');
+            return;
+        }
         var _n = Number($('#txt_beginN').val());
-        var _m = Number($('#txt_endN').val());
+        var _m = Number($('#txt_endN').val()) + 1;
         if (_m < _n) {
             alert('结束序号不能小于开始序列号!');
             return;
         }
-        async.series([
-            function (cb) {
-                loading.show();
-                setTimeout(cb, 1000);
-            },
-            function (cb) {
-                cCode(_n, _m);
-                cb();
-            }
-        ], function (e) {
-            loading.hide();
-            $('#bt_pPro').show();
-        });
+        loading.show();
+        var _c = $('#d_d_codePros').html('');
+        for (var i = _n; i < _m; i++) {
+            var _l = $('<div class="ac"></div>');
+            _c.append(_l);
+            _l.barcode(i, 'code128');
+            _l.append('<br/><b>SN:</b>' + i);
+        }
+        loading.hide();
+        $('#bt_pPro').show();
+//        async.series([
+//            function (cb) {
+//                loading.show();
+//                setTimeout(cb, 1000);
+//            },
+//            function (cb) {
+//                cCode(_n, _m);
+//                cb();
+//            }
+//        ], function (e) {
+//        });
     }
     function cCode(_n, _m) {
         var _c = $('#d_codePros').html('');
@@ -129,12 +139,9 @@
         }
     }
     function printProCodes() {
-
     }
     $('#d_codeNPk').barcode('000000', 'code128')
     function printNewPackCode() {
-
-
     }
     $('#d_mcc').on('click', 'a', function () {
         $('input[type=text]').val('');

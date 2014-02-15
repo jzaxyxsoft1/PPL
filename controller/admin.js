@@ -41,10 +41,13 @@ exports.get = function (req, res) {
                 sfs = Svc.getGVObjs('SysFun', function (i) {return true;});
             }
             else if (req.currentUser.Org.Value == '0') {
-                sfs = Svc.getGVObjs('SysFun', function (i) { return i._id == '100'});
+                sfs = Svc.getGVObjs('SysFun', function (i) { return i._id == '300' || i._id == '100'});
+            }
+            else if (req.currentUser.Org.Value == '1') {
+                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id == '100' || i._id == '200' || i._id == '300'})
             }
             else {
-                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id != '100';})
+                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id.length == 1})
             }
             res.json(sfs);
             break;
@@ -60,10 +63,10 @@ exports.get = function (req, res) {
             break;
         case 'agg':
             Svc.db.Order.aggregate([
-                {$match:{'Owner.Item1':'0'}},
-                {$group:{_id:'$Owner',totle:{$sum:'$Sum'}}}
-            ],function (e,r){
-                var t=r;
+                {$match: {'Owner.Item1': '0'}},
+                {$group: {_id: '$Owner', totle: {$sum: '$Sum'}}}
+            ], function (e, r) {
+                var t = r;
             });
             break;
         default :

@@ -1,49 +1,57 @@
 <% include ../Top.ejs %>
-<div id="d_s" class="hide">
-    <b class="ml10">产品:</b><select id="slt_product"></select>
-    <b class="ml10">批号:</b><input type="text" id="txt_batchNum"/>
-    <b class="ml10">生产日期:</b><input type="text" id="txt_prduceTime"/>
-    <b>每包装包含 </b><input type="text" id="txt_ppAmount" style="width:30px;"/><b>个产品 </b>
-    <input type="button" value="确定" onclick="setProducts()"/>
-    <input type="text" id="txt_Code"/>
-</div>
-<div class="wp100 hp95">
-    <div class="hp100 fl pp1 hide" style="width:20%" id="d_packages">
-        <div class="ac">
-            <input type="button" value="新建包装" onclick="addP()"/>
-            <input type="button" value="保存" onclick="save()"/>
-        </div>
-        <div>
-            <span class="hide ml10 fred bold  spn_alerm" id="err_NPK">*包装未扫码!</span>
-            <span class="hide ml10 fred bold spn_alerm" id="err_Ful">*包装已满!</span>
-        </div>
-        <ul class="wp100 hp90 oya" data-bind="foreach:$data">
-            <li class="lh22"><a data-bind="text:_id,click:showPros"></a></li>
-        </ul>
-    </div>
-    <div class="hp100 oya fr pp1 hide" style="width:75%" id="d_pros">
-        <h3>包装序号:<span data-bind="text:_id"></span></h3>
-
-        <div class="wp100 hp90 lh22" data-bind="foreach:Items">
-            <a class="ml10"> <b data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:_id"></span></a>
-        </div>
+<div class="wp100 hp100" id="d_menu">
+    <div class="ac" style="margin-top: 12%">
+        <input type="button" value="新建入库单" onclick="setPTYPE(true)"/>
+        <input type="button" value="选择入库单" onclick="setPTYPE(false)"/>
     </div>
 </div>
-<div class="hide wp100 hp100 ac" id="d_msg">
-    <div style="margin-top: 27%">
-        保存完成,是否继续?
+<div class="wp100 hp100 hide" id="d_mmc">
+    <div id="d_s" class="hide">
+        <b class="ml10">产品:</b><select id="slt_product"></select>
+        <b class="ml10">批号:</b><input type="text" id="txt_batchNum"/>
+        <b class="ml10">生产日期:</b><input type="text" id="txt_prduceTime"/>
+        <b>每包装包含 </b><input type="text" id="txt_ppAmount" style="width:30px;"/><b>个产品 </b>
+        <input type="button" value="确定" onclick="setProducts()"/>
+        <input type="text" id="txt_Code"/>
     </div>
-    <div>
-        <input type="button" onclick="n()" value="是"/>
+    <div class="wp100 hp95">
+        <div class="hp100 fl pp1 hide" style="width:20%" id="d_packages">
+            <div class="ac">
+                <input type="button" value="新建包装" onclick="addP()"/>
+                <input type="button" value="保存" onclick="save()"/>
+            </div>
+            <div>
+                <span class="hide ml10 fred bold  spn_alerm" id="err_NPK">*包装未扫码!</span>
+                <span class="hide ml10 fred bold spn_alerm" id="err_Ful">*包装已满!</span>
+            </div>
+            <ul class="wp100 hp90 oya" data-bind="foreach:$data">
+                <li class="lh22"><a data-bind="text:_id,click:showPros"></a></li>
+            </ul>
+        </div>
+        <div class="hp100 oya fr pp1 hide" style="width:75%" id="d_pros">
+            <h3>包装序号:<span data-bind="text:_id"></span></h3>
+            <div class="wp100 hp90 lh22" data-bind="foreach:Items">
+                <a class="ml10"> <b data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:_id"></span></a>
+            </div>
+        </div>
     </div>
 </div>
 <audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" loop="loop" style=" display: none;"></audio>
+<script type="text/javascript">
+    var org = {Name:'<%=u.Org.Name%>',Value:'<%=u.Org.Value%>'};
+    var u={Item1:'<%=u._id%>',Item2:'<%=u.Name%>',Item3:'User'};
+</script>
 <script type="text/javascript">
     var ppA = 0, packages = ko.mapping.fromJS([]), audio = document.getElementById('alrm');
     audio.addEventListener('play', function () {
         GV.audioPlaying = true;
     });
+    function setPTYPE(flg){
+        GV.createStockInBill= flg;
+        showPnl('d_mmc');
+    }
     $.getJSON('/product/get', {t: 'objs' }, function (ds) {
+        GV.pros=ds;
         var _s = '';
         ds.forEach(function (i) {
             _s = _s + '<option value="' + i._id + '">' + i.Name + '</option>';
@@ -89,6 +97,7 @@
         GV.currentProduct = {RelativeObj: {Item1: _s.val(), Item2: _s.text(), Item3: 'Product'}, BatchNum: $('#txt_batchNum').val(), ProduceTime: $('#txt_prduceTime').val()};
         $('#d_packages').show();
     }
+    GV.proCounts=0;
     $('#txt_Code').on('keydown', function (e) {
         if (e.keyCode == 13 || e.keyCode == 108) {
             kv = e.target.value;
@@ -96,7 +105,8 @@
                 addP();
                 return;
             }
-            if (kv.substr(0, 1) != 'h') {
+            if (kv.length<12 ) {
+                //包装
                 GV.currentPackage._id(kv);
                 if (GV.audioPlaying) {
                     GV.audioPlaying = false;
@@ -105,12 +115,13 @@
                 }
             }
             else {
-                kv = kv.split('/').pop();
+                //产品
                 if (GV.currentPackage.Items().length == ppA) {
                     audio.play();
                     $('#err_Ful').show();
                 }
                 else {
+                    GV.proCounts++;
                     GV.currentPackage.Items.push({_id: kv, RelativeObj: GV.currentProduct.RelativeObj, BatchNum: GV.currentProduct.BatchNum, ProduceTime: GV.currentProduct.ProduceTime});
                 }
             }
@@ -119,28 +130,47 @@
         }
     })
     function save() {
-        loading.show();
-        if (GV.currentPackage && GV.currentPackage.Items().length > 0) {
-            packages.push(ko.mapping.fromJS(ko.mapping.toJS(GV.currentPackage)));
-        }
         var pks = ko.mapping.toJS(packages);
         pks = pks.filter(function (i) {
             return i.Items.length > 0;
         });
-
+        loading.show();
         $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks)}, function (d) {
             loading.hide();
-            showPnl('d_msg');
+            if (GV.createStockInBill) {
+                if (window.confirm('产品:' + GV.currentProduct.RelativeObj.Item2 + '\r数量:' + GV.proCounts + '\r是否新建入库单?')) {
+                    var stockIn = new StockBill('StockIn',org, u);
+                    var _p = _.find(GV.pros, function (i){return i._id== GV.currentProduct.RelativeObj.Item1});
+                    var itm = new StockBillItem(_p.RelativeObj,_p.UnitCost,GV.proCounts,_p.Model,_p.Unit,true);
+                    stockIn.Items.push(itm);
+                    var m = ko.mapping.toJS(stockIn);
+                    _.each(m.Items, function (i) {
+                        i.Amount = Number(i.Amount);
+                        i.UnitPrice = Number(i.UnitPrice);
+                    });
+                    $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
+                        alert(d.error || '保存成功!');
+                        if (d.msg) {
+                            showPnl('d_menu');
+                        }
+                    });
+                }
+            }
+            else {
+                showPnl('d_menu');
+            }
         });
     }
     function n() {
+        GV.createStockInBill=false;
+        GV.proCounts=0;
         $('input[type=text]').val('');
         $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
         $('#d_packages').hide();
         $('#d_pros').hide();
         packages.removeAll();
         GV.currentPackage = null;
-        $('#d_msg').hide().siblings().show();
+        showPnl('d_menu');
     }
 </script>
 <% include ../Bottom.ejs %>
