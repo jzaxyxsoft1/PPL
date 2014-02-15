@@ -48,6 +48,10 @@
     audio.addEventListener('play', function () {
         GV.audioPlaying = true;
     });
+    audio.addEventListener('pause',function(){
+        $('#err_NPK').hide();
+        $('#err_Ful').hide();
+    });
     function setPTYPE(flg) {
         GV.createStockInBill = flg;
         showPnl('d_mmc');
@@ -102,6 +106,11 @@
     GV.proCounts = 0;
     $('#txt_Code').on('keydown', function (e) {
         if (e.keyCode == 13 || e.keyCode == 108) {
+            if (GV.audioPlaying) {
+                GV.audioPlaying = false;
+                audio.pause();
+
+            }
             kv = e.target.value;
             if (kv == '000000') {
                 addP();
@@ -110,11 +119,7 @@
             if (kv.length < 12) {
                 //包装
                 GV.currentPackage._id(kv);
-                if (GV.audioPlaying) {
-                    GV.audioPlaying = false;
-                    audio.pause();
-                    $('#err_NPK').hide();
-                }
+
             }
             else {
                 //产品
@@ -134,7 +139,7 @@
     function save() {
         if (!GV.currentPackage._id()) {
             audio.play();
-            $('#err_Ful').show();
+            $('#err_NPK').show();
             return;
         }
         if (!_.any(packages, function (i) {return i._id() == GV.currentPackage._id()})) {
