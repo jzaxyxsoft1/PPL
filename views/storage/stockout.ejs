@@ -109,7 +109,7 @@
         bill.Owner.Item3(d.Owner.Item3);
         bill.Items.removeAll();
         _.each(d.Items, function (i) {
-            if(i.Status!='已发货'){
+            if(i.Status!='已发货' || i.Status==''){
                 var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.CompleteAmount- i.Amount, i.Model, i.Unit, false);
                 bi.Status(i.Statues);
                 bill.Items.push(bi);
