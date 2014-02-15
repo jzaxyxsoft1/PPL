@@ -13,6 +13,7 @@ function edit(d) {
                     Creator: {Item1: u._id, Item2: u.Name, Item3: 'User'},
                     CreateTime: Date.ToCreateTime(),
                     Items: [],
+                    Org:{Name:org.Name,Value:org.Value},
                     Status: '未提交'});
             }
             else {
@@ -63,17 +64,23 @@ function proChg(d) {
     d.RelativeObj.Item4('');
     d.Model(pro.Model);
     d.Unit(pro.Unit);
-    d.UnitPrice(pro.Price);
+    d.UnitPrice(pro.PartnerPrice);
 }
 function save(f) {
     if (f) {
         bill.Status('未付款');
     }
+
     var m = ko.mapping.toJS(bill);
+
     _.each(m.Items,function (i){
         i.Amount=Number(i.Amount);
         i.UnitPrice= Number(i.UnitPrice);
     });
+    if (_.any(m.Items, function (i) {return i.Amount == 0})) {
+        alert('请输入订货数量!');
+        return;
+    }
     delete  m.updateFromObj;
     $.post('/base/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
         alm(d.error || '保存成功!');

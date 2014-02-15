@@ -73,7 +73,7 @@ exports.get = function (req, res) {
                     },
                     function (order, cb) {
                         //往来处理
-                        Svc.createRnP(req.currentUser.Org, order.Org, '收货款(' + order.BillNum + ')', 0, orer.Sum, req.currentUser, '', function (e) {cb(e, order);});
+                        Svc.createRnP(req.currentUser.Org, order.Org, '收货款(' + order.BillNum + ')', 0, order.Sum, req.currentUser, '', function (e) {cb(e, order);});
                     },
                     function (order, cb) {
                         //锁定库存

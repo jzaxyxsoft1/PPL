@@ -133,6 +133,7 @@ var Bill = function (owner, creator) {
             var ii = new BillItem(i.RelativeObj, i.UnitPrice, i.Amount, i.Model, i.Unit, true);
             ii.Remark(i.Remark);
             ii.Status(i.Status);
+            ii.CompleteAmount(i.CompleteAmount)
             _t.Items.push(ii);
         });
 
@@ -144,6 +145,7 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
     this.Amount = ko.observable(amount || 0);
     this.Model = ko.observable(model || '');
     this.Unit = ko.observable(unit || '');
+    this.CompleteAmount=ko.observable(0);
     this.AmountEditable = ko.observable(amountEditable || false);
     this.Deleteable = ko.observable(true);
     this.Remark = ko.observable('');
