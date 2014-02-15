@@ -14,6 +14,8 @@ function edit(d) {
                     CreateTime: Date.ToCreateTime(),
                     Items: [],
                     Org:{Name:org.Name,Value:org.Value},
+                    ShipAddress: Cts.Address,
+                    Tel: Cts.SMSNum,
                     Status: '未提交'});
             }
             else {

@@ -110,6 +110,7 @@ var Bill = function (owner, creator) {
     this.ShipAddress=ko.observable('');
     this.Tel=ko.observable('');
     this.Org={Name:ko.observable(owner? owner.Name:''),Value:ko.observable(owner? owner._id:'')};
+
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;

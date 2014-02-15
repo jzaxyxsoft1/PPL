@@ -9,7 +9,10 @@ exports.get = function (req, res) {
     var m = req.query['m'];
     switch (t) {
         case 'n': //新建订单
-            res.render('order/n.ejs', {user: req.currentUser});
+            Svc.db.Org.findOne({_id:req.currentUser.Org.Value },function (e,org){
+                res.render('order/n.ejs', {user: req.currentUser,org:org});
+            });
+
             break;
         case 'submitorder': //提交订单
             if (m) {

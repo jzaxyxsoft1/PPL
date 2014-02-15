@@ -79,7 +79,7 @@ exports.post = function (req, res) {
                             var mc = i.Amount;
                             if (storage) {
                                 storage.Amount = storage.Amount + i.Amount;
-                                var cst = (storage.Cost + i.Sum);
+                                var cst = (storage.Cost + i.Cost);
                                 var uc = Math.round(cst / storage.Amount, 2);
                                 Svc.db.Storage.update({_id: storage._id}, {$set: {Amount: storage.Amount + i.Amount, Cost: cst, UnitCost: uc}}, icb);
                             }
@@ -90,7 +90,7 @@ exports.post = function (req, res) {
                                     Amount: i.Amount,
                                     Model: i.Model,
                                     Unit: i.Unit,
-                                    Cost: Math.round(i.Sum, 2),
+                                    Cost: Math.round(i.Cost, 2),
                                     Stock: i.Stock,
                                     UnitCost: i.UnitCost,
                                     Locked:0,

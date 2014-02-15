@@ -49,7 +49,7 @@
                 </table>
             </fieldset>
             <div class="cb wp100 pt10">
-                <b>送货地址:</b><span></span> <b class="ml10">联系电话:</b><span></span>
+                <b>送货地址:</b><span data-bind="text:ShipAddress"></span> <b class="ml10">联系电话:</b><span data-bind="text:Tel"></span>
             </div>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
@@ -110,8 +110,8 @@
         bill.Items.removeAll();
         _.each(d.Items, function (i) {
             if(i.Status!='已发货' || i.Status==''){
-                var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.CompleteAmount- i.Amount, i.Model, i.Unit, false);
-                bi.Status(i.Statues);
+                var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount-i.CompleteAmount, i.Model, i.Unit, false);
+
                 bill.Items.push(bi);
             }
         });
