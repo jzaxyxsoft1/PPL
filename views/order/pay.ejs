@@ -20,7 +20,7 @@
     var bill = new Bill();
     ko.applyBindings(bill, document.getElementById('d_edit'));
     function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未付款'} }, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '待付款'} }, function (d) {
             if (GV.List) {
                 ko.mapping.fromJS(d, GV.List);
             }
@@ -38,7 +38,7 @@
     }
     function pay() {
         if(!$('#txt_voucherNum').val()){ alert('请输入银行交易号!');return;}
-        $.getJSON('/order/get?t=pay', {id: bill._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
+        $.post('/order/postpay', {id: bill._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
             alert(d.error || '付款完成!');
             if (d.msg) {
                 bindList();

@@ -2,6 +2,7 @@
  * 库存
  */
 var Svc = require('Svc').Svc;
+var StorageSvc = require('Svc').StorageSvc;
 var FinanceSvc = require('Svc').FinanceSvc;
 var helper = require('Svc').HttpHelper;
 var async = require('async');
@@ -143,7 +144,7 @@ exports.post = function (req, res) {
                     });
                 },
                 //更新出库单
-                function (  cb) {
+                function (cb) {
                     Svc.db.StockOut.update({_id: obj._id}, {$set: {Status: obj.Status, Items: obj.Items }}, function (e) {
                         cb(e);
                     });
@@ -202,7 +203,8 @@ exports.post = function (req, res) {
                         Svc.db.Package.update({_id: i}, {$set: {Rounte: order.Owner}}, function () {
                             icb(null);
                         });
-                    }, function () {});
+                    }, function () {
+                    });
                     cb(null);
                 }
             ], function (e) {
@@ -210,4 +212,34 @@ exports.post = function (req, res) {
             })
             break;
     }
+}
+exports.poststockin = function (req, res) {
+    var stockIn = JSON.parse(req.body['obj']);
+    var user = req.currentUser;
+    StorageSvc.SaveStockIn(stockIn, user, function (e, d) {
+        res.json({msg: e == null, error: e});
+    });
+}
+exports.poststockinc = function (req, res) {
+    var stockIn = JSON.parse(req.body['obj']);
+    var user = req.currentUser;
+    StorageSvc.StockInConfirm(stockIn, user,
+        function (e, od) {
+            res.json({msg: e == null, error: e});
+        }
+    )
+}
+exports.poststockout=function(req,res){
+    var stockOut = JSON.parse(req.body['obj']);
+    var user = req.currentUser;
+    StorageSvc.SaveStockOut(stockOut, user, function (e) {
+        res.json({msg: e == null, error: e});
+    })
+}
+exports.postship=function(req,res){
+    var transferBill = JSON.parse(req.body['obj']);
+    var user = req.currentUser;
+    StorageSvc.Ship(transferBill, user, false, function (e) {
+        res.json({msg: e == null, error: e});
+    });
 }

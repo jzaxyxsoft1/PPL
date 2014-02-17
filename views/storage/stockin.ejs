@@ -117,7 +117,7 @@
         d.Stock.Name(_st.Name);
     }
     function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'StockIn', query: {Status: '未执行'}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'StockIn', query: {Status: '待执行'}}, function (d) {
             if (GV.list) {
                 ko.mapping.fromJS(d, GV.list);
             }
@@ -155,7 +155,7 @@
             i.Amount = Number(i.Amount);
             i.UnitPrice = Number(i.UnitPrice);
         });
-        $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
+        $.post('/storage/poststockin', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
             if (d.msg) {
                 bindList();

@@ -99,7 +99,7 @@
             i.Amount = Number(i.Amount);
             i.UnitPrice = Number(i.UnitPrice);
         });
-        $.post('/storage/post', {t: 'savetransbill', obj: JSON.stringify(ko.mapping.toJS(bill)), trbill: {LogisticsOrg: $('#txt_WLGS').val(), LogisticsNum: $('#txt_WLNum').val()}}, function (d) {
+        $.post('/storage/postship', {t: 'savetransbill', obj: JSON.stringify(ko.mapping.toJS(bill)), trbill: {LogisticsOrg: $('#txt_WLGS').val(), LogisticsNum: $('#txt_WLNum').val()}}, function (d) {
             alert(d.error || '发货完成!');
             if (d.msg) {
                 bindList();

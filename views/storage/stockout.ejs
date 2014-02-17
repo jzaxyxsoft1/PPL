@@ -165,7 +165,7 @@
             i.UnitPrice=Number(i.UnitPrice);
             i.Amount=Number(i.Amount);
         });
-        $.post('/base/postsave', {tp: 'StockOut', obj: JSON.stringify(m)}, function (d) {
+        $.post('/storage/poststockout', {tp: 'StockOut', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');
             if (d.msg) {
                 bindList();

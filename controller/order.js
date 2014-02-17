@@ -4,6 +4,7 @@
 var _ = require('underscore');
 var async = require('async');
 var Svc = require('Svc').Svc;
+var OrderSvc = require('Svc').OrderSvc;
 var FinanceSvc = require('Svc').FinanceSvc;
 exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
@@ -169,7 +170,7 @@ exports.get = function (req, res) {
                     //往来处理
                     function (trBill, org, cb) {
                         Svc.db.Org.findOne({_id: '0'}, function (e, org) {
-                            FinanceSvc.CreateRnP(req.currentUser.Org, {Name: org.Name, Value: org._id}, '收货(' + trBill.OrderID + ')', 0,trBill.Sum, req.currentUser, '运单:' + trBill.BillNum, function (e) {
+                            FinanceSvc.CreateRnP(req.currentUser.Org, {Name: org.Name, Value: org._id}, '收货(' + trBill.OrderID + ')', 0, trBill.Sum, req.currentUser, '运单:' + trBill.BillNum, function (e) {
                                 cb(e, trBill.OrderiD);
                             });
                         });
@@ -181,10 +182,12 @@ exports.get = function (req, res) {
                                 return i.RelativeObj.Item1 == pid;
                             });
                             itm.Status = itm.Status.replace(/发货/, '完成');
-                            if(!_.any(order.Items,function (i){return i.Status !='已全部完成'})){
+                            if (!_.any(order.Items, function (i) {
+                                return i.Status != '已全部完成'
+                            })) {
                                 order.Status = '已全部完成';
                             }
-                            Svc.db.Order.update({_id: order._id}, {$set: {Status:order.Statues,Items: order.Items}}, function (e) {
+                            Svc.db.Order.update({_id: order._id}, {$set: {Status: order.Statues, Items: order.Items}}, function (e) {
                                 cb(e, order);
                             });
                         });
@@ -197,3 +200,50 @@ exports.get = function (req, res) {
             break;
     }
 };
+exports.postsave = function (req, res) {
+    var order = JSON.parse(req.body['obj']);
+    var pUser = req.currentUser;
+    if (order.Status == '未付款')OrderSvc.SubmitOrder(order._id, pUser, function (e) {
+        Svc.db.Order.findOne({_id: order._id}, function (e, d) {
+            res.json({msg: e == null, error: e, ID: d._id, BillNum: d.BillNum });
+        });
+    })
+    else OrderSvc.CreateOrder(order, pUser, function (e) {
+        async.parallel(
+            [
+                function (pcb) {
+                    Svc.db.Order.findOne({_id: order._id}, pcb)
+                },
+                function (pcb) {
+                    Svc.db.RnP.findOne({'Org.Value': pUser.Org.Value}, pcb)
+                }
+            ],
+            function (e, result) {
+                var ordr = result[0];
+                var rnp = result[1];
+                res.json({msg: e == null, error: e, ID: ordr._id, BillNum: ordr.BillNum });
+            });
+    });
+}
+exports.postpay = function (req, res) {
+    var id = req.body['id'];
+    var voucherNum = req.body['voucherNum'];
+    var pUser = req.currentUser;
+    OrderSvc.OrderPayment(id, voucherNum, pUser, function (e) {
+        res.json({msg: e == null, error: e});
+    })
+}
+exports.postpayconfirm = function (req, res) {
+    var id = req.body['id'];
+    var user = req.currentUser;
+    OrderSvc.PaymentConfirm(id, user, function (e) {
+        res.json({msg: e == null, error: e})
+    });
+}
+exports.postcomplete = function (req, res) {
+    var id = req.body['id'];
+    var pUser = req.currentUser;
+    OrderSvc.Complete(id, pUser, function (e) {
+        res.json({msg: e == null, error: e});
+    });
+}

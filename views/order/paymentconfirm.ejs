@@ -4,7 +4,7 @@
         <table id="tbl_ds" cellspacing="0" cellpadding="0" class="wp100 mt10"></table>
     </div>
     <div class="wp98 mc hp100 oya hide" id="d_edit">
-        <div id="d_ll" class="wp100">  </div>
+        <div id="d_ll" class="wp100"></div>
 
         <div class="cb ac pt10"><input type="button" value="财务确认付款" onclick="pay()"/>
             <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
@@ -35,7 +35,7 @@
         showPnl('d_edit');
     }
     function pay() {
-        $.getJSON('/order/get?t=paymentconfirm', {id: bill._id(), Status: '付款已确认'}, function (d) {
+        $.post('/order/postpayconfirm', {id: bill._id(), Status: '付款已确认'}, function (d) {
             alert(d.error || '付款确认完成!');
             if (d.msg) {
                 bindList();

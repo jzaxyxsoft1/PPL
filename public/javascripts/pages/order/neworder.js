@@ -84,7 +84,7 @@ function save(f) {
         return;
     }
     delete  m.updateFromObj;
-    $.post('/base/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
+    $.post('/order/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
         alm(d.error || '保存成功!');
         if (d.msg) {
             bill._id(d.ID);

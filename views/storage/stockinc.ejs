@@ -131,7 +131,7 @@
             i.CompleteAmount = Number(i.CompleteAmount);
             i.UnitPrice = Number(i.UnitPrice);
         });
-        $.post('/storage/post', {t: 'stockinconfirm', obj: JSON.stringify(m)}, function (d) {
+        $.post('/storage/poststockinc', {t: 'stockinconfirm', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '入库确认完成!');
             if (d.msg) {
                 bindList();

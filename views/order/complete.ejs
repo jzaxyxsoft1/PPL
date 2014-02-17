@@ -92,7 +92,7 @@
     }
     function itmCfm(d) {
         if (window.confirm('是否确认收货?')) {
-            $.getJSON('/order/get', {t: 'complete', id: d.TranseferBillNum(), pid: d.RelativeObj.Item1()}, function (d) {
+            $.post('/order/postcomplete', {t: 'complete', id: d.TranseferBillNum(), pid: d.RelativeObj.Item1()}, function (d) {
                 bindList();
             });
         }
@@ -102,7 +102,7 @@
         showPnl('d_edit');
     }
     function pay() {
-        $.getJSON('/order/get?t=complete', {id: bill._id(), Status: '完成'}, function (d) {
+        $.post('/order/postcomplete', {id: bill._id(), Status: '完成'}, function (d) {
             alert(d.error || '确认已完成!');
             if (d.msg) {
                 bindList();
