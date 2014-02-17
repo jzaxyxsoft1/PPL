@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="KO" type="javaScript">
+    <properties>
+      <option name="frameworkName" value="Knockout" />
+      <option name="frameworkVersion" value="2.2.1" />
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/public/javascripts/knockout-2.2.1.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

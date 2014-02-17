@@ -59,7 +59,7 @@
     }
     function bindList() {
         var currCode = $('#txt_code').val();
-        $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}, options: {}}, function (_package) {
+        $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}}, function (_package) {
             if(_package==null){
                 alert('产品序列号无效!\r请提防假冒产品!');
                 return;
@@ -67,11 +67,12 @@
             var _o = _.find(_package.Items, function (i) {
                 return i._id == currCode;
             });
-            _o.JXS = _package.Rounte ? _package.Rounte.Value : '';
+            _o.JXS = _package.Route  ? _package.Route.Value : '';
             GV.ProInstance = _o;
             async.parallel([
                 function (cb) {
-                    $.getJSON('/base/getobj', {tp: '', query: {'ProductInstanceID': currCode}, option: {Org:1,CreateTime:1}}, function (d) {
+                    $.getJSON('/base/getobj', {tp: 'Sale',m:1, query: {'ProductInstanceID': currCode}, option: {Org:1,
+                        CreateTime:1}}, function (d) {
                         GV.sb= d;
                         cb();
                     });

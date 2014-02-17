@@ -44,7 +44,7 @@
                     <td data-bind="text:Amount"></td>
                     <td data-bind="text:UnitPrice"></td>
                     <td data-bind="text:Sum"></td>
-                    <td><span data-bind="text:CompleteAmount"></span> </td>
+                    <td><span data-bind="text:CompleteAmount"></span></td>
                     <td data-bind="text:Stock.Name"></td>
                 </tr>
                 </tbody>
@@ -63,6 +63,10 @@
 </div>
 
 <script src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+    var user = {Name: '<%=u.Name%>', Value: '<%=u._id%>'};
+    var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
+</script>
 <script type="text/javascript">
     $('#tbl_bill').StockBillTable('bSlt');
     $('#d_detail').StockBillDetail();
@@ -124,7 +128,6 @@
                     });
                     setItemVal(_l.RelativeObj.Item1, 1);
                 });
-
             }
             e.target.value = '';
             e.target.focus();
@@ -145,6 +148,13 @@
             return;
         }
         _p.CompleteAmount(ca);
+        if (_p.CompleteAmount >= _p.Amount) {
+            _p.Statues = '已完成';
+            _p.StockOutComfirm = {Operator: user, Time: Date.ToCreateTime()};
+        }
+        else{
+            _p.Statues='执行中';
+        }
         checkBillStatus();
     }
     function checkBillStatus() {
