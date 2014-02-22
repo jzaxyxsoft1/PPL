@@ -39,7 +39,7 @@
     function bindList() {
         async.waterfall([
             function (cb) {
-                $.getJSON('/storage/get', {t: 'transferbills', query: {'Receiver.Item1': '<%=user.Org.Value%>', Items: {$elemMatch: {Status: '已发货'}}}, option: {OrderID: 1, Items: 1} },
+                $.getJSON('/storage/get', {t: 'transferbills', query: {'Owner.Item1': '<%=user.Org.Value%>',Status:{$regex:'发货'}}, option: {OrderID: 1, Items: 1} },
                         function (d) {
                             if (d == null || d.length == 0) {
                                 cb('无待收货信息!');
@@ -50,7 +50,7 @@
                                     return ii.Status == '已发货';
                                 });
                                 _.each(its, function (ii) {
-                                    ii.OrderID = i.OrderID, ii.TranseferBillNum = i.BillNum;
+                                    ii.OrderID = i.OrderID, ii.TranseferBillNum = i.BillNum,ii.TranseferBillID = i._id;
                                 });
                                 _items = _.union(_items, its);
                             });
@@ -92,7 +92,7 @@
     }
     function itmCfm(d) {
         if (window.confirm('是否确认收货?')) {
-            $.post('/order/postcomplete', {t: 'complete', id: d.TranseferBillNum(), pid: d.RelativeObj.Item1()}, function (d) {
+            $.post('/order/postcomplete', {t: 'complete', id: d.TranseferBillID(), pid: d.RelativeObj.Item1()}, function (d) {
                 bindList();
             });
         }

@@ -72,9 +72,7 @@ function save(f) {
     if (f) {
         bill.Status('未付款');
     }
-
     var m = ko.mapping.toJS(bill);
-
     _.each(m.Items,function (i){
         i.Amount=Number(i.Amount);
         i.UnitPrice= Number(i.UnitPrice);

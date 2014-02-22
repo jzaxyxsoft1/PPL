@@ -1,4 +1,6 @@
 var Svc = require('Svc').Svc;
+var db = require('DB').DB;
+var async = require('async');
 exports.bo = function (req, res) {
     var id = req.query['id'];
     var m = req.query['m'];
@@ -35,6 +37,17 @@ exports.get = function (req, res) {
     var t = req.query['t'].toLowerCase();
     var tp, id;
     switch (t) {
+        case 'cleardata':
+            async.parallel(
+                [
+                    function (cb) {db.Order.remove({}, cb)},
+                    function (cb) {db.RnP.remove({}, cb)},
+                    function (cb) {db.TransferBill.remove({}, cb)},
+                    function (cb) {db.StockIn.remove({}, cb)},
+                    function (cb) {db.StockOut.remove({}, cb)},
+                    function (cb){db.Storage.remove({},cb)}
+                ], function (e) {res.send("Done")})
+            break;
         case "sysfuns":
             var sfs;
             if (req.currentUser._id == '0') {
@@ -63,9 +76,9 @@ exports.get = function (req, res) {
             break;
         case 'agg':
             Svc.db.Order.aggregate([
-                {$match: {'Owner.Item1': '0'}},
-                {$group: {_id: '$Owner', totle: {$sum: '$Sum'}}}
-            ], function (e, r) {
+                                       {$match: {'Owner.Item1': '0'}},
+                                       {$group: {_id: '$Owner', totle: {$sum: '$Sum'}}}
+                                   ], function (e, r) {
                 var t = r;
             });
             break;

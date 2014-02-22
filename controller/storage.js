@@ -20,7 +20,7 @@ exports.get = function (req, res) {
             break;
         case 'transferbills':
             var query = req.query['query'];
-            Svc.db.TranseferBill.find(query).toArray(function (e, ds) {
+            Svc.db.TransferBill.find(query).toArray(function (e, ds) {
                 res.json(ds)
             });
             break;

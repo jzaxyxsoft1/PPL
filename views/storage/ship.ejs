@@ -11,8 +11,6 @@
             <div class="editor-field"><span data-bind="text:BillNum"></span></div>
             <div class="editor-label">订单号:</div>
             <div class="editor-field"><span data-bind="text:OrderID"></span></div>
-            <div class="editor-label">供应商:</div>
-            <div class="editor-field"><span data-bind="text:Provider.Item2"></span></div>
             <div class="editor-label">建单时间:</div>
             <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
             <div class="editor-label">建单人:</div>
@@ -68,6 +66,9 @@
     var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
 </script>
 <script type="text/javascript">
+    function alrm(msg){
+        alert(msg);
+    }
     $('#tbl_bill').StockBillTable('bSlt');
     $('#d_detail').StockBillDetail();
     var bill = new StockBill();
@@ -90,6 +91,7 @@
         $.getJSON('/base/getobj', {tp: 'StockOut', query: {_id: d._id()}}, function (d) {
             bill.Packages.removeAll();
             bill.updateFromObj(d);
+            bill.StockOutID= bill.BillNum;
             showPnl('d_edit');
         });
     }
@@ -110,10 +112,16 @@
     $('#txt_code').on('keydown', function (e) {
         if (e.keyCode == 13 || e.keyCode == 108) {
             kv = e.target.value;
-            if (kv.substr(0, 1) != 'h') {
+            if (kv.length<12) {
                 bill.Packages.push(kv);
                 //包装
                 $.getJSON('/base/getobj', {tp: 'Package', query: {_id: kv}}, function (d) {
+                    if(!_.every(d.Items,function (i){
+                        return _.any(bill.Items(),function (ii){return ii.RelativeObj.Item1()== i.RelativeObj.Item1})
+                    })){
+                        alrm('包装内产品与订单不符!');
+                        return;
+                    }
                     _.each(d.Items, function (i) {
                         setItemVal(i.RelativeObj.Item1, 1);
                     });
@@ -149,24 +157,24 @@
         }
         _p.CompleteAmount(ca);
         if (_p.CompleteAmount >= _p.Amount) {
-            _p.Statues = '已完成';
+            _p.Statues = '已发货';
             _p.StockOutComfirm = {Operator: user, Time: Date.ToCreateTime()};
         }
         else{
-            _p.Statues='执行中';
+            _p.Statues='部分发货';
         }
         checkBillStatus();
     }
     function checkBillStatus() {
         if (_.any(bill.Items(), function (i) {
-            return i.Status() == '执行中'
+            return i.Status() == '部分发货'
         })) {
-            bill.Status('执行中');
+            bill.Status('部分发货');
         }
         else if (!_.any(bill.Items(), function (i) {
-            return i.Status() != '已完成'
+            return i.Status() != '已发货'
         })) {
-            bill.Status('已完成');
+            bill.Status('已发货');
         }
     }
     bindList();
