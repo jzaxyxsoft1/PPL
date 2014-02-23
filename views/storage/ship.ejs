@@ -156,7 +156,7 @@
             return;
         }
         _p.CompleteAmount(ca);
-        if (_p.CompleteAmount >= _p.Amount) {
+        if (_p.CompleteAmount() >= _p.Amount) {
             _p.Status = '已发货';
             _p.StockOutComfirm = {Operator: user, Time: Date.ToCreateTime()};
         }

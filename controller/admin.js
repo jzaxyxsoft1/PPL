@@ -45,7 +45,7 @@ exports.get = function (req, res) {
                     function (cb) {db.TransferBill.remove({}, cb)},
                     function (cb) {db.StockIn.remove({}, cb)},
                     function (cb) {db.StockOut.remove({}, cb)},
-                    function (cb){db.Storage.remove({},cb)}
+                    function (cb) {db.Storage.remove({}, cb)}
                 ], function (e) {res.send("Done")})
             break;
         case "sysfuns":
@@ -75,12 +75,13 @@ exports.get = function (req, res) {
             });
             break;
         case 'agg':
-            Svc.db.Order.aggregate([
-                                       {$match: {'Owner.Item1': '0'}},
-                                       {$group: {_id: '$Owner', totle: {$sum: '$Sum'}}}
-                                   ], function (e, r) {
-                var t = r;
-            });
+            Svc.db.Order.aggregate(
+                [
+                    {$match: {'Owner.Item1': '0'}},
+                    {$group: {_id: '$Owner', totle: {$sum: '$Sum'}}}
+                ], function (e, r) {
+                    var t = r;
+                });
             break;
         default :
             break;

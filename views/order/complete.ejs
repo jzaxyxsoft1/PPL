@@ -86,7 +86,7 @@
             else {
                 GV.List = ko.mapping.fromJS(d);
                 ko.applyBindings(GV.List, document.getElementById('d_list'));
-                $('#d_list').show();
+               showPnl('d_list')
             }
         });
     }
