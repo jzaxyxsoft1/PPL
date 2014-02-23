@@ -8,6 +8,7 @@ var express = require('express');
 var routes = require('./routes');
 var http = require('http');
 var path = require('path');
+var _=require('underscore');
 var app = express();
 
 // all environments
@@ -34,6 +35,25 @@ var _s = '', controllers = {};
 app.get('/', routes.index);
 app.get('/index',routes.index);
 app.get('/m',routes.m);
+app.get('/getproducts',function (req,res){
+    DB.Product.find().toArray(function (e,ds){
+        _.each(ds,function (i){
+            delete i.UnitCost;
+            delete i.PartnerPrice;
+            delete i.DelegatePrice;
+        });
+        res.json(ds);
+    })
+});
+app.get('/getproductinstance',function (req,res){
+    var id= req.query['id'];
+    DB.Product.findOne({_id:id},function (e,d){
+        delete d.UnitCost;
+        delete d.PartnerPrice;
+        delete d.DelegatePrice;
+        res.json(d);
+    })
+});
 app.post('/index/postl',routes.postl);
 app.get('/main',routes.main);
  function checkUser (req,res,next){
