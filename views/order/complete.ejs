@@ -100,6 +100,7 @@
     function edit(d) {
         bill.updateFromObj(ko.mapping.toJS(d));
         showPnl('d_edit');
+
     }
     function pay() {
         $.post('/order/postcomplete', {id: bill._id(), Status: '完成'}, function (d) {
