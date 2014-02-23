@@ -3,6 +3,9 @@ var Svc = require('Svc').Svc;
 exports.index = function (req, res) {
     res.render('index.ejs', {  msg: req.query['m']||false });
 };
+exports.m=function (req,res){
+    res.render('index.ejs' ,{  msg: req.query['m']||false })
+}
 exports.postl = function (req, res) {
     var pn = req.body['pn'];
     var pwd = req.body['pwd'];
