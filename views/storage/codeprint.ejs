@@ -1,12 +1,12 @@
 <% include ../Top.ejs %>
 <style type="text/css">
-    #d_codePros div { width: 160px; height: 180px; overflow: hidden; display: inline-block; margin-bottom: 10px; }
+    /*#d_codePros div { width: 160px; height: 180px; overflow: hidden; display: inline-block; margin-bottom: 10px; }*/
 </style>
 <div class="wp100 hp100" id="d_mcc">
     <div class="wp100 hp100 hide" id="d_menu">
         <div class="ac" style="margin-top:17%">
             <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
-               href="javascript:showPnl('d_pcode')">打印产品二维码</a>
+               href="javascript:showPnl('d_pcode')">打印产品条码</a>
             <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
                href="javascript:showPnl('d_pkcode')">打印包装条码</a>
             <a class="ilblk ac bg-color-blue fg-color-white" style="height:30px; line-height: 30px; width: 150px;"
@@ -25,17 +25,17 @@
             </div>
         </div>
     </div>
-    <div class="wp100 hp100 hide" id="d_pkcode">
-        <div class="mc mt10" style="width:400px;">
+    <div class="wp100 hp100 hide" id="d_pcode">
+        <div class="mc mt10 hp95" style="width:400px;">
 
-            <p><b>包装数量:</b><input type="text" id="txt_amount"/></p>
-
-            <div id="d_codePacks" class="hide hp90 wp100 oya">
+            <p><b>开始序号:</b><input type="text" id="txt_beginN"/> </p>
+            <p>  <b>结束序号:</b><input type="text" id="txt_endN"/></p>
+            <div id="d_codePros" class="hide  wp100 oya" style="height: 80%;">
 
             </div>
             <div class="cb ac pt10">
-                <input type="button" value="生成" onclick="generatePackageCodes()"/>
-                <input type="button" value="打印" id="bt_prntPK" onclick="printPackageCodes()" class="ml5 hide bt_ext"/>
+                <input type="button" value="生成" onclick="generateProCodes()"/>
+                <input type="button" value="打印" id="bt_prntPR" onclick="printProCodes()" class="ml5 hide bt_ext"/>
                 <input type="button" value="返回" onclick="showPnl('d_menu')" class="ml5"/>
             </div>
         </div>
@@ -51,7 +51,7 @@
             </div>
             <div class="cb ac pt10">
                 <input type="button" value="生成" onclick="generatePackageCodes()"/>
-                <input type="button" value="打印" id="bt_prntPK" onclick="printPackageCodes()" class="ml5 hide bt_ext"/>
+                <input type="button" value="打印" id="bt_prntP" onclick="printPackageCodes()" class="ml5 hide bt_ext"/>
                 <input type="button" value="返回" onclick="showPnl('d_menu')" class="ml5"/>
             </div>
         </div>
@@ -59,9 +59,11 @@
     </div>
 </div>
 <script type="text/javascript" src="/javascripts/jquery-barcode.min.js"></script>
-<script src="/javascripts/qrcode.min.js"></script>
 <script type="text/javascript">
     showPnl('d_menu');
+    function printProCodes() {
+        window.open('print?c='+k.toString());
+    }
     function printPackageCodes() {
     }
     function generatePackageCodes() {
@@ -86,6 +88,7 @@
             $('#bt_prntPK').show();
         });
     }
+    var k=[];
     function generateProCodes() {
         if ($('#txt_beginN').val().match(/\d+/) == 0 || $('#txt_endN').val().match(/\d+/) == 0) {
             alert('产品序号必须为数字!');
@@ -102,26 +105,18 @@
             return;
         }
         loading.show();
-        var _c = $('#d_d_codePros').html('');
+       var _c = $('#d_codePros').html('');
         for (var i = _n; i < _m; i++) {
+            k.push(i);
             var _l = $('<div class="ac"></div>');
             _c.append(_l);
-            _l.barcode(i, 'code128');
-            _l.append('<br/><b>SN:</b>' + i);
+            _l.barcode(i.toString(), 'code128');
+            _l.append('<br/><strong>SN:</strong>' + i);
         }
+
         loading.hide();
-        $('#bt_pPro').show();
-//        async.series([
-//            function (cb) {
-//                loading.show();
-//                setTimeout(cb, 1000);
-//            },
-//            function (cb) {
-//                cCode(_n, _m);
-//                cb();
-//            }
-//        ], function (e) {
-//        });
+        $('#bt_prntPR').show();
+        $('#d_codePros').show()
     }
     function cCode(_n, _m) {
         var _c = $('#d_codePros').html('');
@@ -138,8 +133,7 @@
             _l.append('<br/>' + i);
         }
     }
-    function printProCodes() {
-    }
+
     $('#d_codeNPk').barcode('000000', 'code128')
     function printNewPackCode() {
     }

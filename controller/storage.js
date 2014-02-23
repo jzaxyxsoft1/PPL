@@ -243,3 +243,8 @@ exports.postship=function(req,res){
         res.json({msg: e == null, error: e});
     });
 }
+exports.print=function(req,res){
+    var c=req.query['c'];
+    c= c.replace(",","','")
+    res.render('storage/print.ejs',{m:c});
+}
