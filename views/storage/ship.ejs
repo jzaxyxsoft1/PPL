@@ -157,11 +157,11 @@
         }
         _p.CompleteAmount(ca);
         if (_p.CompleteAmount >= _p.Amount) {
-            _p.Statues = '已发货';
+            _p.Status = '已发货';
             _p.StockOutComfirm = {Operator: user, Time: Date.ToCreateTime()};
         }
         else{
-            _p.Statues='部分发货';
+            _p.Status='部分发货';
         }
         checkBillStatus();
     }
