@@ -33,13 +33,25 @@
 
 <header style=" height:30px; line-height:30px; background-color: #EFEFF2;">
     <span id="MM" class="icon-list ml10 fg-color-darken fl ml10 mt10 pointer"  title="菜单"> </span>
-<span class="icon-windows8 fg-color-blue fr mr20 mi  mt10 pointer" title="主页" u="/main"></span>
+<span class="icon-windows8 fg-color-blue fr mr20 mi  mt10 pointer" title="主页" u="/main?m=<%=isMobile%>"></span>
     <span class="icon-key fg-color-darken fr mr20 mi  mt10 pointer" title="更改密码" u="/user/m?t=changepwd"></span>
 </header>
+<%if(isMobile){%>
+<script type="text/javascript">
+    $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
+        d.forEach(function (i){ i.Url = '/M'+i.Url});
+        ko.applyBindings(d, document.getElementById('d_sysFuns'));
+    });
+</script>
+<%}
+else{%>
 <script type="text/javascript">
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         ko.applyBindings(d, document.getElementById('d_sysFuns'));
     });
+</script>
+<%}%>
+<script type="text/javascript">
     $('#MM').click(function () {
         $('#d_sysFuns').animate({left: 0}, function () {
             $('body').on('click', function (e) {
@@ -58,5 +70,6 @@
         window.parent.location = '/';
     }
 </script>
-<div id="mainContainer" >
+
+<div id="mainContainer" class="oya hide" style="height:-webkit-calc(100%-(30px))" >
 

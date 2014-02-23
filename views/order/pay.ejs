@@ -1,21 +1,37 @@
 <% include ../Top.ejs %>
 <div class="wp100 hp100">
     <div class="wp98 mc hp100 oya" id="d_list">
+        <% if(isMobile){ %>
+
+        <% }
+        else{ %>
         <table id="tbl_ds" cellspacing="0" cellpadding="0" class="wp100 mt10"></table>
+        <script type="text/javascript">
+            $('#tbl_ds').BillTable('edit');
+        </script>
+        <% } %>
+
     </div>
     <div class="wp98 mc hp100 oya hide" id="d_edit">
-        <div id="d_ll" class="wp100">  </div>
+        <% if(isMobile){ %>
+        <div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
+            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+        </div>
+        <% }
+        else{ %>
+        <div id="d_ll" class="wp100"></div>
         <div class="cb pt10 ac">
             <b>银行交易号:</b><input type="text" id="txt_voucherNum" style="width:200px;"/>
         </div>
         <div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
             <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
         </div>
+        <% } %>
+
     </div>
 </div>
 <script type="text/javascript" src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
-    $('#tbl_ds').BillTable('edit');
     $('#d_ll').BillDetail();
     var bill = new Bill();
     ko.applyBindings(bill, document.getElementById('d_edit'));
@@ -37,7 +53,10 @@
         showPnl('d_edit');
     }
     function pay() {
-        if(!$('#txt_voucherNum').val()){ alert('请输入银行交易号!');return;}
+        if (!$('#txt_voucherNum').val()) {
+            alert('请输入银行交易号!');
+            return;
+        }
         $.post('/order/postpay', {id: bill._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
             alert(d.error || '付款完成!');
             if (d.msg) {

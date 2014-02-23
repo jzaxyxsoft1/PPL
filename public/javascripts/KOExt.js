@@ -43,14 +43,12 @@ ko.bindingHandlers.xzqh = {
                     break;
             }
         });
-
     },
     update: function (elm, vlu) {
         var _ns = ko.bindingHandlers.xzqh.getNo(vlu().Value());
         var _t = $(elm);
         $('option[value="' + _ns.pn + '"]', _t.children().eq(0)).attr('selected', 'selected');
         _t.children().eq(0).change();
-
         if (_t.children().length > 1) {
             $('option[value="' + _ns.cn + '"]', _t.children().eq(1)).attr('selected', 'selected');
             _t.children().eq(1).change();
@@ -107,10 +105,9 @@ var Bill = function (owner, creator) {
         });
     }, this);
     this.Status = ko.observable('');
-    this.ShipAddress=ko.observable('');
-    this.Tel=ko.observable('');
-    this.Org={Name:ko.observable(owner? owner.Name:''),Value:ko.observable(owner? owner._id:'')};
-
+    this.ShipAddress = ko.observable('');
+    this.Tel = ko.observable('');
+    this.Org = {Name: ko.observable(owner ? owner.Name : ''), Value: ko.observable(owner ? owner._id : '')};
     this.updateFromObj = function (obj) {
         delete obj.Sum;
         var _t = this;
@@ -126,8 +123,8 @@ var Bill = function (owner, creator) {
         _t.Status(obj.Status);
         _t.BillNum(obj.BillNum);
         _t.Remark(obj.Remark);
-        _t.ShipAddress(obj.ShipAddress||'');
-        _t.Tel(obj.Tel||'');
+        _t.ShipAddress(obj.ShipAddress || '');
+        _t.Tel(obj.Tel || '');
         _t._id(obj._id);
         _t.Items.removeAll();
         _.each(obj.Items, function (i) {
@@ -137,7 +134,6 @@ var Bill = function (owner, creator) {
             ii.CompleteAmount(i.CompleteAmount)
             _t.Items.push(ii);
         });
-
     };
 };
 var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEditable) {
@@ -146,7 +142,7 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
     this.Amount = ko.observable(amount || 0);
     this.Model = ko.observable(model || '');
     this.Unit = ko.observable(unit || '');
-    this.CompleteAmount=ko.observable(0);
+    this.CompleteAmount = ko.observable(0);
     this.AmountEditable = ko.observable(amountEditable || false);
     this.Deleteable = ko.observable(true);
     this.Remark = ko.observable('');
@@ -158,7 +154,6 @@ var BillItem = function (relativeObj, unitPrice, amount, model, unit, amountEdit
 $.fn.BillTable = function (sltKoEvent, multSlt) {
     var _t = $(this);
     var ops = {sltKoEvent: sltKoEvent, multiSlt: arguments.length > 1 ? arguments[1] : false};
-
     var _s = '<thead><tr>' + (ops.multiSlt ? '<td></td>' : '') + '<td>单号</td><td>日期</td><td>内容</td><td>金额</td><td>状态</td><td>建单人</td></tr>' +
         '</thead><tbody data-bind="foreach:$data">' + '<tr data-bind="css:{\'even\':$index()%2!=0}">' +
         (ops.multiSlt ? '<td><input type="checkbox" data-bind="value:_id"/></td>' : '') +
@@ -228,7 +223,6 @@ var StockBill = function (billType, owner, creator) {
             ii.Stock.Value(i.Stock.Value);
             _t.Items.push(ii);
         });
-
     };
 };
 var StockBillItem = function (relativeObj, unitCost, amount, model, unit, amountEditable) {
@@ -254,9 +248,10 @@ var StockBillItem = function (relativeObj, unitCost, amount, model, unit, amount
         }
     }, this);
 };
-$.fn.StockBillTable = function (sltCallback,showOrderID) {
-    var sOrder= showOrderID||false;
-    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>成本</td> '+(sOrder?'< td > 订单号 < /td>':'')+'<td>建单人</td><td>状态</td></tr></thead><tbody data-bind="foreach:$data"> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Cost"></td> '+(sOrder?'<td data-bind="text:OrderID"></td>':'')+'<td data-bind="text:Creator.Name"></td><td data-bind="text:Status"></td> </tr></tbody>';
+
+$.fn.StockBillTable = function (sltCallback, showOrderID) {
+    var sOrder = showOrderID || false;
+    var _s = '<thead><tr><td>单号</td><td>日期</td><td>内容</td><td>成本</td> ' + (sOrder ? '< td > 订单号 < /td>' : '') + '<td>建单人</td><td>状态</td></tr></thead><tbody data-bind="foreach:$data"> <tr data-bind="css:{\'even\':$index()%2!=0}"> <td> <a data-bind="text:BillNum,click:' + sltCallback + '"></a> </td> <td data-bind = "text:CreateTime.Item1" > </td> <td data-bind="foreach:Items" class="al"><b class="ml10" data-bind="text:RelativeObj.Item2"></b>:<span data-bind="text:Amount"></span></td> <td data-bind="text:Cost"></td> ' + (sOrder ? '<td data-bind="text:OrderID"></td>' : '') + '<td data-bind="text:Creator.Name"></td><td data-bind="text:Status"></td> </tr></tbody>';
     this.html(_s);
     return this;
 };
@@ -264,12 +259,11 @@ $.fn.StockBillDetail = function () {
     var _s = '<div class="mc mt10"><div class="editor-label" > 单号: </div><div class="editor-field"><span data-bind="text:BillNum"></span> </div> <div class="editor-label">订单号:</div><div class="editor-field"> <span data-bind="text:OrderID"></span></div><div class="editor-label">供应商:</div> <div class="editor-field"> <span data-bind="text:Provider.Item2"></span> </div> <div class="editor-label">建单时间:</div><div class="editor-field"> <span data-bind="text:CreateTime.Item1"></span></div><div class="editor-label">建单人:</div> <div class="editor-field"> <span data-bind="text:Creator.Item2"></span></div><div class="editor-label">金额:</div><div class="editor-field"><span data-bind="text:Sum"></span></div></div><div class = "hr"style = "height: 10px;" > </div><fieldset class="mc pp1 wp98"><legend><strong>单据内容:</strong></legend><table cellspacing="0" cellpadding="0" class="wp98 mc"><thead><tr><td>产品</td> <td>规格</td><td>单位</td><td>数量</td> <td>单价</td><td>金额</td><td>完成数量</td><td>库房</td></tr> </thead><tbody data-bind="foreach:Items"> <tr data-bind="css:{\'even\':$index()%2!=0}"><td data-bind="text:RelativeObj.Item2"></td><td data-bind="text:Model"></td><td data-bind="text:Unit"></td><td data-bind="text:Amount"></td><td data-bind="text:UnitPrice"></td> <td data-bind="text:Sum"></td><td data-bind="text:CompleteAmount"></td><td data-bind="text:Stock.Name"></td></tr></tbody><tfoot><tr><td colspan="8" class="ac even"><b>金额合计:</b><span data-bind="text:Sum"></span></td></tr></tfoot></table></fieldset>';
     this.html(_s);
     return this;
-
 };
-$.fn.barcode =function (bill){
-    var _t= $(this);
-    var bill= bill;
-   _t.on('keydown', function (e) {
+$.fn.barcode = function (bill) {
+    var _t = $(this);
+    var bill = bill;
+    _t.on('keydown', function (e) {
         if (e.keyCode == 13 || e.keyCode == 108) {
             kv = e.target.value;
             if (kv.substr(0, 1) != 'h') {
@@ -293,7 +287,7 @@ $.fn.barcode =function (bill){
             e.target.focus();
         }
     });
-    _t.setItemVal=function(itmID, amount)  {
+    _t.setItemVal = function (itmID, amount) {
         var _p = _.find(bill.Items(), function (i) {
             return i.RelativeObj.Item1() == itmID;
         });

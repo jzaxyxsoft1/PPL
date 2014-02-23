@@ -58,8 +58,27 @@
     </a>
 
 </div>
+<%if(isMobile){%>
 <script type="text/javascript">
-
+    $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
+        var m = 0;
+        var ts = [];
+        d = _.sortBy(d, function (i) {return i._id});
+        d.forEach(function (di) {
+            di.items.forEach(function (i, idx) {
+                i.icon = 'ico ' + i.icon;
+                i.cls = bgColor[m] + ' iconWrap';
+                i.Url='/M'+ i.Url;
+                ts.push(i);
+                m++;
+                m = m > bgColor.length - 1 ? 0 : m;
+            });
+        })
+        ko.applyBindings(ts, document.getElementById('d_sysFuns'));
+    });
+</script>
+<%}else{%>
+<script type="text/javascript">
     $.getJSON('/admin/get', {t: 'sysfuns'}, function (d) {
         var m = 0;
         var ts = [];
@@ -75,6 +94,11 @@
         })
         ko.applyBindings(ts, document.getElementById('d_sysFuns'));
     });
+</script>
+<%}%>
+<script type="text/javascript">
+
+
     function getCookie(name) {
         var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
         if (arr != null) return unescape(arr[2]);

@@ -5,39 +5,46 @@
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <script type="text/javascript" src="../javascripts/jquery-1.10.1.min.js"></script>
     <style type="text/css">
-        html,body{
+        html, body {
             width: 100%;
-            height: 100%;}
-        form p b{ display: inline-block; width: 100px; text-align: right;}
+            height: 100%; }
+        form p b { display: inline-block; width: 100px; text-align: right; }
     </style>
 </head>
-<body style="width: 100%; height: 97%" class="bg-color-blue">
+<body style="width: 100%; height: 97%">
 <table style="width:100%; height: 100%; text-align: center;">
     <tbody style="width: 100%; height: 100%">
     <tr style="width: 100%; height: 100%;">
         <td style="width: 100%; height: 100% ; text-align: center; vertical-align: middle;">
-            <!--<h1 class="fg-color-yellow" style="font-size:50px;text-shadow: #da532c 0 1px 0;">瑞保驰合作伙伴自助平台</h1>-->
-            <form action="/index/postl" method="post" style="width: 400px; margin-left: auto; margin-right: auto; padding:10px; border-radius:10px;box-shadow: 2px 2px 2px #666; " class="border-color-blueDark bg-color-blueLight">
-                <p><b>经销商代码:</b><input type="text" name="num" value="0"/></p>
-                <p><b>登录名:</b><input type="text" name="pn" value="Admin"/></p>
+            <form action="/index/postl" method="post"
+                  style=" position:relative;width: 400px; margin-left: auto; margin-right: auto; padding:10px; border-radius:10px;box-shadow: 2px 2px 2px #666; " class=" bg-color-blueDark">
+                <img src="http://www.ruibaochi.com/images/login_icon.png" alt="" height="80" style="position:
+                absolute; top: -40px; left: 20px;"/>
+                <div class="m10 bg-color-blueLight" style="width:360px; padding: 10px;">
 
-                <p><b>密码:</b>  <input type="password" name="pwd" value="9998"/></p>
+                    <p><b>经销商代码:</b><input type="text" name="num" value="0"/></p>
 
-                <div><input type="submit" value="登录"/></div>
+                    <p><b>登录名:</b><input type="text" name="pn" value="Admin"/></p>
+
+                    <p><b>密码:</b> <input type="password" name="pwd" value="9998"/></p>
+
+                    <div><input type="submit" value="登录"/></div>
+                    <input type="hidden" name="m" value="<%= isMobile %>"/>
+                </div>
             </form>
         </td>
     </tr>
     </tbody>
 </table>
-<%if(msg){
-    msg =  msg=='1'?'经销商代码错误!':'登录名或密码错误!'
+<% if(typeof (msg) != 'undefined'){
+    msg = msg == '1' ? '经销商代码错误!' : '登录名或密码错误!'
 %>
 <script type="text/javascript">
 
-        alert('<%=msg%>');
+    alert('<%=msg%>');
 
 </script>
-<%}%>
+<% } %>
 
 </body>
 </html>

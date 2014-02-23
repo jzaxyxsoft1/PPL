@@ -51,12 +51,7 @@ function edit(d) {
         showPnl('d_edit');
     });
 }
-function addItem() {
-    var p = GV.products[0];
-    var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut', Item4: ''}, p.PartnerPrice, 1, p.Model, p.Unit, true);
-    o.CompleteAmount=0;
-    bill.Items.push(o);
-}
+
 function proChg(d) {
     var pro = GV.products.filter(function (i) {
         return i._id == d.RelativeObj.Item1();

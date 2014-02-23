@@ -1,11 +1,7 @@
 <% include ../Top.ejs %>
-<ul id="menu">
-    <li><a href="javascript:edit(0)" id="bt_new" style="display: none;">新建订单</a></li>
-</ul>
-<div class="hp95 wp100">
-    <div id="d_list" class="wp100 hp100 oya hide">
-        <table id="tbl_ds" cellspacing="0" cellpadding="0" class="mc mt10 wp98"></table>
-    </div>
+<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<% if(!isMobile){ %>
+<div class="editor-container">
     <div id="d_edit" class="wp100 hp100 oya hide">
         <div class="mc mt10 editor-container">
             <div class="editor-label">单号:</div>
@@ -21,7 +17,7 @@
             <div class="editor-label">金额:</div>
             <div class="editor-field"><span data-bind="text:Sum"></span></div>
             <div class="hr" style="height: 10px;"></div>
-            <fieldset class="mc wp97 pp1"  >
+            <fieldset class="mc wp97 pp1">
                 <legend><strong>订单内容:</strong><a href="javascript:addItem()" class="lnk ml10">添加产品</a></legend>
                 <table cellspacing="0" cellpadding="0" style="width:590px;">
                     <thead>
@@ -46,47 +42,132 @@
                         <td data-bind="text:UnitPrice"></td>
                         <td data-bind="text:Sum"></td>
                         <td data-bind="visible:$parent.Status()=='未提交'">
-                            <a class="ilblk bg-color-red" style="padding: 5px;"  data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}"><b class="icon-close fg-color-white"></b></a>
+                            <a class="ilblk bg-color-red" style="padding: 5px;"
+                               data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}"><b
+                                        class="icon-close fg-color-white"></b></a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </fieldset>
-            <div class="cb ac pt10">
+            <div class="cb ac pt10" id="d_bts">
                 <input type="button" value="保存" onclick="save()"/>
-                <input class="ml10" type="button" value="保存并提交" onclick="save(1)"/>
-                <input class="ml10" type="button" value="删除" onclick="del()"
-                       data-bind="visible:$data.Status()=='未提交'&& $data.BillNum()!=''"/>
-                <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+                <input class="ml5" type="button" value="提交" onclick="save(1)"/>
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<% }
+else{ %>
+<style type="text/css">
+    body { font-size: 16px; }
+    span[class^="icon-"] { font-size: 20px; }
+    .itemC { padding: 3%; width: 94%; line-height: 25px; margin-bottom: 4px; border-radius: 5px; }
+    .bt_itemDel { padding: 15px 10px; position: absolute; bottom: 10px; right: 10px; }
+</style>
+<div class="mc wp96 pp1" id="d_edit">
+    <p>
+        <strong>建单人:</strong><span data-bind="text:Creator.Item2"></span>
+        <strong class="ml10">建单时间:</strong><span data-bind="text:CreateTime.Item1"></span>
+    <br/>
+        <strong >金额合计:</strong><span data-bind="text:Sum"></span>元
+    </p>
+
+    <fieldset class="wp96 pp1 mc">
+        <legend><strong>单据内容:</strong><a href="javascript:addItem()"><span class="icon-plus
+        fg-color-blue"></span></a></legend>
+        <div class="mc wp98" data-bind="foreach:Items">
+            <div class="border-color-blue fg-color-blueDark itemC">
+                <img data-bind="attr:{'src':img}" style="width:30%;" class="fl"/>
+
+                <div class="fr pr" style="width:68%">
+                    <strong>名称:</strong>
+                    <select data-bind="options:GV.products,value:RelativeObj.Item2, optionsText:'Name',optionsValue:'_id',event:{'change':proSlt}" ></select><br/>
+                    <strong>规格型号:</strong><span data-bind="text:Model"></span><br/>
+                    <strong>单价:</strong><span data-bind="text:UnitPrice"></span><span>元</span><br/>
+                    <strong>数量:</strong>
+                    <span class="icon-minus fg-color-green" data-bind="click:m"></span>
+                    <span data-bind="text:Amount" class="ilblk ac bg-color-gray" style="width:100px; Height:30px;
+                    line-height:30px;  padding:5px; "></span>
+                    <span class="icon-plus fg-color-green" data-bind="click:p"></span>
+                    <br/>
+                    <strong>金额:</strong><span data-bind="text:Sum"></span><span>元</span>
+                    <span class="bt_itemDel" data-bind="click:function(){$parent.Items.remove($data)}">删除</span>
+                </div>
+                <b class="hr"></b>
+            </div>
+        </div>
+    </fieldset>
+    <div class="cb ac pt10" id="d_bts">
+        <span class="bt" onclick="save()">保存</span>
+        <span class="bt" class="ml5" onclick="save(1)">提交</span>
+    </div>
+</div>
+<% } %>
+
 <script type="text/javascript">
     var u = {_id: '<%=user._id%>', Name: '<%=user.Name%>', Org: {Name: '<%=user.Org.Name%>', Value: '<%=user.Org.Value%>'}};
-    var org = {Name:'<%=org.Name%>',Value:'<%=org._id%>'}, Cts={Address:'<%=org.Address%>', SMSNum:'<%=org.SMSNum%>'};
-    $('#tbl_ds').BillTable('edit');
-    $.getJSON('/product/get', {t: 'objs', query: {}, option: {Name: 1, Model: 1, Unit: 1, PartnerPrice: 1,Price:1}}, function (d) {
-        GV.products = d;
-        $('#bt_new').show();
-        bindList();
-    });
-    function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '待提交'}}, function (d) {
-            if (GV.list) {
-                ko.mapping.fromJS(d, GV.list);
+    var org = {Name: '<%=org.Name%>', Value: '<%=org._id%>'}, Cts = {Address: '<%=org.Address%>', SMSNum: '<%=org.SMSNum%>'};
+    var bill = new Bill({Item1: org.Value, Item2: org.Name, Item3: 'Org'}, {Item1: u._id, Item2: u.Name, Item3: 'User'});
+    var defaultAmount = 12;
+    bill.Status('未提交');
+    ko.applyBindings(bill, document.getElementById('d_edit'));
+    $(function () {
+        $.getJSON('/product/get', {t: 'objs', query: {}}, function (d) {
+            _.each(d, function (i) {
+                i.img = 'http://www.ruibaochi.com' + i.ImgUrls.length ? i.ImgUrls[0] : '/images/yangpin.png'
+            });
+            GV.products = d;
+            $('#mainContainer').show();
+            $('#d_edit').show();
+
+        });
+    })
+    function addItem() {
+        var p = GV.products[0];
+        var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut'}, p.PartnerPrice, 1, p.Model, p.Unit,
+                             true);
+        o.Amount(defaultAmount);
+        o.CompleteAmount = 0;
+        o.img = ko.observable(p.img);
+        bill.Items.push(o);
+    }
+    function p(d) {
+        d.Amount(d.Amount() + defaultAmount)
+    }
+    function m(d) {
+        if (d.Amount() > 0) { d.Amount(d.Amount() - defaultAmount);}
+    }
+    function save(f) {
+        if (f) {
+            bill.Status('未付款');
+        }
+        var m = ko.mapping.toJS(bill);
+        _.each(m.Items, function (i) {
+            i.Amount = Number(i.Amount);
+            i.UnitPrice = Number(i.UnitPrice);
+        });
+        if (_.any(m.Items, function (i) {return i.Amount == 0})) {
+            alert('请输入订货数量!');
+            return;
+        }
+        delete  m.updateFromObj;
+        $.post('/order/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
+            alm(d.error || '保存成功!');
+            if (d.msg) {
+                bill._id(d.ID);
+                bill.BillNum(d.BillNum);
+                bindList();
             }
-            else {
-                GV.list = ko.mapping.fromJS(d);
-                ko.applyBindings(GV.list, document.getElementById('d_list'));
-            }
-            showPnl('d_list');
         });
     }
-    function alm(msg) {
-        alert(msg);
+    function proSlt(d){
+        var pi = _.find(GV.products,function (i){return i._id== d.RelativeObj.Item1();});
+        d.RelativeObj.Item2(pi.Name);
+        d.Model(pi.Model);
+        d.UnitPrice(pi.PartnerPrice);
+        d.img(pi.img)
     }
 </script>
-<script type="text/javascript" src="/javascripts/pages/order/neworder.js"></script>
+
 <% include ../Bottom.ejs %>

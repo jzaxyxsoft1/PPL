@@ -244,6 +244,7 @@ _.mixin({ToArray:function (obj,iterator){
 }});
 }
 
+$('span.bt').addClass('bg-color-blueDark fg-color-white');
 
 
 
