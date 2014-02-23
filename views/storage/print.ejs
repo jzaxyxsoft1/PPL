@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        #mc {
+            margin-top: -10px;
+        }
+    </style>
+    <object id="WB" width="0" height="0" classid="clsid:8856F961-340A-11D0-A96B-00C04FD705A2"></object>
+    <script type="text/javascript" src="/javascripts/jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="/javascripts/jquery-barcode.min.js"></script>
+    <script language="VBScript">
+Sub window_onunload
+On Error Resume Next
+Set WB = nothing
+End Sub
+Sub vbPrintPage ( x,y,z )
+WB.ExecWB x, y,z, 0
+End Sub
+
+    </script>
+</head>
+<body>
+<div id="mc" style="margin-left: 75px">
+
+</div>
+</body>
+
+<script type="text/javascript">
+    var m = ['<%=m%>'];
+    var _c = $('#mc');
+    _c.html('');
+    for (i = 0; i < m.length; i++) {
+        var _l = $('<div class="ac"></div>');
+        _c.append(_l);
+        _l.barcode(m[i].toString(), 'code128');
+    }
+</script>
+<script language="VBScript">
+  vbPrintPage 6 ,2 ,3
+</script>
+<script type="text/javascript">
+    window.opener = null;
+    //window.close();
+</script>
+</html>
