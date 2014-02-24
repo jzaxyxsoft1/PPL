@@ -81,7 +81,7 @@
                     });
                 },
                 function (cb) {
-                    $.getJSON('/product/get?t=obj', {query: {_id: GV.productid}}, function (d) {
+                    $.getJSON('/product/get?t=obj', {query: {_id:_o.RelativeObj.Item1}}, function (d) {
                         GV.product = d;
                         $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
                         cb();
