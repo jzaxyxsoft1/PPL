@@ -28,9 +28,10 @@
                         <td>产品</td>
                         <td>规格</td>
                         <td>单位</td>
-                        <td>数量</td>
+                        <td>订货数量</td>
                         <td>单价</td>
                         <td>金额</td>
+                        <td>供应商库存</td>
                         <td style="width:30px;" data-bind="visible:$data.Status()=='未提交'"></td>
                     </tr>
                     </thead>
@@ -44,6 +45,7 @@
                         <td><input type="text" data-bind="value:Amount" style="width:40px;"/></td>
                         <td data-bind="text:UnitPrice"></td>
                         <td data-bind="text:Sum"></td>
+                        <td data-bind="text:PStorage"></td>
                         <td data-bind="visible:$parent.Status()=='未提交'">
                             <a class="ilblk bg-color-red" style="padding: 5px;"
                                data-bind="click:function(){if(window.confrim('是否删除?')){$parent.Items.remove($data);}}"><b
@@ -72,8 +74,10 @@ else{ %>
     <p>
         <strong>建单人:</strong><span data-bind="text:Creator.Name"></span>
         <strong class="ml10">建单时间:</strong><span data-bind="text:CreateTime.Item1"></span>
-    </p><p>
-        <strong >金额合计:</strong><b data-bind="text:Sum" class="fred" style="font-size: 22px;"></b><span>元</span>
+    </p>
+
+    <p>
+        <strong>金额合计:</strong><b data-bind="text:Sum" class="fred" style="font-size: 22px;"></b><span>元</span>
     </p>
     <fieldset class="wp96 pp1 mc">
         <legend><strong>单据内容:</strong><a href="javascript:addItem()" class="ml20"><span class="icon-plus
@@ -81,21 +85,25 @@ else{ %>
         <div class="mc wp98" data-bind="foreach:Items">
             <div class="border-color-grayDark fg-color-blueDark itemC">
                 <img data-bind="attr:{'src':img}" style="width:25%;" class="fl"/>
+
                 <div class="fr pr" style="width:73%">
                     <p>
-                        <b>名称:</b> <span class="bg-color-blueDark fg-color-white" data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
+                        <b>名称:</b> <span class="bg-color-blueDark fg-color-white"
+                                         data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
                     </p>
-
                     <b>规格型号:</b><span data-bind="text:Model"></span><br/>
                     <b>单价:</b><span data-bind="text:UnitPrice"></span><span>元</span><br/>
                     <b>数量:</b>
                     <span class="icon-minus fg-color-green" data-bind="click:m"></span>
                     <span data-bind="text:Amount" class="ilblk ac bg-color-gray" style="width:100px; Height:30px;
                     line-height:30px;  padding:5px; "></span>
-                    <span class="icon-plus fg-color-green" data-bind="click:p"></span><span data-bind="text:Unit"></span>
+                    <span class="icon-plus fg-color-green" data-bind="click:p"></span><span
+                            data-bind="text:Unit"></span>
                     <br/>
                     <b>金额:</b><span data-bind="text:Sum"></span><span>元</span>
-                                  </div>  <span style="display:block; margin-left:6%;" class=" fl mt10 bt bg-color-red fg-color-white" data-bind="click:function(){$parent.Items.remove($data)}">删除</span>
+                </div>
+                <span style="display:block; margin-left:6%;" class=" fl mt10 bt bg-color-red fg-color-white"
+                      data-bind="click:function(){$parent.Items.remove($data)}">删除</span>
 
                 <b class="hr"></b>
             </div>
@@ -109,6 +117,7 @@ else{ %>
 <ul id="ul_pros" class="hide wp96 mc" data-bind="foreach:$data">
     <li class=" wp94 pp1 bg-color-gray" data-bind="click:ppSlt" style="margin-bottom: 4px;">
         <img data-bind="attr:{'src':img}" style="width:20%" class="fl"/>
+
         <div cl="fl " style="width:75%; margin-left: 2%;">
             <strong>名称:</strong> <span class="bt" data-bind="text:Name,click:chgP"></span> <br/>
             <strong>规格型号:</strong><span data-bind="text:Model"></span><br/>
@@ -118,20 +127,20 @@ else{ %>
     </li>
 </ul>
 <script type="text/javascript">
-   function bindPros(d){
-       ko.applyBindings(d,document.getElementById('ul_pros'));
-   }
-    function chgP(d){
-        GV.currentItem=d;
+    function bindPros(d) {
+        ko.applyBindings(d, document.getElementById('ul_pros'));
+    }
+    function chgP(d) {
+        GV.currentItem = d;
         showPnl('ul_pros');
     }
-    function ppSlt(d){
+    function ppSlt(d) {
         GV.currentItem.RelativeObj.Item1(d._id);
-        GV.currentItem.RelativeObj.Item2(d.Name );
-        GV.currentItem.Model(d.Model );
+        GV.currentItem.RelativeObj.Item2(d.Name);
+        GV.currentItem.Model(d.Model);
         GV.currentItem.Unit(d.Unit);
-        GV.currentItem.UnitPrice(d.PartnerPrice );
-        GV.currentItem.img(d.img );
+        GV.currentItem.UnitPrice(d.PartnerPrice);
+        GV.currentItem.img(d.img);
         showPnl('d_edit');
     }
 </script>
@@ -141,31 +150,70 @@ else{ %>
     var u = {_id: '<%=user._id%>', Name: '<%=user.Name%>', Org: {Name: '<%=user.Org.Name%>', Value: '<%=user.Org.Value%>'}};
     var org = {Name: '<%=org.Name%>', Value: '<%=org._id%>'}, Cts = {Address: '<%=org.Address%>', SMSNum: '<%=org.SMSNum%>'};
     var bill = new Bill({Item1: org.Value, Item2: org.Name, Item3: 'Org'}, u);
-    bill.Address=ko.observable(Cts.Address);
-    bill.SMSNum=ko.observable(Cts.SMSNum);
+    bill.Address = ko.observable(Cts.Address);
+    bill.SMSNum = ko.observable(Cts.SMSNum);
     var defaultAmount = 12;
     bill.Status('未提交');
     ko.applyBindings(bill, document.getElementById('d_edit'));
     $(function () {
         $.getJSON('/product/get', {t: 'objs', query: {}}, function (d) {
             _.each(d, function (i) {
-                i.img = 'http://www.ruibaochi.com' +( i.ImgUrls.length ? i.ImgUrls[0] : '/images/yangpin.png');
+                i.img = 'http://www.ruibaochi.com' + ( i.ImgUrls.length ? i.ImgUrls[0] : '/images/yangpin.png');
             });
             GV.products = d;
-            if(typeof(bindPros)!='undefined'){bindPros(d);}
+            if (typeof(bindPros) != 'undefined') {bindPros(d);}
             $('#mainContainer').show();
             $('#d_edit').show();
-
         });
     })
+    function getStorage(id, cb) {
+        async.parallel(
+                {
+                    cs: function (pcb) {
+                        $.getJSON(
+                                '/base/getobjs',
+                                {
+                                    tp: 'Storage', m: 1,
+                                    query: {'RelativeObj.Item1': id,
+                                        $or: [
+                                            {'Org.Value': '0'},
+                                            {'Org.Value': '1'}
+                                        ]
+                                    },
+                                    option: {Useable: 1}
+                                },
+                                function (d) {
+                                    d = d.length ? d.Sum('Useable') : 0;
+                                    pcb(null, d);
+                                });
+                    },
+                    zs: function (pcb) {
+                        $.getJSON('/base/getobjs', {tp: 'Storage', m: 1,
+                            query: {'RelativeObj.Item1': d.RelativeObj.Item1(), 'Org.Value': '<%=u.Org.Value%>'},
+                            option: {Useable: 1}}, function (d) {
+                            d = d.length > 0 ? d.Sum('Useable') : 0;
+                        });
+                    }
+                },
+                function (e, result) {
+                    cb(result);
+                }
+        );
+    }
     function addItem() {
         var p = GV.products[0];
-        var o = new BillItem({Item1: p._id, Item2: p.Name, Item3: 'Prodcut'}, p.PartnerPrice, 1, p.Model, p.Unit,
-                             true);
-        o.Amount(defaultAmount);
-        o.CompleteAmount = 0;
-        o.img = ko.observable(p.img);
-        bill.Items.push(o);
+        getStorage(p.__id, function (storage) {
+            var o = new BillItem(
+                    {Item1: p._id, Item2: p.Name, Item3: 'Prodcut'},
+                    p.PartnerPrice, 1, p.Model, p.Unit, true
+            );
+            o.Amount(defaultAmount);
+            o.CompleteAmount = 0;
+            o.img = ko.observable(p.img);
+            o.PStorage=ko.observable(storage.cs);
+            o.CStorage=ko.observable(storage.zs);
+            bill.Items.push(o);
+        })
     }
     function p(d) {
         d.Amount(d.Amount() + defaultAmount)
@@ -196,13 +244,16 @@ else{ %>
             }
         });
     }
-    function proSlt(d){
-        var pi = _.find(GV.products,function (i){return i._id== d.RelativeObj.Item1();});
-        d.RelativeObj.Item2(pi.Name);
-        d.Model(pi.Model);
-        d.UnitPrice(pi.PartnerPrice);
-        d.img(pi.img);
-        alert(pi.img);
+    function proSlt(d) {
+        var pi = _.find(GV.products, function (i) {return i._id == d.RelativeObj.Item1();});
+        getStorage(pi.RelativeObj.Item1(),function (storage){
+            d.RelativeObj.Item2(pi.Name);
+            d.Model(pi.Model);
+            d.UnitPrice(pi.PartnerPrice);
+            d.img(pi.img);
+            d.PStorage(storage.cs);
+            d.CStorage(storage.zs);
+        })
     }
 </script>
 

@@ -162,9 +162,10 @@
                     i.UnitCost = Number(i.UnitCost);
                 });
                 $.post('/base/postsave', {tp: 'StockIn', obj: JSON.stringify(m)}, function (d) {
+
                     alert(d.error || '保存成功!');
                     if (d.msg) {
-                        ps(pks);
+                        ps(pks , d.ID);
                     }
                 });
             }
@@ -173,8 +174,8 @@
             ps(pks);
         }
     }
-    function ps(pks) {
-        $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks)}, function (d) {
+    function ps(pks,stockInBillId) {
+        $.post('/storage/post', {t: 'savepackages', objs: JSON.stringify(pks),iId:stockInBillId}, function (d) {
             loading.hide();
             showPnl('d_menu');
         });

@@ -39,7 +39,7 @@
     function bindList() {
         async.waterfall([
             function (cb) {
-                $.getJSON('/base/getobjs', {tp: 'TransferBill', query: {'Creator.Org.Value': '<%=user.Org.Value%>',Status:{$regex:'发货'}}, option: {OrderID: 1, Items: 1} },
+                $.getJSON('/base/getobjs', {tp: 'TransferBill',m:1, query: {'Owner.Item1': '<%=user.Org.Value%>',Status:{$regex:'发货'}}, option: {OrderID: 1, Items: 1} },
                         function (d) {
                             if (d == null || d.length == 0) {
                                 cb('无待收货信息!');
@@ -76,8 +76,10 @@
                 cb(null, items);
             }
         ], function (e, d) {
+            showPnl('d_list')
             if (e) {
                 alert(e);
+                $('#d_list').hide();
                 return;
             }
             if (GV.List) {
@@ -86,7 +88,7 @@
             else {
                 GV.List = ko.mapping.fromJS(d);
                 ko.applyBindings(GV.List, document.getElementById('d_list'));
-               showPnl('d_list')
+
             }
         });
     }
@@ -111,5 +113,6 @@
         });
     }
     bindList();
+    $('#mainContainer').show();
 </script>
 <% include ../Bottom.ejs %>
