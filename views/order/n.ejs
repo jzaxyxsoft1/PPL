@@ -190,9 +190,10 @@ else{ %>
                     },
                     zs: function (pcb) {
                         $.getJSON('/base/getobjs', {tp: 'Storage', m: 1,
-                            query: {'RelativeObj.Item1': d.RelativeObj.Item1(), 'Org.Value': '<%=u.Org.Value%>'},
+                            query: {'RelativeObj.Item1': id, 'Org.Value': '<%=user.Org.Value%>'},
                             option: {Useable: 1}}, function (d) {
                             d = d.length > 0 ? d.Sum('Useable') : 0;
+                            pcb(null,d)
                         });
                     }
                 },

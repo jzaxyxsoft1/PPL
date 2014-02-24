@@ -39,6 +39,8 @@
         GV.prices = d;
         GV.mdl = ko.mapping.fromJS(d);
         ko.applyBindings(GV.mdl, document.getElementById('d_list'));
+        $('#mainContainer').show();
+
     });
     function s() {
         var m = ko.mapping.toJS(GV.mdl);

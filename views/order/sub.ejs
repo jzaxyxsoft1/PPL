@@ -1,6 +1,6 @@
 <% include ../Top.ejs %>
 <div class="wp100 hp100 oh">
-    <div class="wp100 hp100 oya hide" id="d_list">
+    <div class="wp100 hp100 oya  " id="d_list">
         <table cellspacing="0" cellpadding="0" class="mt10 wp98 mc" id="tbl_ds"></table>
     </div>
     <div class="wp100 hp100 oya hide" id="d_edit">
@@ -16,7 +16,7 @@
     $('#tbl_ds').BillTable('oSlt');
     $('#d_dtl').BillDetail();
     var bill = new Bill();
-    ko.applyBindings(bill, document.getElementById('d_dtl'));
+    ko.applyBindings(bill, document.getElementById('d_edit'));
     function sub() {
         $.getJSON('/order/get', {t: 'submitorder', id: bill._id()}, function (d) {
             alert(d.error || '订单提交完成!');
@@ -38,7 +38,7 @@
                 GV.list = ko.mapping.fromJS(ds);
                 ko.applyBindings(GV.list, document.getElementById('d_list'));
             }
-            showPnl('d_list');
+            $('#mainContainer').show();
         });
     }
     bindList();
