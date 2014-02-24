@@ -12,7 +12,7 @@
                 <div class="editor-label">建单时间:</div>
                 <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
                 <div class="editor-label">建单人:</div>
-                <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
+                <div class="editor-field"><span data-bind="text:Creator.Name"></span></div>
                 <div class="editor-label">金额:</div>
                 <div class="editor-field"><span data-bind="text:Sum"></span></div>
             </div>
@@ -37,7 +37,7 @@
                         </td>
                         <td data-bind="text:Model"></td>
                         <td data-bind="text:Unit"></td>
-                        <td data-bind="text:Amount">  </td>
+                        <td data-bind="text:Amount"></td>
                         <td data-bind="text:UnitPrice"></td>
                         <td data-bind="text:Sum"></td>
                         <td>
@@ -49,7 +49,8 @@
                 </table>
             </fieldset>
             <div class="cb wp100 pt10">
-                <b>送货地址:</b><span data-bind="text:ShipAddress"></span> <b class="ml10">联系电话:</b><span data-bind="text:Tel"></span>
+                <b>送货地址:</b><span data-bind="text:ShipAddress"></span> <b class="ml10">联系电话:</b><span
+                        data-bind="text:Tel"></span>
             </div>
             <div class="cb ac pt10">
                 <input type="button" value="保存" onclick="save()"/>
@@ -75,21 +76,25 @@
 </div>
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
-    var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
+    var u = {_id: '<%=u._id%>', Name: '<%=u.Name%>', Org: {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'}};
     var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
     $('#tbl_bills').StockBillTable('edit');
     $('#tbl_order').BillTable('orderSlt');
-    var bill = new StockBill('StockIn', org, u);
+    var bill = new StockBill('StockIn', u.Org, u);
     ko.applyBindings(bill, document.getElementById('d_edit'));
 
     $.getJSON('/base/getobjs', {tp: 'Stock', query: {}, options: {Name: 1}}, function (d) {
         GV.stocks = d;
         $('#bt_add').show();
+        $('#mainContainer').show();
     });
 
     function getOrders() {
         loading.show();
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {$or:[{Status: '付款已确认'},{Status:'已部分发货'}]}}, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {$or: [
+            {Status: '付款已确认'},
+            {Status: '已部分发货'}
+        ]}}, function (d) {
             if (GV.order) {
                 ko.mapping.fromJS(d, GV.order);
             }
@@ -103,21 +108,32 @@
     }
     function orderSlt(d) {
         d = ko.mapping.toJS(d);
-        bill.OrderID(d.BillNum);
-        bill.Owner.Item1(d.Owner.Item1);
-        bill.Owner.Item2(d.Owner.Item2);
-        bill.Owner.Item3(d.Owner.Item3);
-        bill.Items.removeAll();
-        _.each(d.Items, function (i) {
-            if(i.Status!='已发货' || i.Status==''){
-                var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount-i.CompleteAmount, i.Model, i.Unit, false);
-
-                bill.Items.push(bi);
-            }
+        var pids = _.map(d.Items, function (i) {
+            return i.RelativeObj.Item1;
         });
-        bill.ShipAddress (d.ShipAddress);
-        bill.Tel (d.Tel);
-        showPnl('d_edit');
+        $.getJSON('/product/get', {t: 'objs', query: {_id: {$in: pids}}, option: {UnitCost: 1}}, function (pros) {
+            bill.OrderID(d.BillNum);
+            bill.Owner.Item1(d.Owner.Item1);
+            bill.Owner.Item2(d.Owner.Item2);
+            bill.Owner.Item3(d.Owner.Item3);
+            bill.Items.removeAll();
+            _.each(d.Items, function (i) {
+                if (i.Status != '已发货' || i.Status == '') {
+                    var bi = new StockBillItem(i.RelativeObj, i.UnitPrice, i.Amount - i.CompleteAmount, i.Model, i.Unit, false);
+                    var pi = _.find(pros, function (pri) {
+                        return pri._id == i.RelativeObj.Item1
+                    });
+                    bi.UnitPrice(i.UnitPrice);
+                    bi.UnitCost(pi ? pi.UnitCost : 0);
+                    bill.Items.push(bi);
+                }
+            });
+            bill.ShipAddress(d.ShipAddress);
+            bill.Tel(d.Tel);
+            showPnl('d_edit');
+        })
+
+
     }
     function stockChg(d) {
         var _st = _.find(GV.stocks, function (i) {
@@ -160,10 +176,12 @@
     }
     function save() {
         var m = ko.mapping.toJS(bill);
-        m.Items = _.filter(m.Items, function (i) {return i.Status != '已发货'});
-        _.each(m.Items,function (i){
-            i.UnitPrice=Number(i.UnitPrice);
-            i.Amount=Number(i.Amount);
+        m.Items = _.filter(m.Items, function (i) {
+            return i.Status != '已发货'
+        });
+        _.each(m.Items, function (i) {
+            i.UnitPrice = Number(i.UnitPrice);
+            i.Amount = Number(i.Amount);
         });
         $.post('/storage/poststockout', {tp: 'StockOut', obj: JSON.stringify(m)}, function (d) {
             alert(d.error || '保存成功!');

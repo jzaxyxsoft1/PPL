@@ -31,9 +31,9 @@
 <img src="/stylesheets/loading.gif" alt="" id="imgLoading"
      style="position: absolute; top:45%; left: 46%; z-index: 9999; display: none;"/>
 
-<header style=" height:30px; line-height:30px; background-color: #EFEFF2;">
+<header style=" height:<%=isMobile?'40':'30'%>px; line-height:30px; background-color: #EFEFF2;">
     <span id="MM" class="icon-list ml10 fg-color-darken fl ml10 mt10 pointer"  title="菜单"> </span>
-<span class="icon-windows8 fg-color-blue fr mr20 mi  mt10 pointer" title="主页" u="/main?m=<%=isMobile%>"></span>
+<span class="icon-windows8 fg-color-blue fr mr20 mi  mt10 pointer" title="主页" u="/main?p=<%=isMobile%>"></span>
     <span class="icon-key fg-color-darken fr mr20 mi  mt10 pointer" title="更改密码" u="/user/m?t=changepwd"></span>
 </header>
 <%if(isMobile){%>
@@ -71,5 +71,5 @@ else{%>
     }
 </script>
 
-<div id="mainContainer" class="oya hide" style="height:-webkit-calc(100%-(30px))" >
+<div id="mainContainer" class="oya hide" >
 

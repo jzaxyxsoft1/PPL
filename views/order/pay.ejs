@@ -1,40 +1,99 @@
 <% include ../Top.ejs %>
-<div class="wp100 hp100">
-    <div class="wp98 mc hp100 oya" id="d_list">
-        <% if(isMobile){ %>
+<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<% if(isMobile){ %>
+<style type="text/css">
+    body { font-size: 16px; }
+    .itemC { padding: 1%; width: 96%; line-height: 25px; margin-bottom: 4px; border-radius: 5px; }
+</style>
+<ul class="wp96 mc" id="d_list" data-bind="foreach:$data">
+    <li class="wp94 pp2 border-color-blue fg-color-blueDark" data-bind="css:{'even':$index()%2!=0}, click:edit"
+        style="margin-bottom: 4px; border-radius: 10px;">
+        <p><strong>单号:</strong> <span data-bind="text:BillNum"></span>
+        </p>
 
-        <% }
-        else{ %>
-        <table id="tbl_ds" cellspacing="0" cellpadding="0" class="wp100 mt10"></table>
-        <script type="text/javascript">
-            $('#tbl_ds').BillTable('edit');
-        </script>
-        <% } %>
+        <p>
+            <strong>建单人:</strong><span data-bind="text:Creator.Name"></span>
+            <strong class="ml10">日期:</strong><span data-bind="text:CreateTime.Item1"></span>
+        </p>
 
+        <p>
+            <strong>金额:</strong>
+            <span data-bind="text:Sum" style="color:#f00; font-size:22px; font-weight:bold;"></span><span>元</span>
+            <strong class="ml10">状态:</strong><span data-bind="text:Status"></span>
+        </p>
+        <ul data-bind="foreach:Items" style="width:95%; margin-right:5%;">
+            <li class="ilblk" style="width:45%; line-height: 25px;">
+                <span data-bind="text:RelativeObj.Item2"></span><span data-bind="text:Amount"></span>
+                <span data-bind="text:Unit"></span>
+            </li>
+        </ul>
+    </li>
+</ul>
+<% }
+else{ %>
+<div class="wp98 mc hp100 oya" id="d_list">
+    <table id="tbl_ds" cellspacing="0" cellpadding="0" class="wp100 mt10"></table>
+</div>
+<script type="text/javascript">
+    $('#tbl_ds').BillTable('edit');
+</script>
+<% } %>
+
+<div class="wp98 mc hp100 oya hide" id="d_edit">
+    <% if(isMobile){ %>
+    <p>
+        <strong>建单人:</strong><span data-bind="text:Creator.Name"></span>
+        <strong class="ml10">建单时间:</strong><span data-bind="text:CreateTime.Item1"></span>
+    </p>
+
+    <p>
+        <strong>金额合计:</strong><b data-bind="text:Sum" class="fred" style="font-size: 22px;"></b><span>元</span>
+    </p>
+    <fieldset class="wp96 pp1 mc">
+        <legend><strong>单据内容:</strong></legend>
+        <div class="mc wp98" data-bind="foreach:Items">
+            <div class=" border-color-blue fg-color-blueDark itemC mc">
+                <img data-bind="attr:{'src':img}" style="width:40%;" class="fl"/>
+
+                <div class="fr pr" style="width:59%"><b>名称:</b>
+                        <span  data-bind="text:RelativeObj.Item2 " ></span>
+                    <br/>
+
+                    <b>规格型号:</b><span data-bind="text:Model"></span><br/>
+                    <b>单价:</b><span data-bind="text:UnitPrice"></span><span>元</span><br/>
+                    <b>数量:</b> <span data-bind="text:Amount"></span><span data-bind="text:Unit"></span>
+                    <br/>
+                    <b>金额:</b><span data-bind="text:Sum"></span><span>元</span>
+                </div>
+
+                <b class="hr"></b>
+            </div>
+        </div>
+    </fieldset>
+    <div class="cb pt10 ac">
+        <b>银行交易号:</b><input type="text" id="txt_voucherNum" style="width:200px;"/>
     </div>
-    <div class="wp98 mc hp100 oya hide" id="d_edit">
-        <% if(isMobile){ %>
-        <div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
-            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
-        </div>
-        <% }
-        else{ %>
-        <div id="d_ll" class="wp100"></div>
-        <div class="cb pt10 ac">
-            <b>银行交易号:</b><input type="text" id="txt_voucherNum" style="width:200px;"/>
-        </div>
-        <div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
-            <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
-        </div>
-        <% } %>
-
+    <div class="cb ac " id="d_bts" style="padding: 22px;">
+        <span class="bt bg-color-blueDark fg-color-white" onclick="pay()">付款</span>
+        <span class="bt bg-color-blueDark fg-color-white" class="ml5" onclick="showPnl('d_list')">返回</span>
     </div>
 </div>
-<script type="text/javascript" src="/javascripts/KOExt.js"></script>
+
+<% } else{ %>
+<div id="d_ll" class="wp100"></div>
+<div class="cb pt10 ac">
+    <b>银行交易号:</b><input type="text" id="txt_voucherNum" style="width:200px;"/>
+</div>
+<div class="cb ac pt10"><input type="button" value="确认付款" onclick="pay()"/>
+    <input type="button" value="返回" class="ml10" onclick="showPnl('d_list')"/>
+</div>
+<% } %>
+
+</div>
+
+
 <script type="text/javascript">
     $('#d_ll').BillDetail();
-    var bill = new Bill();
-    ko.applyBindings(bill, document.getElementById('d_edit'));
     function bindList() {
         $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '待付款'} }, function (d) {
             if (GV.List) {
@@ -48,16 +107,36 @@
         });
     }
     function edit(d) {
-        bill.updateFromObj(ko.mapping.toJS(d));
-        $('#txt_voucherNum').val('');
-        showPnl('d_edit');
+        var pids = _.map(d.Items, function (i) {
+            return i.RelativeObj.Item1
+        });
+        $.getJSON('/product/get', {t: 'objs', query: {_id: {$in: pids}}, options: {ImgUrls: 1}}, function (ds) {
+
+            _.each(d.Items, function (i) {
+                var imgs = _.find(ds, function (i) {
+                    return i._id == i.RelativeObj.Item1();
+                });
+                var im = imgs ? 'http://www.ruibaochi.com' + (imgs.length ? imgs[0] : '/images/yangpin.png') : '/images/yangpin.png';
+                i.img = ko.observable(im);
+
+            });
+            if (GV.mdl) {
+                ko.mapping.fromJS(d, GV.mdl);
+            }
+            else {
+                GV.mdl = ko.mapping.fromJS(d);
+                ko.applyBindings(GV.mdl, document.getElementById('d_edit'));
+            }
+            $('#txt_voucherNum').val('');
+            showPnl('d_edit');
+        })
     }
     function pay() {
         if (!$('#txt_voucherNum').val()) {
             alert('请输入银行交易号!');
             return;
         }
-        $.post('/order/postpay', {id: bill._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
+        $.post('/order/postpay', {id: GV.mdl._id(), voucherNum: $('#txt_voucherNum').val()}, function (d) {
             alert(d.error || '付款完成!');
             if (d.msg) {
                 bindList();
@@ -65,5 +144,6 @@
         });
     }
     bindList();
+    $('#mainContainer').show();
 </script>
 <% include ../Bottom.ejs %>

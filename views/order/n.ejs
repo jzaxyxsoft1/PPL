@@ -1,5 +1,8 @@
 <% include ../Top.ejs %>
 <script type="text/javascript" src="/javascripts/KOExt.js"></script>
+<script type="text/javascript">
+
+</script>
 <% if(!isMobile){ %>
 <div class="editor-container">
     <div id="d_edit" class="wp100 hp100 oya hide">
@@ -13,7 +16,7 @@
             <div class="editor-label">建单时间:</div>
             <div class="editor-field"><span data-bind="text:CreateTime.Item1"></span></div>
             <div class="editor-label">建单人:</div>
-            <div class="editor-field"><span data-bind="text:Creator.Item2"></span></div>
+            <div class="editor-field"><span data-bind="text:Creator.Name"></span></div>
             <div class="editor-label">金额:</div>
             <div class="editor-field"><span data-bind="text:Sum"></span></div>
             <div class="hr" style="height: 10px;"></div>
@@ -34,7 +37,7 @@
                     <tbody data-bind="foreach:Items">
                     <tr data-bind="css:{'even':$index()%2!=0}">
                         <td>
-                            <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proChg}"></select>
+                            <select data-bind="options:GV.products,optionsValue:'_id',optionsText:'Name',value:RelativeObj.Item1,event:{'change':proSlt}"></select>
                         </td>
                         <td data-bind="text:Model"></td>
                         <td data-bind="text:Unit"></td>
@@ -67,57 +70,89 @@ else{ %>
 </style>
 <div class="mc wp96 pp1" id="d_edit">
     <p>
-        <strong>建单人:</strong><span data-bind="text:Creator.Item2"></span>
+        <strong>建单人:</strong><span data-bind="text:Creator.Name"></span>
         <strong class="ml10">建单时间:</strong><span data-bind="text:CreateTime.Item1"></span>
-    <br/>
-        <strong >金额合计:</strong><span data-bind="text:Sum"></span>元
+    </p><p>
+        <strong >金额合计:</strong><b data-bind="text:Sum" class="fred" style="font-size: 22px;"></b><span>元</span>
     </p>
-
     <fieldset class="wp96 pp1 mc">
-        <legend><strong>单据内容:</strong><a href="javascript:addItem()"><span class="icon-plus
+        <legend><strong>单据内容:</strong><a href="javascript:addItem()" class="ml20"><span class="icon-plus
         fg-color-blue"></span></a></legend>
         <div class="mc wp98" data-bind="foreach:Items">
-            <div class="border-color-blue fg-color-blueDark itemC">
-                <img data-bind="attr:{'src':img}" style="width:30%;" class="fl"/>
+            <div class="border-color-grayDark fg-color-blueDark itemC">
+                <img data-bind="attr:{'src':img}" style="width:25%;" class="fl"/>
+                <div class="fr pr" style="width:73%">
+                    <p>
+                        <b>名称:</b> <span class="bg-color-blueDark fg-color-white" data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
+                    </p>
 
-                <div class="fr pr" style="width:68%">
-                    <strong>名称:</strong>
-                    <select data-bind="options:GV.products,value:RelativeObj.Item2, optionsText:'Name',optionsValue:'_id',event:{'change':proSlt}" ></select><br/>
-                    <strong>规格型号:</strong><span data-bind="text:Model"></span><br/>
-                    <strong>单价:</strong><span data-bind="text:UnitPrice"></span><span>元</span><br/>
-                    <strong>数量:</strong>
+                    <b>规格型号:</b><span data-bind="text:Model"></span><br/>
+                    <b>单价:</b><span data-bind="text:UnitPrice"></span><span>元</span><br/>
+                    <b>数量:</b>
                     <span class="icon-minus fg-color-green" data-bind="click:m"></span>
                     <span data-bind="text:Amount" class="ilblk ac bg-color-gray" style="width:100px; Height:30px;
                     line-height:30px;  padding:5px; "></span>
-                    <span class="icon-plus fg-color-green" data-bind="click:p"></span>
+                    <span class="icon-plus fg-color-green" data-bind="click:p"></span><span data-bind="text:Unit"></span>
                     <br/>
-                    <strong>金额:</strong><span data-bind="text:Sum"></span><span>元</span>
-                    <span class="bt_itemDel" data-bind="click:function(){$parent.Items.remove($data)}">删除</span>
-                </div>
+                    <b>金额:</b><span data-bind="text:Sum"></span><span>元</span>
+                                  </div>  <span style="display:block; margin-left:6%;" class=" fl mt10 bt bg-color-red fg-color-white" data-bind="click:function(){$parent.Items.remove($data)}">删除</span>
+
                 <b class="hr"></b>
             </div>
         </div>
     </fieldset>
-    <div class="cb ac pt10" id="d_bts">
-        <span class="bt" onclick="save()">保存</span>
-        <span class="bt" class="ml5" onclick="save(1)">提交</span>
+    <div class="cb ac " id="d_bts" style="padding: 22px;">
+        <span class="bt bg-color-blueDark fg-color-white" onclick="save()">保存</span>
+        <span class="bt bg-color-blueDark fg-color-white" class="ml5" onclick="save(1)">提交</span>
     </div>
 </div>
+<ul id="ul_pros" class="hide wp96 mc" data-bind="foreach:$data">
+    <li class=" wp94 pp1 bg-color-gray" data-bind="click:ppSlt" style="margin-bottom: 4px;">
+        <img data-bind="attr:{'src':img}" style="width:20%" class="fl"/>
+        <div cl="fl " style="width:75%; margin-left: 2%;">
+            <strong>名称:</strong> <span class="bt" data-bind="text:Name,click:chgP"></span> <br/>
+            <strong>规格型号:</strong><span data-bind="text:Model"></span><br/>
+            <strong>单价:</strong><span data-bind="text:PartnerPrice"></span><span>元</span><br/>
+        </div>
+        <div style="clear: both; height: 1px;"></div>
+    </li>
+</ul>
+<script type="text/javascript">
+   function bindPros(d){
+       ko.applyBindings(d,document.getElementById('ul_pros'));
+   }
+    function chgP(d){
+        GV.currentItem=d;
+        showPnl('ul_pros');
+    }
+    function ppSlt(d){
+        GV.currentItem.RelativeObj.Item1(d._id);
+        GV.currentItem.RelativeObj.Item2(d.Name );
+        GV.currentItem.Model(d.Model );
+        GV.currentItem.Unit(d.Unit);
+        GV.currentItem.UnitPrice(d.PartnerPrice );
+        GV.currentItem.img(d.img );
+        showPnl('d_edit');
+    }
+</script>
 <% } %>
 
 <script type="text/javascript">
     var u = {_id: '<%=user._id%>', Name: '<%=user.Name%>', Org: {Name: '<%=user.Org.Name%>', Value: '<%=user.Org.Value%>'}};
     var org = {Name: '<%=org.Name%>', Value: '<%=org._id%>'}, Cts = {Address: '<%=org.Address%>', SMSNum: '<%=org.SMSNum%>'};
-    var bill = new Bill({Item1: org.Value, Item2: org.Name, Item3: 'Org'}, {Item1: u._id, Item2: u.Name, Item3: 'User'});
+    var bill = new Bill({Item1: org.Value, Item2: org.Name, Item3: 'Org'}, u);
+    bill.Address=ko.observable(Cts.Address);
+    bill.SMSNum=ko.observable(Cts.SMSNum);
     var defaultAmount = 12;
     bill.Status('未提交');
     ko.applyBindings(bill, document.getElementById('d_edit'));
     $(function () {
         $.getJSON('/product/get', {t: 'objs', query: {}}, function (d) {
             _.each(d, function (i) {
-                i.img = 'http://www.ruibaochi.com' + i.ImgUrls.length ? i.ImgUrls[0] : '/images/yangpin.png'
+                i.img = 'http://www.ruibaochi.com' +( i.ImgUrls.length ? i.ImgUrls[0] : '/images/yangpin.png');
             });
             GV.products = d;
+            if(typeof(bindPros)!='undefined'){bindPros(d);}
             $('#mainContainer').show();
             $('#d_edit').show();
 
@@ -153,7 +188,7 @@ else{ %>
         }
         delete  m.updateFromObj;
         $.post('/order/postsave', {tp: 'Order', obj: JSON.stringify(m)}, function (d) {
-            alm(d.error || '保存成功!');
+            alert(d.error || '保存成功!');
             if (d.msg) {
                 bill._id(d.ID);
                 bill.BillNum(d.BillNum);
@@ -166,7 +201,8 @@ else{ %>
         d.RelativeObj.Item2(pi.Name);
         d.Model(pi.Model);
         d.UnitPrice(pi.PartnerPrice);
-        d.img(pi.img)
+        d.img(pi.img);
+        alert(pi.img);
     }
 </script>
 

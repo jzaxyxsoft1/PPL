@@ -46,7 +46,9 @@ exports.get = function (req, res) {
                     function (cb) {db.StockIn.remove({}, cb)},
                     function (cb) {db.StockOut.remove({}, cb)},
                     function (cb) {db.Storage.remove({}, cb)}
-                ], function (e) {res.send("Done")})
+                ], function (e) {
+                    res.send("Done")}
+            )
             break;
         case "sysfuns":
             var sfs;

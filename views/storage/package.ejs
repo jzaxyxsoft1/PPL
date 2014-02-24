@@ -40,7 +40,7 @@
 <audio src="/sounds/WoopAlerm.mp3" id="alrm" volume="1" loop="loop" style=" display: none;"></audio>
 <script type="text/javascript">
     var org = {Name: '<%=u.Org.Name%>', Value: '<%=u.Org.Value%>'};
-    var u = {Item1: '<%=u._id%>', Item2: '<%=u.Name%>', Item3: 'User'};
+    var u = {_id: '<%=u._id%>',Name: '<%=u.Name%>', Org: org};
 </script>
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
@@ -65,6 +65,7 @@
         $('#txt_prduceTime').val(Date.ToDateTimeString(new Date, false, '-'));
         $('#slt_product').html(_s);
         $('#d_s').show();
+        $('#mainContainer').height(WS.h-30).show();
     });
     ko.applyBindings(packages, document.getElementById('d_packages'));
     function addP() {

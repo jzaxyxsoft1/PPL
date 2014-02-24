@@ -24,7 +24,7 @@ exports.postl = function (req, res) {
                 Svc.db.User.findOne({Name: pn, Pwd: pwd, 'Org.Value': org._id}, function (e, d) {
                     if (d) {
                         setCurrentUser(res, {_id: d._id, Name: d.Name, Org: d.Org});
-                        res.redirect('main');
+                        res.redirect('/main?p='+m);
                     }
                     else {
                         res.redirect('/index?s=2&m='+m)

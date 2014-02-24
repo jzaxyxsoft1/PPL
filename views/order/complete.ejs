@@ -39,7 +39,7 @@
     function bindList() {
         async.waterfall([
             function (cb) {
-                $.getJSON('/base/getobjs', {t: 'TransferBill', query: {'Owner.Item1': '<%=user.Org.Value%>',Status:{$regex:'发货'}}, option: {OrderID: 1, Items: 1} },
+                $.getJSON('/base/getobjs', {tp: 'TransferBill', query: {'Creator.Org.Value': '<%=user.Org.Value%>',Status:{$regex:'发货'}}, option: {OrderID: 1, Items: 1} },
                         function (d) {
                             if (d == null || d.length == 0) {
                                 cb('无待收货信息!');

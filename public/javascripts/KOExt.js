@@ -98,7 +98,7 @@ var Bill = function (owner, creator) {
     this.Remark = ko.observable('');
     this.Items = ko.observableArray([]);
     this.CreateTime = Date.ToCreateTime();
-    this.Creator = {Item1: ko.observable(creator ? creator.Item1 : ''), Item2: ko.observable(creator ? creator.Item2 : ''), Item3: ko.observable(creator ? creator.Item3 : '')};
+    this.Creator = {_id: ko.observable(creator ? creator._id: ''), Name: ko.observable(creator ? creator.Name: ''), Org:{Name:ko.observable(creator?creator.Org.Name:''),Value:ko.observable(creator?creator.Org.Value:'')}};
     this.Sum = ko.computed(function () {
         return this.Items().Sum(function (i) {
             return i.Sum()
@@ -114,9 +114,10 @@ var Bill = function (owner, creator) {
         _t.Owner.Item1(obj.Owner.Item1);
         _t.Owner.Item2(obj.Owner.Item2);
         _t.Owner.Item3(obj.Owner.Item3);
-        _t.Creator.Item1(obj.Creator.Item1);
-        _t.Creator.Item2(obj.Creator.Item2);
-        _t.Creator.Item3(obj.Creator.Item3);
+        _t.Creator.Name(obj.Creator.Name);
+        _t.Creator._id(obj.Creator._id);
+        _t.Creator.Org.Name(obj.Creator.Org.Name);
+        _t.Creator.Org.Value(obj.Creator.Org.Value);
         _t.CreateTime = obj.CreateTime;
         _t.Org.Name(obj.Org.Name);
         _t.Org.Value(obj.Org.Value);
@@ -202,9 +203,10 @@ var StockBill = function (billType, owner, creator) {
         _t.Owner.Item1(obj.Owner.Item1);
         _t.Owner.Item2(obj.Owner.Item2);
         _t.Owner.Item3(obj.Owner.Item3);
-        _t.Creator.Item1(obj.Creator.Item1);
-        _t.Creator.Item2(obj.Creator.Item2);
-        _t.Creator.Item3(obj.Creator.Item3);
+        _t.Creator.Name(obj.Creator.Name);
+        _t.Creator._id(obj.Creator._id);
+        _t.Creator.Org.Name(obj.Creator.Org.Name);
+        _t.Creator.Org.Value(obj.Creator.Org.Value);
         _t.CreateTime = obj.CreateTime;
         _t.Status(obj.Status);
         _t.BillNum(obj.BillNum);
@@ -236,17 +238,7 @@ var StockBillItem = function (relativeObj, unitCost, amount, model, unit, amount
     }, this);
     this.Stock = {Name: ko.observable(''), Value: ko.observable('')}
     this.CompleteAmount = ko.observable(0);
-    this.Status = ko.computed(function () {
-        if (this.CompleteAmount() == 0) {
-            return '未执行';
-        }
-        else if (this.CompleteAmount() < this.Amount()) {
-            return '未完成';
-        }
-        else {
-            return '已完成';
-        }
-    }, this);
+    this.Status =ko.observable('');
 };
 
 $.fn.StockBillTable = function (sltCallback, showOrderID) {

@@ -92,6 +92,10 @@
             bill.Packages.removeAll();
             bill.updateFromObj(d);
             bill.StockOutID= bill.BillNum;
+            _.each(d.Items,function (i){
+                var bi = _.find(bill.Items(),function (ii){return ii.RelativeObj.Item1()== i.RelativeObj.Item1});
+                bi.UnitPrice(i.UnitPrice);
+            });
             showPnl('d_edit');
         });
     }
@@ -156,12 +160,12 @@
             return;
         }
         _p.CompleteAmount(ca);
-        if (_p.CompleteAmount() >= _p.Amount) {
-            _p.Status = '已发货';
+        if (_p.CompleteAmount() >= _p.Amount()) {
+            _p.Status( '已发货');
             _p.StockOutComfirm = {Operator: user, Time: Date.ToCreateTime()};
         }
         else{
-            _p.Status='部分发货';
+            _p.Status('部分发货');
         }
         checkBillStatus();
     }
@@ -178,6 +182,7 @@
         }
     }
     bindList();
+    $('#mainContainer').show();
 </script>
 
 <% include ../Bottom.ejs %>
