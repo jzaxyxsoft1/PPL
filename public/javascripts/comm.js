@@ -45,7 +45,6 @@ $(function () {
 function showPnl(id) {
     $("#" + id).show().siblings().hide();
 };
-
 String.format = function () {
     if (arguments.length == 0) return null;
     var str = arguments[0];
@@ -225,26 +224,25 @@ function getDayExp() {
     var _meta = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"': '\\"', '\\': '\\\\' };
 })(jQuery);
 var GUID = { s4: function () { return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1); }, newID: function () { return (this.s4() + this.s4() + this.s4() + "4" + this.s4().substr(0, 3) + this.s4() + this.s4() + this.s4() + this.s4()).toLowerCase(); } };
-if(_){
-_.mixin({ToArray:function (obj,iterator){
-    var r=[];
-    var it= iterator||false;
-    if(it){
-        Object.keys(obj).forEach(function (i) {
-            r.push(it(i,obj[i]));
-        })
-    }
-    else{
-        Object.keys(obj).forEach(function (i) {
-            r.push({key:i, value:obj[i]});
-        })
-    }
-
-    return r;
-}});
+if (_) {
+    _.mixin({ToArray: function (obj, iterator) {
+        var r = [];
+        var it = iterator || false;
+        if (it) {
+            Object.keys(obj).forEach(function (i) {
+                r.push(it(i, obj[i]));
+            })
+        }
+        else {
+            Object.keys(obj).forEach(function (i) {
+                r.push({key: i, value: obj[i]});
+            })
+        }
+        return r;
+    }});
 }
-
 $('span.bt').addClass('bg-color-blueDark fg-color-white');
+var DIC = {SF: "京津冀晋蒙辽吉黑沪苏浙皖闽赣鲁豫鄂湘粤桂琼渝川贵云藏陕甘青宁新港澳台", DXZM: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', XXZM: 'abcdefghijklmnopqrstuvwxyz'};
 
 
 
