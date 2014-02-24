@@ -56,6 +56,25 @@ exports.get = function (req, res) {
                 }
             });
             break;
+        //解决(方案
+        case 'solution':
+            var d=req.query['d'];
+            if(d){
+                if(d =='t'){
+                    res.json(Svc.SolutionTypes)
+                }
+                else{
+                    var id=req.query['id'];
+                     db.Solution.findOne({_id:id},function (e,ss){
+                        res.json(ss);
+                    })
+                }
+            }
+            else{
+                res.render('product/solution.ejs');
+            }
+
+            break;
     }
 };
 exports.post = function (req, res) {

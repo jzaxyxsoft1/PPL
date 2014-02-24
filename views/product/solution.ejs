@@ -1,0 +1,46 @@
+<% include ../Top.ejs %>
+<style type="text/css">
+    #d_detail p{ text-indent: 20px; line-height: 22px; }
+   <%if(isMobile){%>
+    body{ font-size: 16px;}
+    #d_detail p{ text-indent: 32px; line-height:25px;}
+   <%}%>
+</style>
+<div class="mc" style="width:400px; letter-spacing: -4px; margin-top: 10px;" data-bind="foreach:$data" id="d_list">
+    <span style="width:185px; padding:40px 0px ; text-align: center; display: inline-block; letter-spacing: 0px;
+    margin-bottom: 4px; " data-bind="attr:{'class':cls},text:Name,click:tSlt">
+    </span>
+</div>
+<div class="hide wp100" id="d_detail">
+    <div class="mc wp96 pp1 mt10 mb10 bg-color-blueLight fg-color-white" style="border-radius: 10px;">
+        <div class="mc wp98 pp1 bg-color-white fg-color-blueDark" style="border-radius: 10px;"
+             data-bind="foreach:$data">
+            <div data-bind="html:$data"></div>
+        </div>
+    </div>
+    <div class="ac" style="padding: 15px;">
+        <span class="bg-color-blueDark fg-color-white " style="padding: 15px;" onclick="showPnl('d_list')">返回</span>
+    </div>
+</div>
+<script type="text/javascript">
+    $.getJSON('/product/get', {t: 'solution', d: 't'}, function (d) {
+        _.each(d[0], function (i, idx) {
+            i.cls = 'fg-color-white ' + bgColor[idx];
+        });
+        ko.applyBindings(d[0], document.getElementById('d_list'));
+    });
+    function tSlt(d) {
+        $.getJSON('/product/get', {t: 'solution', d: 'd', id: d._id}, function (s) {
+            s = _.ToArray(s.Contents, function (k, v) { return v});
+            if (GV.mdl) { ko.mapping.fromJS(s, GV.mdl);}
+            else {
+                GV.mdl = ko.mapping.fromJS(s);
+                ko.applyBindings(GV.mdl, document.getElementById('d_detail'));
+            }
+            showPnl('d_detail')
+        });
+    }
+    $('body').addClass('bg-color-blue')
+$('#mainContainer').show();
+</script>
+<% include ../Bottom.ejs %>

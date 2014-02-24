@@ -85,15 +85,16 @@ else{ %>
         <div class="mc wp98" data-bind="foreach:Items">
             <div class="border-color-grayDark fg-color-blueDark itemC">
                 <img data-bind="attr:{'src':img}" style="width:25%;" class="fl"/>
-
                 <div class="fr pr" style="width:73%">
                     <p>
                         <b>名称:</b> <span class="bg-color-blueDark fg-color-white"
                                          data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
                     </p>
                     <b>规格型号:</b><span data-bind="text:Model"></span><br/>
-                    <b>单价:</b><span data-bind="text:UnitPrice"></span><span>元</span><br/>
-                    <b>数量:</b>
+                    <b>单价:</b><span data-bind="text:UnitPrice"></span><span>元</span>
+                    <b class="ml10">供应商库存</b><span data-bind="text:PStorage"></span><span data-bind="text:Unit"></span>
+                    <br/>
+                    <b>订货数量:</b>
                     <span class="icon-minus fg-color-green" data-bind="click:m"></span>
                     <span data-bind="text:Amount" class="ilblk ac bg-color-gray" style="width:100px; Height:30px;
                     line-height:30px;  padding:5px; "></span>

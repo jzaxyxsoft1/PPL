@@ -1,44 +1,40 @@
 <% include ../Top.ejs %>
-<table cellspacing="0" cellpadding="0" class="wp98 mc mt10" id="d_list">
-    <thead>
-    <tr>
-        <td>产品</td>
-        <td>规格型号</td>
-        <td>单位</td>
-        <td>数量</td>
+<% if(isMobile){ %>
+<style type="text/css">
+    body { font-size: 16px; }
+    span[class^="icon-"] { font-size: 20px; }
+    .itemC { padding: 3%; width: 94%; line-height: 25px; margin-bottom: 4px; border-radius: 5px; }
+</style>
+<% } %>
+<div class="mc wp98" data-bind="foreach:$data">
+    <div class="border-color-grayDark fg-color-blueDark itemC">
+        <img data-bind="attr:{'src':img}" style="width:35%;" class="fl"/>
 
-        <td>库存成本</td>
-    </tr>
-    </thead>
-    <tbody data-bind="foreach:$data">
-    <tr data-bind="css:{'even':$index()%2!=0}">
-        <td data-bind="text:RelativeObj.Item2"></td>
-        <td data-bind="text:Model"></td>
-        <td data-bind="text:Unit"></td>
-        <td data-bind="text:Amount"></td>
-        <td data-bind="text:Cost"></td>
-    </tr>
-    </tbody>
-    <tfoot>
-    <tr class="even">
-        <td colspan="5" class="ac lh22">
-            <b>库存总成本:</b><span id="txt_Cost"></span>
-        </td>
-    </tr>
-    </tfoot>
-</table>
+        <div class="fr pr" style="width:63%">
+            <p>
+                <b>名称:</b> <span class="bg-color-blueDark fg-color-white"
+                                 data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
+            </p>
+            <b>规格型号:</b><span data-bind="text:Model"></span><br/>
+            <b>单位</b><span data-bind="text:Unit"></span>
+            <b>单位成本:</b><span data-bind="text:UnitCost"></span><span>元</span>
+            <br/>
+            <b>库存成本:</b><span data-bind="text:Cost"></span><span>元</span>
+        </div>
+        <b class="hr"></b>
+    </div>
+</div>
+<div class="ac p10">
+    <b>库存总成本:</b><span id="txt_Cost"></span>
+</div>
 <script type="text/javascript">
     $.getJSON('/storage/get', {t: 'storages'}, function (d) {
-        var p = d.length>0?d.Sum('Cost'):0;
-        d= _.sortBy(d,function(i){ return i.Cost;});
+        d = _.filter(d, function (i) {return i.Amount != 0;})
+        var p = d.length > 0 ? d.Sum('Cost') : 0;
+        d = _.sortBy(d, function (i) { return i.Cost;});
         $('#txt_Cost').text(p);
-        if (GV.list) {
-            ko.mapping.fromJS(d, GV.list);
-        }
-        else {
-            GV.list = ko.mapping.fromJS(d);
-            ko.applyBindings(GV.list, document.getElementById('d_list'));
-        }
+        ko.applyBindings(d, document.getElementById('d_list'));
+        $('#mainContainer').show();
     });
 </script>
 <% include ../Bottom.ejs %>

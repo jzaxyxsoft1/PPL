@@ -52,6 +52,7 @@ app.get('/getproductinstance', function (req, res) {
     })
 });
 app.post('/index/postl', routes.postl);
+app.post('/saveproduct',routes.saveProduct)
 app.get('/main', routes.main);
 function checkUser(req, res, next) {
     req.currentUser = cookie.get(req, cookie.defaultUserCookieName);
