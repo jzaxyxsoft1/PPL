@@ -69,6 +69,7 @@ exports.get = function (req, res) {
             });
             break;
         case 'barcheck':
+
             var code = req.query['c'];
             var pack;
             async.waterfall(
