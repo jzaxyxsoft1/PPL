@@ -32,6 +32,7 @@ var _s = '', controllers = {};
 app.get('/', routes.index);
 app.get('/index', routes.index);
 app.get('/m', routes.m);
+app.get('/barcheck',routes.barcheck)
 app.get('/getproducts', function (req, res) {
     DB.Product.find().toArray(function (e, ds) {
         _.each(ds, function (i) {

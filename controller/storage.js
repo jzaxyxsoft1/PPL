@@ -115,7 +115,7 @@ exports.get = function (req, res) {
                                         Img: p.ImgUrls.length ? p.ImgUrls[0] : '',
                                         BatchNum: pack.BatchNum,
                                         ProduceTime: pack.ProduceTime,
-                                        Dealer: pack.Rounte.Name
+                                        Dealer: pack.Route.Name
                                     };
                                     if (result.salebill) {
                                         r.msg = false;
