@@ -1,109 +1,177 @@
 <% include ../Top.ejs %>
+<script src="/javascripts/KOExt.js"></script>
 <style type="text/css">
-    #d_list li {
-        line-height: 22px;
-    }
-
-    #d_list ul li b {
-        display: inline-block;
-        width: 110px;
-        text-align: right;
-    }
+    tr:first-child { text-align: right; font-weight: bold; padding-right: 5px; }
+</style>
+<% if(isMobile){ %>
+<style type="text/css">
+    body { font-size: 16px; }
+    #d_list { width: 98px; margin: 0px auto; }
+    #img1 { display: block; margin-left: auto; margin-right: auto; }
+    #tb1 { display: block; width: 500px; margin: 10px auto; }
 </style>
 
-<div class="wp100 hp98 oh">
-    <div class="  wp100 " id="d_list">
-        <div class="mc" style="width: 610px;">
+
+<% }else{ %>
+<style type="text/css">
+    #d_list { width: 610px; margin: 0px auto; }
+    #img1 { float: left; width: 200px; }
+    #tb1 { float: left; width: auto; margin-left: 10px; }
+</style>
+<% } %>
+
+<div class="hide" id="d_list">
+    <div class="mc wp100">
+        <p>
             <b> 客户车型:</b><input type="text" id="txt_carType"/>
-            <b class="ml10"> 客户车号:</b><input type="text" id="txt_carNum"/>
-            <p>
-                <b> 客户手机:</b><input type="text" id="txt_tel"/>
-            </p>
-        </div>
-        <div style="width:610px;" class="mc">
-            <fieldset class="mc pp1 wp98">
-                <legend><strong>产品信息:</strong></legend>
-                <img id="img1" style="width: 120px;" class="fl mt10 ml10"/>
-                <ul class="fl"   style="width:auto;">
-                    <li><b>产品名称:</b><span data-bind="text:Product.Name"></span></li>
-                    <li><b>规格型号:</b><span data-bind="text:Product.Model"></span></li>
-                    <li><b>单位:</b><span data-bind="text:Product.Unit"></span></li>
-                    <li><b>数量:</b>1</li>
-                    <li><b>单价:</b><span data-bind="text:Product.Price"></span></li>
-                    <li><b>批号:</b><span data-bind="text:Instance.BatchNum"></span></li>
-                    <li><b>产品序号:</b><span data-bind="text:Instance._id"></span></li>
-                    <li><b>授权经销商:</b><span data-bind="text:Instance.JXS"></span></li>
-                </ul>
+            <b class="ml10"> 客户车号:</b>
+            <select id="slt_sf"></select>
+            <select id="slt_zm"></select>
+            <input type="text" id="txt_carNum" style="width:60px"/>
+        </p>
 
-            </fieldset>
+        <p>
+            <b> 回访电话:</b><input type="text" id="txt_tel"/>
+        </p>
+    </div>
+    <div id="mc" class="mc">
+        <fieldset class="mc pp1 wp98">
+            <legend><strong>产品信息:</strong></legend>
+            <img id="img1"/>
+            <table id="tb1" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>产品名称:</td>
+                    <td data-bind="text:Product.Name"></td>
+                </tr>
+                <tr>
+                    <td>规格型号:</td>
+                    <td data-bind="text:Product.Model"></td>
+                </tr>
+                <tr>
+                    <td>单位:</td>
+                    <td data-bind="text:Product.Unit"></td>
+                </tr>
+                <tr>
+                    <td>数量:</td>
+                    1
+                </tr>
+                <tr>
+                    <td>单价:</td>
+                    <td data-bind="text:Product.Price"></td>
+                </tr>
+                <tr>
+                    <td>批号:</td>
+                    <td data-bind="text:Instance.BatchNum"></td>
+                </tr>
+                <tr>
+                    <td>产品序号:</td>
+                    <td data-bind="text:Instance._id"></td>
+                </tr>
+                <tr>
+                    <td>授权经销商:</td>
+                    <td data-bind="text:Instance.JXS"></td>
+                </tr>
+            </table>
+            <div style="height: 1px ;clear: both;"></div>
+        </fieldset>
 
-        </div>
     </div>
-    <div class="cb ac pt10">
-        <input type="button" value="扫码" onclick="c()"/>
-        <input type="button" value="保存" class="ml10 hide" onclick="save()" id="bt_save"/>
-    </div>
-    <!--<input type="text" value="" id="txt_code" style="position: absolute; top: 0px;"/>-->
 </div>
-<script src="/javascripts/KOExt.js"></script>
+<div class="cb ac pt10 pt10">
+    <% if(isMobile){ %>
+    <span class="bg-color-blueDark fg-color-white bt" onclick="c()">扫码</span>
+    <span class="bg-color-blueDark fg-color-white bt ml10 hide" onclick="save()" id="bt_save">保存</span>
+    <script type="text/javascript">
+        function c() {
+            AndroidObj.scanProduct('bindList');
+        }
+    </script>
+
+    <% }else{ %>
+    <input type="button" value="扫码" onclick="c()" />
+    <input type="button" value="保存" class="ml10 hide" onclick="save()" id="bt_save"/>
+    <input type="text" value="" id="txt_code" style="position: absolute; top: 0px;"/>
+    <script type="text/javascript">
+        $(function () {
+            $('#txt_code').on('keydown', function (e) {
+                if (e.keyCode == 13 || e.keyCode == 108) {
+                    bindList($('#txt_code').val());
+                }
+            });
+        })
+        function c() {
+            $('#txt_code').val('').focus();
+        }
+    </script>
+    <% } %>
+</div>
+
+
 <script type="text/javascript">
     $(function () {
-//        $('#txt_code').on('keydown', function (e) {
-//            if (e.keyCode == 13 || e.keyCode == 108) {
-//                bindList( $('#txt_code').val());
-//            }
-//        });
         $('#mainContainer').show();
     });
+    $.fn.generateOp = function (str) {
+        var _t = $(this);
+        for (var i = 0; i < str.length; i++) {
+            _t.append('<option value="' + str[i] + '">' + str[i] + '</option>');
+        }
+    };
 
-    function c() {
-        AndroidObj.scanProduct('bindList');
-    }
     function bindList(currCode) {
-        $('#txt_code').html('').focus();
-        // var currCode = $('#txt_code').val();
-        $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}}, function (_package) {
-            if(_package==null){
-                alert('产品序列号无效!\r请提防假冒产品!');
-                return;
-            }
-            var _o = _.find(_package.Items, function (i) {
-                return i._id == currCode;
-            });
-            _o.JXS = _package.Route  ? _package.Route.Name : '';
-            GV.ProInstance = _o;
-            async.parallel([
-                function (cb) {
-                    $.getJSON('/base/getobj', {tp: 'SaleBill',m:1, query: {'ProductInstanceID': currCode}, option: {Org:1,
-                        CreateTime:1}}, function (d) {
-                        GV.sb= d;
-                        cb();
-                    });
-                },
-                function (cb) {
-                    $.getJSON('/product/get?t=obj', {query: {_id:_o.RelativeObj.Item1}}, function (d) {
-                        GV.product = d;
-                        $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
-                        cb();
-                    });
-                }
-            ], function (e) {
-                if(GV.sb){
-                    alert(GV.product.Name+'\r序列号:'+currCode+'\r'+'已由'+GV.sb.Org.Name+'于'+GV.sb.CreateTime.Item1+'售出\r请提防假冒产品或不良品!');
-                    return;
-                }
-                var o = {Instance: GV.ProInstance, Product: GV.product };
-                if (GV.list) {
-                    ko.mapping.fromJS(o, GV.list);
-                }
-                else {
-                    GV.list = ko.mapping.fromJS(o);
-                    ko.applyBindings(GV.list, document.getElementById('d_list'));
-                }
-                $('#d_list').show();
-                $('#bt_save').show();
-            });
+        $('#txt_code').val('').focus();
+        $.getJSON('/barcheck',{c:currCode},function(d){
+             if(d.error){  $('#d_list').hide();alert(d.error);}
+            else{
+                 if(GV.mdl){ ko.mapping.fromJS(d.obj,GV.mdl);}
+                 else{GV.mdl=ko.mapping.fromJS(d.obj); ko.applyBindings(GV.mdl,document.getElementById('d_list'));}
+                 $('#d_list').hide();
+             }
         });
+        // var currCode = $('#txt_code').val();
+//        $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}}, function (_package) {
+//            if (_package == null) {
+//                alert('产品序列号无效!\r请提防假冒产品!');
+//                return;
+//            }
+//            var _o = _.find(_package.Items, function (i) {
+//                return i._id == currCode;
+//            });
+//            _o.JXS = _package.Route ? _package.Route.Name : '';
+//            GV.ProInstance = _o;
+//            async.parallel(
+//                    [
+//                        function (cb) {
+//                            $.getJSON('/base/getobj', {tp: 'SaleBill', m: 1, query: {'ProductInstanceID': currCode}, option: {Org: 1,
+//                                CreateTime: 1}}, function (d) {
+//                                GV.sb = d;
+//                                cb();
+//                            });
+//                        },
+//                        function (cb) {
+//                            $.getJSON('/product/get?t=obj', {query: {_id: _o.RelativeObj.Item1}}, function (d) {
+//                                GV.product = d;
+//                                $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
+//                                cb();
+//                            });
+//                        }
+//                    ], function (e) {
+//                        if (GV.sb) {
+//                            alert(GV.product.Name + '\r序列号:' + currCode + '\r' + '已由' + GV.sb.Org.Name + '于' + GV.sb.CreateTime.Item1 + '售出\r请提防假冒产品或不良品!');
+//                            return;
+//                        }
+//                        var o = {Instance: GV.ProInstance, Product: GV.product };
+//                        if (GV.list) {
+//                            ko.mapping.fromJS(o, GV.list);
+//                        }
+//                        else {
+//                            GV.list = ko.mapping.fromJS(o);
+//                            ko.applyBindings(GV.list, document.getElementById('d_list'));
+//                        }
+//                        $('#d_list').show();
+//                        $('#bt_save').show();
+//                    });
+//        });
     }
     function save() {
         var m = {
