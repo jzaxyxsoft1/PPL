@@ -1,6 +1,7 @@
 var cookie = require('Svc').HttpHelper.Cookie;
 var Svc = require('Svc').Svc;
 var async = require('async');
+var _= require('underscore');
 exports.index = function (req, res) {
     res.render('index.ejs', { isMobile: req.query['m'] == "1" ? true : false, msg: req.query['s']});
 };
