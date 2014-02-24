@@ -52,13 +52,19 @@
             if (e.keyCode == 13 || e.keyCode == 108) {
                 bindList();
             }
-        })
+        });
+
+        $('#mainContainer').show();
     });
-    function c() {
-        $('#txt_code').html('').focus();
+    function codeScaned(code){
+
     }
-    function bindList() {
-        var currCode = $('#txt_code').val();
+    function c() {
+        AndroidObj.scanProduct('bindList');
+    }
+    function bindList(currCode) {
+        $('#txt_code').html('').focus();
+        // var currCode = $('#txt_code').val();
         $.getJSON('/base/getobj', {tp: 'Package', query: {'Items._id': currCode}}, function (_package) {
             if(_package==null){
                 alert('产品序列号无效!\r请提防假冒产品!');
