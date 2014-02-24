@@ -68,6 +68,7 @@ exports.barcheck=function (req,res){
     async.waterfall(
         [
             function (cb) {
+
                 Svc.db.Package.findOne({'Items._id': code}, {Route: 1, Items: 1}, function (e, o) {
                     if (o ==null) cb(1, {msg: false, error: '产品序列号无效,请提防假货!'});
                     else {
