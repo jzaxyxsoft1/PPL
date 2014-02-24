@@ -48,11 +48,11 @@
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
     $(function () {
-        $('#txt_code').on('keydown', function (e) {
-            if (e.keyCode == 13 || e.keyCode == 108) {
-                bindList( $('#txt_code').val());
-            }
-        });
+//        $('#txt_code').on('keydown', function (e) {
+//            if (e.keyCode == 13 || e.keyCode == 108) {
+//                bindList( $('#txt_code').val());
+//            }
+//        });
         $('#mainContainer').show();
     });
 
@@ -81,7 +81,7 @@
                     });
                 },
                 function (cb) {
-                    $.getJSON('/product/get?t=obj', {query: {_id: _o.RelativeObj.Item1 }}, function (d) {
+                    $.getJSON('/product/get?t=obj', {query: {_id:_o.RelativeObj.Item1}}, function (d) {
                         GV.product = d;
                         $('#img1').attr('src', 'http://www.ruibaochi.com' + d.ImgUrls[0]);
                         cb();
