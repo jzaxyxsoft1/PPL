@@ -76,7 +76,7 @@ exports.get = function (req, res) {
                 [
                     function (cb) {
                         Svc.db.Package.findOne({'Items._id': code}, {Route: 1, Items: 1}, function (e, o) {
-                            if (e) cb(e, {msg: false, error: '产品序列号无效,请提防假货!'});
+                            if (o==null) cb('error', {msg: false, error: '产品序列号无效,请提防假货!'});
                             else {
                                 cb(null, o);
                             }
