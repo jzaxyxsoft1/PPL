@@ -1,7 +1,7 @@
-var cookie = require('Svc').HttpHelper.Cookie;
+﻿var cookie = require('Svc').HttpHelper.Cookie;
 var Svc = require('Svc').Svc;
 var async = require('async');
-var _= require('underscore');
+var _ = require('underscore');
 exports.index = function (req, res) {
     res.render('index.ejs', { isMobile: req.query['m'] == "1" ? true : false, msg: req.query['s']});
 };
@@ -63,15 +63,14 @@ exports.main = function (req, res) {
     var u = cookie.get(req, cookie.defaultUserCookieName);
     res.render('main.ejs', {isMobile: req.query['p'] == 'true' ? true : false });
 }
-exports.barcheck=function (req,res){
+exports.barcheck = function (req, res) {
     var code = req.query['c'];
     var pack;
     async.waterfall(
         [
             function (cb) {
-
                 Svc.db.Package.findOne({'Items._id': code}, {Route: 1, Items: 1}, function (e, o) {
-                    if (o ==null) cb(1, {msg: false, error: '产品序列号无效,请提防假货!'});
+                    if (o == null) cb(1, {msg: false, error: '产品序列号无效,请提防假货!'});
                     else {
                         cb(null, o);
                     }
@@ -94,37 +93,31 @@ exports.barcheck=function (req,res){
                         }
                     },
                     function (e, result) {
-                        var cb = req.query['callback'];
-                        if (e) {
-                            if (cb)  res.jsonp(result);
-                            else res.json(result);
+                        var r = {msg: true, error: null, obj: {}};
+                        var p = result.product;
+                        r.obj = {
+                            Name: p.Name,
+                            Model: p.Model,
+                            Unit: p.Unit,
+                            Price: p.Price,
+                            Img: p.ImgUrls.length ? p.ImgUrls[0] : '',
+                            BatchNum: pack.BatchNum,
+                            ProduceTime: pack.ProduceTime,
+                            Dealer: pack.Route.Name
+                        };
+                        if (result.salebill) {
+                            r.msg = false;
+                            r.error = '序列号为' + code + '的产品,\r已由' + result.salebill.Org.Name + '\r于' + result.salebill.CreateTime.Itme1 + '售出,请提防假货!'
                         }
-                        else {
-                            var r = {msg: true, error: null, obj: {}};
-                            var p = result.product;
-                            r.obj = {
-                                Name: p.Name,
-                                Model: p.Model,
-                                Unit: p.Unit,
-                                Price: p.Price,
-                                Img: p.ImgUrls.length ? p.ImgUrls[0] : '',
-                                BatchNum: pack.BatchNum,
-                                ProduceTime: pack.ProduceTime,
-                                Dealer: pack.Route.Name
-                            };
-                            if (result.salebill) {
-                                r.msg = false;
-                                r.error = '序列号为'+code+'的产品,\r已由'+result.salebill.Org.Name+'\r于'+result.salebill.CreateTime.Itme1+'售出,请提防假货!'
-                            }
-                            if (cb) res.jsonp(r);
-                            else res.json(r)
-                        }
+                        cb(null, r);
                     }
                 )
             }
         ],
         function (e, d) {
-            res.json(d);
+            var cb = req.query['callback'];
+            if (cb) { res.jsonp(d)}
+            else {res.json(d)}
         })
 }
 function setCurrentUser(res, iuser) {
