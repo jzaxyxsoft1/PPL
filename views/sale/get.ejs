@@ -12,7 +12,7 @@
 </style>
 
 <div class="wp100 hp98 oh">
-    <div class="hide wp100 " id="d_list">
+    <div class="  wp100 " id="d_list">
         <div class="mc" style="width: 610px;">
             <b> 客户车型:</b><input type="text" id="txt_carType"/>
             <b class="ml10"> 客户车号:</b><input type="text" id="txt_carNum"/>
@@ -43,22 +43,19 @@
         <input type="button" value="扫码" onclick="c()"/>
         <input type="button" value="保存" class="ml10 hide" onclick="save()" id="bt_save"/>
     </div>
-    <input type="text" value="" id="txt_code" style="position: absolute; top: -100px;"/>
+    <!--<input type="text" value="" id="txt_code" style="position: absolute; top: 0px;"/>-->
 </div>
 <script src="/javascripts/KOExt.js"></script>
 <script type="text/javascript">
     $(function () {
-        $('#txt_code').on('keydown', function (e) {
-            if (e.keyCode == 13 || e.keyCode == 108) {
-                bindList();
-            }
-        });
-
+//        $('#txt_code').on('keydown', function (e) {
+//            if (e.keyCode == 13 || e.keyCode == 108) {
+//                bindList( $('#txt_code').val());
+//            }
+//        });
         $('#mainContainer').show();
     });
-    function codeScaned(code){
 
-    }
     function c() {
         AndroidObj.scanProduct('bindList');
     }
@@ -73,11 +70,11 @@
             var _o = _.find(_package.Items, function (i) {
                 return i._id == currCode;
             });
-            _o.JXS = _package.Route  ? _package.Route.Value : '';
+            _o.JXS = _package.Route  ? _package.Route.Name : '';
             GV.ProInstance = _o;
             async.parallel([
                 function (cb) {
-                    $.getJSON('/base/getobj', {tp: 'Sale',m:1, query: {'ProductInstanceID': currCode}, option: {Org:1,
+                    $.getJSON('/base/getobj', {tp: 'SaleBill',m:1, query: {'ProductInstanceID': currCode}, option: {Org:1,
                         CreateTime:1}}, function (d) {
                         GV.sb= d;
                         cb();
