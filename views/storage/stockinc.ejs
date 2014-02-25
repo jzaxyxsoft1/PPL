@@ -97,6 +97,7 @@
             $('#slt_stock').append('<option value="' + i._id + '">' + i.Name + '</option>');
         });
         $('#slt_stock option:first').select();
+        $('#mainContainer').show();
     });
     function setStock() {
         var _t = $('#slt_stock option:selected').length ? $('#slt_stock option:selected') : $('#slt_stock option:first');

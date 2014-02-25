@@ -65,11 +65,11 @@ exports.main = function (req, res) {
 }
 exports.barcheck = function (req, res) {
     var code = req.query['c'];
-    var pack;
+    var pack , instan;
     async.waterfall(
         [
             function (cb) {
-                Svc.db.Package.findOne({'Items._id': code}, {Route: 1, Items: 1}, function (e, o) {
+                Svc.db.Package.findOne({'Items._id': code}, function (e, o) {
                     if (o == null) cb(1, {msg: false, error: '产品序列号无效,请提防假货!'});
                     else {
                         cb(null, o);
@@ -81,8 +81,8 @@ exports.barcheck = function (req, res) {
                 async.parallel(
                     {
                         product: function (pcb) {
-                            var rl = _.find(pkg.Items, function (i) {return i._id == code});
-                            Svc.db.Product.findOne({_id: rl.RelativeObj.Item1}, function (e, pro) {
+                            instan = _.find(pkg.Items, function (i) {return i._id == code});
+                            Svc.db.Product.findOne({_id: instan.RelativeObj.Item1}, function (e, pro) {
                                 pcb(null, pro);
                             });
                         },
@@ -101,13 +101,14 @@ exports.barcheck = function (req, res) {
                             Unit: p.Unit,
                             Price: p.Price,
                             Img: p.ImgUrls.length ? p.ImgUrls[0] : '',
-                            BatchNum: pack.BatchNum,
-                            ProduceTime: pack.ProduceTime,
-                            Dealer: pack.Route.Name
+                            BatchNum: instan.BatchNum,
+                            ProduceTime: instan.ProduceTime,
+                            Dealer: pack.Route.Name,
+                            ProductID: p._id
                         };
                         if (result.salebill) {
                             r.msg = false;
-                            r.error = '序列号为' + code + '的产品,\r已由' + result.salebill.Org.Name + '\r于' + result.salebill.CreateTime.Itme1 + '售出,请提防假货!'
+                            r.error = '序列号为' + code + '的产品,\r已由' + result.salebill.Org.Name + '\r于' + result.salebill.CreateTime.Item1 + '售出,请提防假货!'
                         }
                         cb(null, r);
                     }

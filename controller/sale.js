@@ -10,10 +10,10 @@ exports.statistics = function (req, res) {
 exports.post = function (req, res) {
     var obj = JSON.parse(req.body['obj']);
     async.waterfall([
-         function (bill,cb) {
-            Svc.db.Storage.findOne({'Org.Value':req.currentUser.Org.Value,'RelativeObj.Item1':bill.RelativeObj.Item1},function(e,storage){
-                var am = storage.Amount-bill.Amount;
-                var cst = storage.Cost - storage.UnitCost* bill.Amount;
+         function (cb) {
+            Svc.db.Storage.findOne({'Org.Value':req.currentUser.Org.Value,'RelativeObj.Item1':obj.RelativeObj.Item1},function(e,storage){
+                var am = storage.Amount-obj.Amount;
+                var cst = storage.Cost - storage.UnitCost* obj.Amount;
                 Svc.db.Storage.update({_id:storage._id},{$set:{Amount:am,Cost:cst}},function(e){
                     cb(e,storage.UnitCost);
                 });
@@ -22,7 +22,7 @@ exports.post = function (req, res) {
         function (unitCost,cb) {
             obj.Cost = unitCost*obj.Amount; //成本
             obj.Profit= obj.Sum - obj.Cost;  //利润
-            if(obj._id){Svc.insert('SaleBill',obj,req.currentUser,function(e,d){
+            if(obj._id==''){Svc.insert('SaleBill',obj,req.currentUser,function(e,d){
                 cb(null,d[0]);
             })}
             else{
@@ -35,6 +35,6 @@ exports.post = function (req, res) {
             }
         }
    ], function (e, result) {
-        res.json({msg: e == null, error: e, ID: result.saleBill._id, BillNum: result.saleBill.BillNum});
+        res.json({msg: e == null, error: e, ID: result._id, BillNum: result.BillNum});
     });
 }
