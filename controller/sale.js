@@ -2,10 +2,11 @@ var async = require('async');
 var _ = require('underscore');
 var Svc = require('Svc').Svc;
 exports.get = function (req, res) {
-    res.render('sale/get');
+   res.render('sale/get');
 }
 exports.statistics = function (req, res) {
-    res.render('sale/statistics.ejs', {u: req.currentUser});
+    //res.render('sale/statistics.ejs', {u: req.currentUser});
+    res.render('sale/tj.ejs')
 }
 exports.post = function (req, res) {
     var obj = JSON.parse(req.body['obj']);

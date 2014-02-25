@@ -61,7 +61,7 @@
                 var pids = _.map(items, function (i) {
                     return i.RelativeObj.Item1
                 });
-                $.getJSON('/product/get', {t: 'objs', query: {_id: {$in: pids}}, option: {ImgUrls: 1}}, function (d) {
+                $.getJSON('/product/get', {t: 'objs', query: {_id: {$in: pids}} }, function (d) {
                     cb(null, items, d);
                 });
             },
