@@ -95,7 +95,7 @@ else{ %>
 <script type="text/javascript">
     $('#d_ll').BillDetail();
     function bindList() {
-        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '待付款'} }, function (d) {
+        $.getJSON('/base/getobjs', {tp: 'Order', query: {Status: '未付款'} }, function (d) {
             if (GV.List) {
                 ko.mapping.fromJS(d, GV.List);
             }

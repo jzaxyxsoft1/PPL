@@ -1,6 +1,7 @@
 var Svc = require('Svc').Svc;
 var db = require('DB').DB;
 var async = require('async');
+var _=require('underscore')
 exports.bo = function (req, res) {
     var id = req.query['id'];
     var m = req.query['m'];
@@ -40,29 +41,50 @@ exports.get = function (req, res) {
         case 'cleardata':
             async.parallel(
                 [
-                    function (cb) {db.Order.remove({}, cb)},
-                    function (cb) {db.RnP.remove({}, cb)},
-                    function (cb) {db.TransferBill.remove({}, cb)},
-                    function (cb) {db.StockIn.remove({}, cb)},
-                    function (cb) {db.StockOut.remove({}, cb)},
-                    function (cb) {db.Storage.remove({}, cb)}
+                    function (cb) {
+                        db.Order.remove({}, cb)
+                    },
+                    function (cb) {
+                        db.RnP.remove({}, cb)
+                    },
+                    function (cb) {
+                        db.TransferBill.remove({}, cb)
+                    },
+                    function (cb) {
+                        db.StockIn.remove({}, cb)
+                    },
+                    function (cb) {
+                        db.StockOut.remove({}, cb)
+                    },
+                    function (cb) {
+                        db.Storage.remove({}, cb)
+                    }
                 ], function (e) {
-                    res.send("Done")}
+                    res.send("Done")
+                }
             )
             break;
         case "sysfuns":
             var sfs;
             if (req.currentUser._id == '0') {
-                sfs = Svc.getGVObjs('SysFun', function (i) {return true;});
+                sfs = Svc.getGVObjs('SysFun', function (i) {
+                    return true;
+                });
             }
             else if (req.currentUser.Org.Value == '0') {
-                sfs = Svc.getGVObjs('SysFun', function (i) { return i._id == '300' || i._id == '100'});
+                sfs = Svc.getGVObjs('SysFun', function (i) {
+                    return i._id == '300' || i._id == '100'
+                });
             }
             else if (req.currentUser.Org.Value == '1') {
-                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id == '100' || i._id == '200' || i._id == '300'})
+                sfs = Svc.getGVObjs('SysFun', function (i) {
+                    return i._id == '100' || i._id == '200' || i._id == '300'
+                })
             }
             else {
-                sfs = Svc.getGVObjs('SysFun', function (i) {return i._id.length == 1})
+                sfs = Svc.getGVObjs('SysFun', function (i) {
+                    return i._id.length == 1
+                })
             }
             res.json(sfs);
             break;
@@ -71,7 +93,8 @@ exports.get = function (req, res) {
             Svc.db.Org.findOne({_id: oid}, function (e, org) {
                 Svc.db.User.findOne({Name: 'Admin', 'Org.Value': org._id}, function (e, d) {
                     if (!d) {
-                        Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id, Type: 'Org'}, flag: 1, TypeFullName: 'User'}, function () { });
+                        Svc.db.User.insert({_id: Svc.db.User.ObjectID().toString(), Name: 'Admin', Simcode: 'ADMIN', Pwd: org.SMSNum, Org: {Name: org.Name, Value: org._id, Type: 'Org'}, flag: 1, TypeFullName: 'User'}, function () {
+                        });
                     }
                 });
             });

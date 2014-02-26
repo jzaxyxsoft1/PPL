@@ -1,0 +1,34 @@
+<% include ../Top.ejs %>
+<% if(isMobile){ %>
+<style type="text/css">
+    body{ font-size:16px}
+</style>
+<% } %>
+<div class="wp98 mc" id="d_list" data-bind="foreach:$data">
+    <div class="border-color-blue pp1 wp96 mc" style="border-radius: 5px;">
+        <p>
+            <b>单号:</b><span data-bind="text:BillNum"></span>
+            <b class="ml10">日期:</b><span data-bind="text:CreateTime"></span>
+        </p>
+
+        <p>
+            <b>车号:</b><span data-bind="text:carNum"></span>
+            <b class="ml10">车型:</b><span data-bind="text:carType"></span>
+        </p>
+
+        <p><b>客户电话:</b><span data-bind="text:phoneNum"></span></p>
+        <p>
+            <b style="font-size:18px;" data-bind="text:RelativeObj.Item2"></b><span data-bind="text:Amount"></span> <span data-bind="text:Unit"></span><span>[</span><span data-bind="text:Model"></span><span>]</span><b class="ml10">金额:</b><span data-bind="text:Sum"></span><span>元</span>
+        </p>
+    </div>
+</div>
+<script>
+$.getJSON('/base/getobjs',{tp:'SaleBill',query:{}},function(d){
+    _.each(d,function (i){
+        i.CreateTime= i.CreateTime.Item1.split(' ').shift();
+    });
+    ko.applyBindings(d,document.getElementById('d_list'));
+    $('#mainContainer').removeClass('oya').show();
+})
+</script>
+<% include ../Bottom.ejs %>

@@ -225,7 +225,7 @@ else{ %>
     }
     function save(f) {
         if (f) {
-            bill.Status('未付款');
+            bill.Status('待付款');
         }
         var m = ko.mapping.toJS(bill);
         _.each(m.Items, function (i) {

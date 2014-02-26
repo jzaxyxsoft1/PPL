@@ -3,20 +3,20 @@
 <style type="text/css">
     body { font-size: 16px; }
     span[class^="icon-"] { font-size: 20px; }
-    .itemC { padding: 3%; width: 94%; line-height: 25px; margin-bottom: 4px; border-radius: 5px; }
+    .itemC { padding:1%; width:47%; line-height: 25px; margin-bottom: 4px; display: inline-block;  }
 </style>
 <% } %>
-<div class="mc wp98" data-bind="foreach:$data">
-    <div class="border-color-grayDark fg-color-blueDark itemC">
+<div class="mc wp98" id="d_list" data-bind="foreach:$data">
+    <div data-bind="attr:{'class':cls}">
+        <%if(!isMobile){%>
         <img data-bind="attr:{'src':img}" style="width:35%;" class="fl"/>
-
-        <div class="fr pr" style="width:63%">
+        <%}%>
+        <div class="itm">
             <p>
-                <b>名称:</b> <span class="bg-color-blueDark fg-color-white"
-                                 data-bind="text:RelativeObj.Item2,click:chgP" style="padding: 10px;"></span>
+                <b>名称:</b> <span data-bind="text:RelativeObj.Item2"></span>
             </p>
             <b>规格型号:</b><span data-bind="text:Model"></span><br/>
-            <b>单位</b><span data-bind="text:Unit"></span>
+            <b>库存数量:</b><span data-bind="text:Amount"></span><span data-bind="text:Unit"></span><br/>
             <b>单位成本:</b><span data-bind="text:UnitCost"></span><span>元</span>
             <br/>
             <b>库存成本:</b><span data-bind="text:Cost"></span><span>元</span>
@@ -28,13 +28,25 @@
     <b>库存总成本:</b><span id="txt_Cost"></span>
 </div>
 <script type="text/javascript">
+
     $.getJSON('/storage/get', {t: 'storages'}, function (d) {
         d = _.filter(d, function (i) {return i.Amount != 0;})
         var p = d.length > 0 ? d.Sum('Cost') : 0;
         d = _.sortBy(d, function (i) { return i.Cost;});
-        $('#txt_Cost').text(p);
-        ko.applyBindings(d, document.getElementById('d_list'));
-        $('#mainContainer').show();
+        var pid= _.map(d,function (i){ return i.RelativeObj.Item1;});
+        $.getJSON('/product/get',{t:'objs',query:{_id:{$in:pid}},option:{ImgUrls:1,Model:1,Unit:1}},function(pros){
+            _.each(d,function (i,idx){
+                var pro = _.find(pros,function (pi){return pi._id== i.RelativeObj.Item1});
+                i.img ='http://www.ruibaochi.com'+ pro&&pro.ImgUrls.length?pro.ImgUrls[0]:'/images/yanpin.png';
+                i.Model= pro.Model;
+                i.Unit= pro.Unit||'台';
+                i.cls='fg-color-white itemC ';
+                i.cls = i.cls +bgColor[idx];
+            });
+            $('#txt_Cost').text(p);
+            ko.applyBindings(d, document.getElementById('d_list'));
+            $('#mainContainer').show();
+        })
     });
 </script>
 <% include ../Bottom.ejs %>
