@@ -111,8 +111,7 @@
             k.push(i);
             var _l = $('<div class="ac"></div>');
             _c.append(_l);
-            _l.barcode(i.toString(), 'code128');
-            _l.append('<br/><strong>SN:</strong>' + i);
+            _l.barcode(i.toString(), 'code128',{HRIPre:'SN'});
         }
 
         loading.hide();
